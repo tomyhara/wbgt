@@ -1,0 +1,30 @@
+[Unit]
+Description=WBGT Heat Stroke Warning Kiosk
+Documentation=https://github.com/your-repo/wbgt
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/wbgt
+ExecStart=/usr/bin/python3 /home/pi/wbgt/wbgt_kiosk.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# 環境変数
+Environment=PYTHONUNBUFFERED=1
+Environment=DISPLAY=:0
+
+# セキュリティ設定
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/pi/wbgt
+
+[Install]
+WantedBy=multi-user.target
