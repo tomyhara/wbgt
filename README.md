@@ -5,12 +5,14 @@ Raspberry Piを使用した熱中症警戒アラート情報と天気予報を�
 ## ✨ 機能
 
 - 🌤️ **リアルタイム天気情報** - 気象庁APIから取得
-- 🌡️ **WBGT指数自動計算** - 湿球黒球温度による熱中症リスク判定
+- 🌡️ **WBGT指数表示** - 環境省公式データ優先、気象庁APIフォールバック
 - 🚨 **熱中症警戒アラート** - 今日・明日の警戒レベル表示
+- 🎯 **データソース表示** - 環境省公式/計算値の区別
 - 🎨 **色分け表示** - 危険度に応じた視覚的な警告
 - 🔄 **自動更新** - 30分間隔でのデータ更新
 - 🖥️ **ターミナル版** - 安定動作、低負荷
 - 🪟 **GUI版** - 実験的サポート
+- 📅 **季節対応** - 環境省サービス期間（4-10月）の自動判定
 
 ## 🛠️ 必要な環境
 
@@ -27,9 +29,8 @@ Raspberry Piを使用した熱中症警戒アラート情報と天気予報を�
 git clone <repository-url>
 cd wbgt
 
-# 自動セットアップ実行
-chmod +x install.sh
-./install.sh
+# 仮想環境セットアップ（推奨）
+./setup_venv.sh
 ```
 
 ### 2. 設定
@@ -42,27 +43,33 @@ nano config.py
 
 **デモモード（動作確認用）：**
 ```bash
-python3 wbgt_kiosk.py --demo
+./run_wbgt.sh --demo
 ```
 
 **通常モード（本格運用）：**
 ```bash
-python3 wbgt_kiosk.py
+./run_wbgt.sh
 ```
 
 **GUI版（実験的）：**
 ```bash
-python3 wbgt_kiosk.py --gui
+./run_wbgt.sh --gui
 ```
 
 ## 📱 使用方法
 
 ### コマンドオプション
 ```bash
-python3 wbgt_kiosk.py           # ターミナル版（推奨）
-python3 wbgt_kiosk.py --demo    # デモモード（3回更新で終了）
-python3 wbgt_kiosk.py --gui     # GUI版（実験的）
-python3 wbgt_kiosk.py --help    # ヘルプ表示
+./run_wbgt.sh           # ターミナル版（推奨）
+./run_wbgt.sh --demo    # デモモード（3回更新で終了）
+./run_wbgt.sh --gui     # GUI版（実験的）
+./run_wbgt.sh --help    # ヘルプ表示
+```
+
+### 手動実行（仮想環境使用）
+```bash
+source venv/bin/activate
+python wbgt_kiosk.py --demo
 ```
 
 ### 操作方法
@@ -130,8 +137,10 @@ crontab -e
 
 ### WBGT指数
 - **WBGT値** - 熱中症リスクの指標
-- **警戒レベル** - 注意/警戒/厳重警戒/危険/極めて危険
+- **データソース** - 環境省公式データ優先、気象庁計算値フォールバック
+- **警戒レベル** - ほぼ安全/注意/警戒/厳重警戒/危険
 - **アドバイス** - 具体的な対応策
+- **季節対応** - 環境省サービス期間（4-10月）自動判定
 
 ### 熱中症警戒アラート
 - 今日の警戒レベル
@@ -141,21 +150,28 @@ crontab -e
 
 ```
 wbgt/
-├── wbgt_kiosk.py        # メインアプリケーション
-├── jma_api.py           # 気象庁API クライアント
-├── heatstroke_alert.py  # 熱中症警戒アラート
-├── config.py            # 設定ファイル
-├── config.sample.py     # 設定サンプル
-├── requirements.txt     # Python依存関係
-├── install.sh           # セットアップスクリプト
-├── autostart.sh         # 自動起動スクリプト
-└── README.md           # このファイル
+├── wbgt_kiosk.py        # 🎯 メインアプリケーション
+├── jma_api.py           # 🌐 気象庁API クライアント
+├── env_wbgt_api.py      # 🏛️ 環境省WBGT API クライアント（NEW）
+├── heatstroke_alert.py  # 🚨 熱中症警戒アラート
+├── config.py            # ⚙️ 設定ファイル
+├── config.sample.py     # 📝 設定サンプル
+├── requirements.txt     # 📦 Python依存関係
+├── setup_venv.sh        # 🔧 仮想環境セットアップ
+├── run_wbgt.sh          # 🚀 実行スクリプト
+├── install.sh           # 🛠️ セットアップスクリプト
+├── autostart.sh         # 🔄 自動起動スクリプト
+├── wbgt-kiosk.service   # ⚙️ systemdサービス設定
+├── venv/                # 📁 Python仮想環境
+└── README.md           # 📖 このファイル
 ```
 
 ## 🌐 API
 
-- **気象庁API** - 天気情報・熱中症警戒アラート
+- **環境省熱中症予防情報サイト** - 公式WBGT指数（4-10月期間）
+- **気象庁API** - 天気情報・熱中症警戒アラート・WBGT計算値
 - **APIキー不要** - 無料で利用可能
+- **ハイブリッド方式** - 公式データ優先、フォールバック対応
 - **信頼性の高いデータ** - 日本の公式気象データ
 
 ## 🔍 トラブルシューティング
@@ -163,13 +179,27 @@ wbgt/
 ### よくある問題
 
 **Q: ウィンドウが表示されない（GUI版）**
-A: ターミナル版をお試しください：`python3 wbgt_kiosk.py`
+A: ターミナル版をお試しください：`./run_wbgt.sh`
 
 **Q: データが取得できない**
 A: インターネット接続を確認してください
 
 **Q: 地域を変更したい**
 A: `config.py`の`AREA_CODE`を変更してください
+
+**Q: `ModuleNotFoundError: No module named 'requests'` エラー**
+A: 仮想環境を使用してください：
+```bash
+./setup_venv.sh  # 初回のみ
+./run_wbgt.sh --demo
+```
+
+**Q: `./run_wbgt.sh: Permission denied` エラー**
+A: 実行権限を付与してください：
+```bash
+chmod +x run_wbgt.sh
+./run_wbgt.sh --demo
+```
 
 ### ログ確認
 ```bash

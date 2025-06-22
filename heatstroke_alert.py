@@ -2,11 +2,16 @@ import requests
 import json
 from datetime import datetime, timedelta
 import logging
+from env_wbgt_api import EnvWBGTAPI
 
 logger = logging.getLogger(__name__)
 
 class HeatstrokeAlert:
     def __init__(self):
+        # 環境省公式データサービスを優先使用
+        self.env_wbgt_api = EnvWBGTAPI()
+        
+        # フォールバック用のJMA APIデータ
         self.base_url = "https://www.jma.go.jp/bosai/forecast/data/forecast"
         self.area_codes = {
             '北海道': '016000',
@@ -59,6 +64,17 @@ class HeatstrokeAlert:
         }
     
     def get_alert_data(self, prefecture='東京都'):
+        """熱中症警戒アラート情報を取得（環境省公式データを優先）"""
+        
+        # まず環境省公式データを試行
+        if self.env_wbgt_api.is_service_available():
+            official_data = self.env_wbgt_api.get_alert_data(prefecture)
+            if official_data:
+                logger.info("環境省公式アラートデータを取得")
+                return official_data
+        
+        # フォールバック：JMA APIから推定
+        logger.info("JMA APIを使用してアラート情報を推定")
         area_code = self.area_codes.get(prefecture, '130000')
         url = f"{self.base_url}/{area_code}.json"
         
@@ -150,9 +166,10 @@ class HeatstrokeAlert:
     
     def get_alert_color(self, level):
         colors = {
-            0: 'gray',
-            1: 'orange',
-            2: 'red',
-            3: 'darkred'
+            0: 'gray',      # 発表なし
+            1: 'orange',    # 注意
+            2: 'yellow',    # 特別警戒情報（判定）
+            3: 'red',       # 熱中症警戒情報
+            4: 'darkred'    # 熱中症特別警戒情報
         }
         return colors.get(level, 'gray')

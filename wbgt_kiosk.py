@@ -30,6 +30,7 @@ except ImportError:
 
 from jma_api import JMAWeatherAPI
 from heatstroke_alert import HeatstrokeAlert
+from env_wbgt_api import EnvWBGTAPI
 
 class WBGTKiosk:
     """WBGT熱中症警戒キオスクのメインクラス"""
@@ -39,8 +40,10 @@ class WBGTKiosk:
         self.gui_mode = gui_mode
         self.weather_api = JMAWeatherAPI(area_code=config.AREA_CODE)
         self.heatstroke_alert = HeatstrokeAlert()
+        self.env_wbgt_api = EnvWBGTAPI()
         self.weather_data = None
         self.alert_data = None
+        self.env_wbgt_data = None
         self.running = True
         self.demo_count = 0
         
@@ -106,8 +109,25 @@ class WBGTKiosk:
             if not self.demo_mode:
                 print("📡 データ取得中...")
             
+            # 気象庁APIからデータ取得
             self.weather_data = self.weather_api.get_weather_data()
             self.alert_data = self.heatstroke_alert.get_alert_data()
+            
+            # 環境省WBGTサービスからデータ取得（サービス期間内の場合）
+            if self.env_wbgt_api.is_service_available():
+                # まず実況値を試す
+                self.env_wbgt_data = self.env_wbgt_api.get_wbgt_current_data(config.CITY_NAME)
+                
+                # 実況値が取得できない場合は予測値を試す
+                if not self.env_wbgt_data:
+                    self.env_wbgt_data = self.env_wbgt_api.get_wbgt_forecast_data(config.CITY_NAME)
+                
+                if self.env_wbgt_data:
+                    # 環境省の公式データがある場合は優先使用
+                    self._integrate_env_wbgt_data()
+                    if not self.demo_mode:
+                        data_type = self.env_wbgt_data.get('data_type', 'unknown')
+                        print(self.colored_text(f"✅ 環境省公式WBGTデータ取得完了 ({data_type})", 'green'))
             
             if not self.demo_mode:
                 print(self.colored_text("✅ データ取得完了", 'green'))
@@ -120,6 +140,24 @@ class WBGTKiosk:
             if not self.demo_mode:
                 print(self.colored_text(f"❌ データ取得エラー: {e}", 'red'))
             return False
+    
+    def _integrate_env_wbgt_data(self):
+        """環境省WBGTデータを気象庁データと統合"""
+        if self.env_wbgt_data and self.weather_data:
+            # 環境省の公式WBGT値を使用
+            official_wbgt = self.env_wbgt_data['wbgt_value']
+            level, color, advice = self.env_wbgt_api.get_wbgt_level_info(official_wbgt)
+            
+            # 既存の天気データを更新
+            self.weather_data.update({
+                'wbgt': official_wbgt,
+                'wbgt_level': level,
+                'wbgt_color': color,
+                'wbgt_advice': advice,
+                'wbgt_source': '環境省公式データ'
+            })
+            
+            self.logger.info(f"環境省公式WBGT値を使用: {official_wbgt}°C")
     
     def display_header(self):
         """ヘッダーを表示"""
@@ -169,6 +207,14 @@ class WBGTKiosk:
         
         print(f"WBGT指数: {self.colored_text(wbgt_text, wbgt_color)} " + 
               self.colored_text(level_text, wbgt_color))
+        
+        # データソース表示
+        if 'wbgt_source' in self.weather_data:
+            source_color = 'green' if '環境省' in self.weather_data['wbgt_source'] else 'yellow'
+            print(f"データソース: {self.colored_text(self.weather_data['wbgt_source'], source_color)}")
+        else:
+            print(f"データソース: {self.colored_text('気象庁API（計算値）', 'yellow')}")
+        
         print()
         print(f"📋 アドバイス:")
         print(f"   {self.colored_text(self.weather_data['wbgt_advice'], 'white')}")
@@ -176,16 +222,16 @@ class WBGTKiosk:
         
         # WBGT レベル表示
         level = self.weather_data['wbgt_level']
-        if level == "極めて危険":
-            indicator = "🚨🚨🚨 極めて危険 🚨🚨🚨"
-        elif level == "危険":
-            indicator = "🚨🚨 危険 🚨🚨"
+        if level == "極めて危険" or level == "危険":
+            indicator = "🚨🚨🚨 危険 🚨🚨🚨"
         elif level == "厳重警戒":
             indicator = "⚠️⚠️ 厳重警戒 ⚠️⚠️"
         elif level == "警戒":
             indicator = "⚠️ 警戒 ⚠️"
+        elif level == "注意":
+            indicator = "⚠️ 注意"
         else:
-            indicator = "✅ 注意"
+            indicator = "✅ ほぼ安全"
         
         print(f"レベル: {self.colored_text(indicator, wbgt_color)}")
         print()
@@ -278,7 +324,7 @@ class WBGTKiosk:
             print(self.colored_text("🎉 デモ完了！WBGTキオスクが正常に動作しています。", 'green'))
             print()
             print("📱 本格運用する場合は以下のコマンドを使用してください:")
-            print(f"   {self.colored_text('python3 wbgt_kiosk.py', 'cyan')}")
+            print(f"   {self.colored_text('./run_wbgt.sh', 'cyan')}")
             print("=" * 80)
                 
         except KeyboardInterrupt:
