@@ -1,6 +1,18 @@
-# 気象庁API設定（APIキー不要）
-AREA_CODE = "130000"  # 東京都のコード
-CITY_NAME = "東京"
+# 表示拠点設定
+LOCATIONS = [
+    {
+        "name": "横浜",
+        "area_code": "140000",  # 気象庁API用
+        "wbgt_location_code": "46106",  # 環境省WBGT用
+        "prefecture": "神奈川県"
+    },
+    {
+        "name": "銚子",
+        "area_code": "120000",  # 気象庁API用
+        "wbgt_location_code": "45148",  # 環境省WBGT用
+        "prefecture": "千葉県"
+    }
+]
 
 # 利用可能な地域コード
 AREA_CODES = {

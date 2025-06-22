@@ -73,18 +73,23 @@ class EnvWBGTAPI:
             '沖縄県': 'okinawa'
         }
     
-    def get_wbgt_forecast_data(self, prefecture='東京都'):
+    def get_wbgt_forecast_data(self, location=None):
         """
         WBGT予測値データを取得
         
         Args:
-            prefecture (str): 都道府県名
+            location (dict): 拠点情報（prefecture含む）
             
         Returns:
             dict: WBGT予測データ
         """
         try:
-            pref_name = self.prefecture_names.get(prefecture, 'tokyo')  # デフォルト：東京
+            if location is None:
+                from config import LOCATIONS
+                location = LOCATIONS[0]
+            
+            prefecture = location.get('prefecture')
+            pref_name = self.prefecture_names.get(prefecture, 'kanagawa')
             
             # 環境省データサービスの正式URL構造（都道府県別予測値）
             url = f"{self.base_url}/prev15WG/dl/yohou_{pref_name}.csv"
@@ -93,7 +98,7 @@ class EnvWBGTAPI:
             response = self.session.get(url, timeout=10)
             
             if response.status_code == 200:
-                return self._parse_forecast_csv_data(response.text)
+                return self._parse_forecast_csv_data(response.text, location)
             else:
                 logger.warning(f"環境省WBGTサービスからのデータ取得に失敗: {response.status_code} - URL: {url}")
                 return None
@@ -102,18 +107,23 @@ class EnvWBGTAPI:
             logger.error(f"環境省WBGTデータ取得エラー: {e}")
             return None
     
-    def get_wbgt_current_data(self, prefecture='東京都'):
+    def get_wbgt_current_data(self, location=None):
         """
         WBGT実況値データを取得
         
         Args:
-            prefecture (str): 都道府県名
+            location (dict): 拠点情報（prefecture含む）
             
         Returns:
             dict: WBGT実況データ
         """
         try:
-            pref_name = self.prefecture_names.get(prefecture, 'tokyo')
+            if location is None:
+                from config import LOCATIONS
+                location = LOCATIONS[0]
+                
+            prefecture = location.get('prefecture')
+            pref_name = self.prefecture_names.get(prefecture, 'kanagawa')
             now = datetime.now()
             year_month = f"{now.year}{now.month:02d}"
             
@@ -124,7 +134,7 @@ class EnvWBGTAPI:
             response = self.session.get(url, timeout=10)
             
             if response.status_code == 200:
-                return self._parse_current_csv_data(response.text)
+                return self._parse_current_csv_data(response.text, location)
             else:
                 logger.warning(f"環境省WBGT実況データ取得に失敗: {response.status_code} - URL: {url}")
                 return None
@@ -133,17 +143,22 @@ class EnvWBGTAPI:
             logger.error(f"環境省WBGT実況データ取得エラー: {e}")
             return None
     
-    def get_alert_data(self, prefecture='東京都'):
+    def get_alert_data(self, location=None):
         """
         熱中症警戒アラート情報を取得
         
         Args:
-            prefecture (str): 都道府県名
+            location (dict): 拠点情報（prefecture含む）
             
         Returns:
             dict: アラート情報
         """
         try:
+            if location is None:
+                from config import LOCATIONS
+                location = LOCATIONS[0]
+                
+            prefecture = location.get('prefecture')
             now = datetime.now()
             date_str = now.strftime('%Y%m%d')
             
@@ -181,23 +196,21 @@ class EnvWBGTAPI:
             logger.error(f"環境省アラートデータ取得エラー: {e}")
             return None
     
-    def _parse_forecast_csv_data(self, csv_content):
+    def _parse_forecast_csv_data(self, csv_content, location):
         """予測値CSVデータを解析"""
         try:
             lines = csv_content.strip().split('\n')
             if len(lines) < 2:
                 return None
             
-            # 1行目: 予測時刻データ
-            header_line = lines[0].split(',')
-            
             # 2行目以降: 地点データ
             data_lines = lines[1:]
+            target_location_code = location.get('wbgt_location_code')
             
-            # 最新のデータを使用（最初の地点）
-            if data_lines:
-                data_row = data_lines[0].split(',')
-                if len(data_row) >= 3:
+            # 指定された地点のデータを検索
+            for data_row_str in data_lines:
+                data_row = data_row_str.split(',')
+                if len(data_row) >= 3 and data_row[0] == target_location_code:
                     location_code = data_row[0]
                     update_time = data_row[1]
                     
@@ -216,6 +229,7 @@ class EnvWBGTAPI:
                         return {
                             'wbgt_value': wbgt_values[0],  # 最新の予測値
                             'location_code': location_code,
+                            'location_name': location.get('name'),
                             'update_time': update_time,
                             'data_type': 'forecast',
                             'source': '環境省熱中症予防情報サイト（予測値）'
@@ -227,34 +241,36 @@ class EnvWBGTAPI:
             logger.error(f"予測値CSVデータ解析エラー: {e}")
             return None
     
-    def _parse_current_csv_data(self, csv_content):
+    def _parse_current_csv_data(self, csv_content, location):
         """実況値CSVデータを解析"""
         try:
             lines = csv_content.strip().split('\n')
             if len(lines) < 2:
                 return None
             
-            # 最新の実況データを取得（最後の行）
-            latest_line = lines[-1].split(',')
+            target_location_code = location.get('wbgt_location_code')
             
-            if len(latest_line) >= 4:
-                location_code = latest_line[0]
-                date_time = latest_line[1]
-                
-                try:
-                    # WBGT値は10倍されているので10で割る
-                    wbgt_val = int(latest_line[2]) / 10.0 if latest_line[2].strip() else None
+            for line in reversed(lines):  # 最新から検索
+                data = line.split(',')
+                if len(data) >= 4 and data[0] == target_location_code:
+                    location_code = data[0]
+                    date_time = data[1]
                     
-                    if wbgt_val is not None:
-                        return {
-                            'wbgt_value': wbgt_val,
-                            'location_code': location_code,
-                            'datetime': date_time,
-                            'data_type': 'current',
-                            'source': '環境省熱中症予防情報サイト（実況値）'
-                        }
-                except (ValueError, TypeError):
-                    pass
+                    try:
+                        # WBGT値は10倍されているので10で割る
+                        wbgt_val = int(data[2]) / 10.0 if data[2].strip() else None
+                        
+                        if wbgt_val is not None:
+                            return {
+                                'wbgt_value': wbgt_val,
+                                'location_code': location_code,
+                                'location_name': location.get('name'),
+                                'datetime': date_time,
+                                'data_type': 'current',
+                                'source': '環境省熱中症予防情報サイト（実況値）'
+                            }
+                    except (ValueError, TypeError):
+                        continue
             
             return None
             
