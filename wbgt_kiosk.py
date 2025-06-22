@@ -28,6 +28,20 @@ except ImportError:
     print("📝 config.sample.py をコピーして config.py を作成してください。")
     sys.exit(1)
 
+# GUI設定のデフォルト値を追加
+if not hasattr(config, 'DISPLAY_WIDTH'):
+    config.DISPLAY_WIDTH = 1024
+if not hasattr(config, 'DISPLAY_HEIGHT'):
+    config.DISPLAY_HEIGHT = 768
+if not hasattr(config, 'FONT_SIZE_LARGE'):
+    config.FONT_SIZE_LARGE = 20
+if not hasattr(config, 'FONT_SIZE_MEDIUM'):
+    config.FONT_SIZE_MEDIUM = 16
+if not hasattr(config, 'FONT_SIZE_SMALL'):
+    config.FONT_SIZE_SMALL = 12
+if not hasattr(config, 'FULLSCREEN'):
+    config.FULLSCREEN = False
+
 from jma_api import JMAWeatherAPI
 from heatstroke_alert import HeatstrokeAlert
 from env_wbgt_api import EnvWBGTAPI
@@ -395,37 +409,218 @@ class WBGTKiosk:
             self.logger.info("ターミナルキオスクアプリケーション終了")
     
     def run_gui_mode(self):
-        """GUI モード実行（実験的）"""
+        """キオスク用GUI モード実行"""
         try:
             import tkinter as tk
-            print("🪟 GUI版は実験的機能です")
-            print("⚠️ 表示に問題がある場合はターミナル版をご利用ください")
+            from tkinter import ttk
+            from datetime import datetime
             
-            # 簡単なGUI実装
+            print("🪟 WBGT熱中症警戒キオスク GUI版を起動中...")
+            
+            # メインウィンドウ設定
             root = tk.Tk()
-            root.title("WBGT熱中症警戒キオスク")
-            root.geometry("600x400")
+            root.title("WBGT熱中症警戒キオスク（複数拠点対応）")
+            root.geometry(f"{config.DISPLAY_WIDTH}x{config.DISPLAY_HEIGHT}")
+            root.configure(bg='#1a1a1a')
             
-            text_widget = tk.Text(root, bg='black', fg='white', font=('monospace', 12))
-            text_widget.pack(fill=tk.BOTH, expand=True)
+            if config.FULLSCREEN:
+                root.attributes('-fullscreen', True)
+                root.bind('<Escape>', lambda e: root.destroy())
+            
+            # フォント設定
+            header_font = ('Helvetica', config.FONT_SIZE_LARGE, 'bold')
+            title_font = ('Helvetica', config.FONT_SIZE_MEDIUM, 'bold')
+            data_font = ('Helvetica', config.FONT_SIZE_SMALL)
+            
+            # メインフレーム
+            main_frame = tk.Frame(root, bg='#1a1a1a')
+            main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+            
+            # ヘッダー
+            header_frame = tk.Frame(main_frame, bg='#1a1a1a')
+            header_frame.pack(fill=tk.X, pady=(0, 20))
+            
+            title_label = tk.Label(header_frame, 
+                                 text="🌡️ WBGT熱中症警戒キオスク（複数拠点対応） 🌡️",
+                                 font=header_font, fg='#00ccff', bg='#1a1a1a')
+            title_label.pack()
+            
+            time_label = tk.Label(header_frame, text="", font=data_font, fg='white', bg='#1a1a1a')
+            time_label.pack()
+            
+            locations_label = tk.Label(header_frame, text="", font=data_font, fg='#00ccff', bg='#1a1a1a')
+            locations_label.pack()
+            
+            # 拠点表示フレーム（2列レイアウト）
+            locations_frame = tk.Frame(main_frame, bg='#1a1a1a')
+            locations_frame.pack(fill=tk.BOTH, expand=True)
+            
+            location_frames = []
+            for i, location in enumerate(self.locations):
+                col = i % 2
+                location_frame = tk.Frame(locations_frame, bg='#2a2a2a', relief=tk.RAISED, bd=2)
+                location_frame.grid(row=0, column=col, sticky='nsew', padx=10, pady=10)
+                locations_frame.grid_columnconfigure(col, weight=1)
+                locations_frame.grid_rowconfigure(0, weight=1)
+                
+                # 拠点名
+                location_title = tk.Label(location_frame, 
+                                        text=f"📍 {location['name']}",
+                                        font=title_font, fg='#00ccff', bg='#2a2a2a')
+                location_title.pack(pady=10)
+                
+                # 天気情報フレーム
+                weather_frame = tk.LabelFrame(location_frame, text="🌤️ 天気情報", 
+                                            font=data_font, fg='#00ccff', bg='#2a2a2a')
+                weather_frame.pack(fill=tk.X, padx=10, pady=5)
+                
+                temp_label = tk.Label(weather_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
+                temp_label.pack(anchor='w')
+                
+                humidity_label = tk.Label(weather_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
+                humidity_label.pack(anchor='w')
+                
+                weather_label = tk.Label(weather_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
+                weather_label.pack(anchor='w')
+                
+                # WBGT情報フレーム
+                wbgt_frame = tk.LabelFrame(location_frame, text="🌡️ WBGT指数", 
+                                         font=data_font, fg='#00ccff', bg='#2a2a2a')
+                wbgt_frame.pack(fill=tk.X, padx=10, pady=5)
+                
+                wbgt_value_label = tk.Label(wbgt_frame, text="", font=title_font, fg='white', bg='#2a2a2a')
+                wbgt_value_label.pack()
+                
+                wbgt_level_label = tk.Label(wbgt_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
+                wbgt_level_label.pack()
+                
+                wbgt_advice_label = tk.Label(wbgt_frame, text="", font=data_font, fg='white', bg='#2a2a2a', wraplength=250)
+                wbgt_advice_label.pack()
+                
+                wbgt_source_label = tk.Label(wbgt_frame, text="", font=('Helvetica', 10), fg='#888888', bg='#2a2a2a')
+                wbgt_source_label.pack()
+                
+                # アラート情報フレーム
+                alert_frame = tk.LabelFrame(location_frame, text="🚨 熱中症警戒アラート", 
+                                          font=data_font, fg='#00ccff', bg='#2a2a2a')
+                alert_frame.pack(fill=tk.X, padx=10, pady=5)
+                
+                today_alert_label = tk.Label(alert_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
+                today_alert_label.pack(anchor='w')
+                
+                tomorrow_alert_label = tk.Label(alert_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
+                tomorrow_alert_label.pack(anchor='w')
+                
+                location_frames.append({
+                    'temp': temp_label,
+                    'humidity': humidity_label,
+                    'weather': weather_label,
+                    'wbgt_value': wbgt_value_label,
+                    'wbgt_level': wbgt_level_label,
+                    'wbgt_advice': wbgt_advice_label,
+                    'wbgt_source': wbgt_source_label,
+                    'today_alert': today_alert_label,
+                    'tomorrow_alert': tomorrow_alert_label
+                })
+            
+            # フッター
+            footer_frame = tk.Frame(main_frame, bg='#1a1a1a')
+            footer_frame.pack(fill=tk.X, pady=(20, 0))
+            
+            update_time_label = tk.Label(footer_frame, text="", font=data_font, fg='#888888', bg='#1a1a1a')
+            update_time_label.pack()
+            
+            status_label = tk.Label(footer_frame, text="ESC キーで終了", font=data_font, fg='#888888', bg='#1a1a1a')
+            status_label.pack()
+            
+            def get_wbgt_color(level):
+                """WBGT警戒レベルに応じた色を返す"""
+                colors = {
+                    'ほぼ安全': '#0080ff',
+                    '注意': '#00ff00',
+                    '警戒': '#ffff00',
+                    '厳重警戒': '#ff8000',
+                    '危険': '#ff0000',
+                    '極めて危険': '#800000'
+                }
+                return colors.get(level, '#ffffff')
+            
+            def get_alert_color(level):
+                """アラートレベルに応じた色を返す"""
+                if level >= 4:
+                    return '#ff0000'
+                elif level >= 3:
+                    return '#ff8000'
+                elif level >= 2:
+                    return '#ffff00'
+                else:
+                    return '#888888'
             
             def update_gui():
-                if self.update_data():
-                    # ターミナル出力をGUIに表示
-                    text_widget.delete(1.0, tk.END)
-                    text_widget.insert(tk.END, f"WBGT熱中症警戒キオスク\n")
-                    text_widget.insert(tk.END, f"=" * 50 + "\n")
+                """GUI表示を更新"""
+                try:
+                    # 時刻更新
+                    current_time = datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')
+                    time_label.config(text=f"現在時刻: {current_time}")
                     
-                    if self.weather_data:
-                        text_widget.insert(tk.END, f"気温: {self.weather_data['temperature']}°C\n")
-                        text_widget.insert(tk.END, f"湿度: {self.weather_data['humidity']}%\n")
-                        text_widget.insert(tk.END, f"天気: {self.weather_data['weather_description']}\n")
-                        text_widget.insert(tk.END, f"WBGT: {self.weather_data['wbgt']}°C ({self.weather_data['wbgt_level']})\n")
-                        text_widget.insert(tk.END, f"アドバイス: {self.weather_data['wbgt_advice']}\n")
+                    location_names = [loc['name'] for loc in self.locations]
+                    locations_label.config(text=f"監視拠点: {' / '.join(location_names)}")
+                    
+                    # データ更新
+                    if self.update_data():
+                        # 各拠点のデータを表示
+                        for i, location_data in enumerate(self.locations_data):
+                            if i < len(location_frames):
+                                frames = location_frames[i]
+                                weather_data = location_data.get('weather_data')
+                                alert_data = location_data.get('alert_data')
+                                
+                                if weather_data:
+                                    # 天気情報
+                                    frames['temp'].config(text=f"気温: {weather_data['temperature']}°C")
+                                    frames['humidity'].config(text=f"湿度: {weather_data['humidity']}%")
+                                    frames['weather'].config(text=f"天気: {weather_data['weather_description']}")
+                                    
+                                    # WBGT情報
+                                    wbgt_color = get_wbgt_color(weather_data['wbgt_level'])
+                                    frames['wbgt_value'].config(text=f"{weather_data['wbgt']}°C", fg=wbgt_color)
+                                    frames['wbgt_level'].config(text=f"({weather_data['wbgt_level']})", fg=wbgt_color)
+                                    frames['wbgt_advice'].config(text=weather_data['wbgt_advice'])
+                                    
+                                    source_text = weather_data.get('wbgt_source', '気象庁API（計算値）')
+                                    frames['wbgt_source'].config(text=f"データソース: {source_text}")
+                                
+                                if alert_data and 'alerts' in alert_data:
+                                    # アラート情報
+                                    today_alert = alert_data['alerts']['today']
+                                    tomorrow_alert = alert_data['alerts']['tomorrow']
+                                    
+                                    today_color = get_alert_color(today_alert['level'])
+                                    tomorrow_color = get_alert_color(tomorrow_alert['level'])
+                                    
+                                    frames['today_alert'].config(text=f"今日: {today_alert['status']}", fg=today_color)
+                                    frames['tomorrow_alert'].config(text=f"明日: {tomorrow_alert['status']}", fg=tomorrow_color)
+                        
+                        # 更新時刻表示
+                        if self.locations_data and self.locations_data[0].get('weather_data'):
+                            update_time = self.locations_data[0]['weather_data']['timestamp']
+                            update_time_label.config(text=f"最終更新: {update_time}")
+                    
+                    else:
+                        status_label.config(text="データ取得エラー - ESC キーで終了", fg='#ff0000')
                 
+                except Exception as e:
+                    self.logger.error(f"GUI更新エラー: {e}")
+                    status_label.config(text=f"表示エラー: {e} - ESC キーで終了", fg='#ff0000')
+                
+                # 次回更新をスケジュール
                 root.after(config.UPDATE_INTERVAL_MINUTES * 60 * 1000, update_gui)
             
+            # 初回更新
             update_gui()
+            
+            # メインループ開始
+            self.logger.info("GUI版キオスクアプリケーション開始")
             root.mainloop()
             
         except ImportError:
@@ -435,6 +630,8 @@ class WBGTKiosk:
             print(f"❌ GUI版でエラーが発生しました: {e}")
             print("ターミナル版を起動します。")
             self.run_terminal_mode()
+        finally:
+            self.logger.info("GUI版キオスクアプリケーション終了")
     
     def run(self):
         """メイン実行"""
