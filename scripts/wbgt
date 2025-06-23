@@ -1,0 +1,8 @@
+#!/bin/bash
+# WBGT熱中症警戒キオスク シンプルランチャー
+# WBGT Heat Stroke Warning Kiosk Simple Launcher
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+
+# Shebang無しでも実行可能にするため、拡張子付きスクリプトを呼び出し
+exec "$SCRIPT_DIR/wbgt.sh" "$@"

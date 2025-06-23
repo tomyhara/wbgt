@@ -53,7 +53,7 @@ nano config.py
 
 **GUI版（実験的）：**
 ```bash
-./run_wbgt.sh --gui
+./scripts/run_wbgt.sh --gui
 ```
 
 ## 📱 使用方法
@@ -107,7 +107,7 @@ After=network.target
 Type=simple
 User=pi
 WorkingDirectory=/home/pi/wbgt
-ExecStart=/usr/bin/python3 /home/pi/wbgt/wbgt_kiosk.py
+ExecStart=/usr/bin/python3 /home/pi/wbgt/src/wbgt_kiosk.py
 Restart=always
 RestartSec=10
 
@@ -124,7 +124,7 @@ sudo systemctl start wbgt-kiosk.service
 ```bash
 crontab -e
 # 以下を追加
-@reboot cd /home/pi/wbgt && python3 wbgt_kiosk.py
+@reboot cd /home/pi/wbgt && python3 src/wbgt_kiosk.py
 ```
 
 ## 📊 表示内容
@@ -150,20 +150,42 @@ crontab -e
 
 ```
 wbgt/
-├── wbgt_kiosk.py        # 🎯 メインアプリケーション
-├── jma_api.py           # 🌐 気象庁API クライアント
-├── env_wbgt_api.py      # 🏛️ 環境省WBGT API クライアント（NEW）
-├── heatstroke_alert.py  # 🚨 熱中症警戒アラート
-├── config.py            # ⚙️ 設定ファイル
-├── config.sample.py     # 📝 設定サンプル
-├── requirements.txt     # 📦 Python依存関係
-├── setup_venv.sh        # 🔧 仮想環境セットアップ
-├── run_wbgt.sh          # 🚀 実行スクリプト
-├── install.sh           # 🛠️ セットアップスクリプト
-├── autostart.sh         # 🔄 自動起動スクリプト
-├── wbgt-kiosk.service   # ⚙️ systemdサービス設定
-├── venv/                # 📁 Python仮想環境
-└── README.md           # 📖 このファイル
+├── src/                      # 🎯 ソースコード
+│   ├── wbgt_kiosk.py        # メインアプリケーション（日本語版）
+│   ├── wbgt_kiosk_en.py     # メインアプリケーション（英語版）
+│   ├── jma_api.py           # 気象庁API クライアント
+│   ├── jma_api_en.py        # 気象庁API クライアント（英語版）
+│   ├── env_wbgt_api.py      # 環境省WBGT API クライアント
+│   ├── env_wbgt_api_en.py   # 環境省WBGT API クライアント（英語版）
+│   ├── heatstroke_alert.py  # 熱中症警戒アラート
+│   └── heatstroke_alert_en.py # 熱中症警戒アラート（英語版）
+├── setup/                   # ⚙️ セットアップ・設定
+│   ├── config.py            # 設定ファイル（日本語版）
+│   ├── config.sample.py     # 設定サンプル（日本語版）
+│   ├── config_en.py         # 設定ファイル（英語版）
+│   ├── config_en.sample.py  # 設定サンプル（英語版）
+│   ├── requirements.txt     # Python依存関係
+│   ├── setup_venv.sh        # 仮想環境セットアップ（Linux/macOS）
+│   ├── setup_venv.bat       # 仮想環境セットアップ（Windows）
+│   ├── install.sh           # セットアップスクリプト（Linux/macOS）
+│   ├── install.bat          # セットアップスクリプト（Windows）
+│   ├── install_windows_service.ps1  # Windowsサービス登録
+│   └── uninstall_windows_service.ps1 # Windowsサービス削除
+├── scripts/                 # 🚀 実行スクリプト
+│   ├── wbgt.sh              # 統合ランチャー（Linux/macOS）
+│   ├── wbgt.bat             # 統合ランチャー（Windows）
+│   ├── run_wbgt.sh          # 実行スクリプト（日本語版）
+│   ├── run_wbgt.bat         # 実行スクリプト（日本語版・Windows）
+│   ├── run_wbgt_en.sh       # 実行スクリプト（英語版）
+│   ├── run_wbgt_en.bat      # 実行スクリプト（英語版・Windows）
+│   ├── autostart.sh         # 自動起動スクリプト（Linux/macOS）
+│   ├── autostart.bat        # 自動起動スクリプト（Windows）
+│   └── wbgt                 # 実行ファイル（Linux）
+├── venv/                    # 📁 Python仮想環境
+├── wbgt-kiosk.service       # ⚙️ systemdサービス設定
+├── README.md                # 📖 このファイル（日本語版）
+├── README_EN.md             # 📖 英語版ドキュメント
+└── doc/                     # 📚 ドキュメント
 ```
 
 ## 🌐 API
