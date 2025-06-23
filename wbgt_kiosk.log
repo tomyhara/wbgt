@@ -1,0 +1,705 @@
+2025-06-22 18:08:04,028 - __main__ - INFO - WBGTキオスクアプリケーション開始
+2025-06-22 18:08:04,482 - kiosk_display - INFO - データの取得が完了しました
+2025-06-22 18:08:04,482 - kiosk_display - INFO - データの取得が完了しました
+2025-06-22 18:08:04,483 - __main__ - INFO - キオスク画面を開始します
+2025-06-22 18:09:05,451 - __main__ - INFO - WBGTキオスクアプリケーション開始
+2025-06-22 18:09:05,698 - kiosk_display - INFO - データの取得が完了しました
+2025-06-22 18:09:05,700 - kiosk_display - INFO - データの取得が完了しました
+2025-06-22 18:09:05,700 - __main__ - INFO - キオスク画面を開始します
+2025-06-22 18:09:07,560 - kiosk_display - INFO - 手動更新が要求されました
+2025-06-22 18:09:07,736 - kiosk_display - INFO - データの取得が完了しました
+2025-06-22 18:09:23,573 - kiosk_display - INFO - 手動更新が要求されました
+2025-06-22 18:09:23,762 - kiosk_display - INFO - データの取得が完了しました
+2025-06-22 18:09:24,539 - kiosk_display - INFO - 手動更新が要求されました
+2025-06-22 18:09:24,722 - kiosk_display - INFO - データの取得が完了しました
+2025-06-22 18:09:25,790 - kiosk_display - INFO - 手動更新が要求されました
+2025-06-22 18:09:25,968 - kiosk_display - INFO - データの取得が完了しました
+2025-06-22 18:09:29,592 - kiosk_display - INFO - 手動更新が要求されました
+2025-06-22 18:09:29,739 - __main__ - INFO - WBGTキオスクアプリケーション終了
+2025-06-22 18:31:53,800 - __main__ - INFO - データ更新開始
+2025-06-22 18:31:54,022 - __main__ - INFO - データ更新完了
+2025-06-22 18:32:00,053 - __main__ - INFO - データ更新開始
+2025-06-22 18:32:00,254 - __main__ - INFO - データ更新完了
+2025-06-22 18:32:06,282 - __main__ - INFO - データ更新開始
+2025-06-22 18:32:06,471 - __main__ - INFO - データ更新完了
+2025-06-22 18:43:19,807 - __main__ - INFO - データ更新開始
+2025-06-22 18:43:19,986 - __main__ - INFO - データ更新完了
+2025-06-22 18:43:26,029 - __main__ - INFO - データ更新開始
+2025-06-22 18:43:26,188 - __main__ - INFO - データ更新完了
+2025-06-22 18:43:32,224 - __main__ - INFO - データ更新開始
+2025-06-22 18:43:32,393 - __main__ - INFO - データ更新完了
+2025-06-22 18:43:47,694 - __main__ - INFO - データ更新開始
+2025-06-22 18:43:47,857 - __main__ - INFO - データ更新完了
+2025-06-22 18:43:53,893 - __main__ - INFO - データ更新開始
+2025-06-22 18:43:54,044 - __main__ - INFO - データ更新完了
+2025-06-22 18:44:00,086 - __main__ - INFO - データ更新開始
+2025-06-22 18:44:00,278 - __main__ - INFO - データ更新完了
+2025-06-22 18:44:48,884 - __main__ - INFO - データ更新開始
+2025-06-22 18:44:49,057 - __main__ - INFO - データ更新完了
+2025-06-22 18:44:53,051 - __main__ - INFO - ユーザーによってアプリケーションが終了されました
+2025-06-22 18:45:09,577 - __main__ - INFO - データ更新開始
+2025-06-22 18:45:09,721 - __main__ - INFO - データ更新完了
+2025-06-22 18:52:43,319 - __main__ - INFO - データ更新開始
+2025-06-22 18:52:43,599 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 18:52:43,600 - __main__ - INFO - データ更新完了
+2025-06-22 18:52:49,635 - __main__ - INFO - データ更新開始
+2025-06-22 18:52:49,803 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 18:52:49,804 - __main__ - INFO - データ更新完了
+2025-06-22 18:52:55,840 - __main__ - INFO - データ更新開始
+2025-06-22 18:52:56,013 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 18:52:56,013 - __main__ - INFO - データ更新完了
+2025-06-22 18:56:05,713 - __main__ - INFO - データ更新開始
+2025-06-22 18:56:05,961 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 18:56:05,961 - __main__ - INFO - データ更新完了
+2025-06-22 18:56:11,999 - __main__ - INFO - データ更新開始
+2025-06-22 18:56:12,172 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 18:56:12,173 - __main__ - INFO - データ更新完了
+2025-06-22 18:56:18,206 - __main__ - INFO - データ更新開始
+2025-06-22 18:56:18,377 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 18:56:18,377 - __main__ - INFO - データ更新完了
+2025-06-22 18:56:52,720 - __main__ - INFO - データ更新開始
+2025-06-22 18:56:52,922 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 18:56:52,923 - __main__ - INFO - データ更新完了
+2025-06-22 18:56:58,963 - __main__ - INFO - データ更新開始
+2025-06-22 18:56:59,128 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 18:56:59,128 - __main__ - INFO - データ更新完了
+2025-06-22 18:57:05,161 - __main__ - INFO - データ更新開始
+2025-06-22 18:57:05,315 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 18:57:05,316 - __main__ - INFO - データ更新完了
+2025-06-22 19:06:31,331 - __main__ - INFO - データ更新開始
+2025-06-22 19:06:31,558 - env_wbgt_api - WARNING - 環境省アラートデータ取得に失敗: 404
+2025-06-22 19:06:31,559 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 19:06:31,652 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 19:06:31,652 - __main__ - INFO - データ更新完了
+2025-06-22 19:06:37,696 - __main__ - INFO - データ更新開始
+2025-06-22 19:06:37,828 - env_wbgt_api - WARNING - 環境省アラートデータ取得に失敗: 404
+2025-06-22 19:06:37,829 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 19:06:37,890 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 19:06:37,890 - __main__ - INFO - データ更新完了
+2025-06-22 19:06:43,932 - __main__ - INFO - データ更新開始
+2025-06-22 19:06:44,061 - env_wbgt_api - WARNING - 環境省アラートデータ取得に失敗: 404
+2025-06-22 19:06:44,061 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 19:06:44,127 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 19:06:44,127 - __main__ - INFO - データ更新完了
+2025-06-22 19:07:14,488 - __main__ - INFO - データ更新開始
+2025-06-22 19:07:14,655 - env_wbgt_api - WARNING - 環境省アラートデータ取得に失敗: 404
+2025-06-22 19:07:14,656 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 19:07:14,747 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 19:07:14,747 - __main__ - INFO - データ更新完了
+2025-06-22 19:07:20,788 - __main__ - INFO - データ更新開始
+2025-06-22 19:07:20,917 - env_wbgt_api - WARNING - 環境省アラートデータ取得に失敗: 404
+2025-06-22 19:07:20,918 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 19:07:20,985 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 19:07:20,985 - __main__ - INFO - データ更新完了
+2025-06-22 19:07:27,027 - __main__ - INFO - データ更新開始
+2025-06-22 19:07:27,156 - env_wbgt_api - WARNING - 環境省アラートデータ取得に失敗: 404
+2025-06-22 19:07:27,156 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 19:07:27,225 - env_wbgt_api - WARNING - 環境省WBGT実況データ取得に失敗: 404
+2025-06-22 19:07:27,225 - __main__ - INFO - データ更新完了
+2025-06-22 19:12:03,514 - __main__ - INFO - データ更新開始
+2025-06-22 19:12:03,637 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:12:03,724 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:12:03,725 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:12:03,775 - __main__ - INFO - データ更新完了
+2025-06-22 19:12:09,817 - __main__ - INFO - データ更新開始
+2025-06-22 19:12:09,928 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:12:09,947 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:12:09,948 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:12:09,967 - __main__ - INFO - データ更新完了
+2025-06-22 19:12:16,010 - __main__ - INFO - データ更新開始
+2025-06-22 19:12:16,118 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:12:16,141 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:12:16,141 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:12:16,158 - __main__ - INFO - データ更新完了
+2025-06-22 19:12:57,940 - __main__ - INFO - データ更新開始
+2025-06-22 19:12:58,056 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:12:58,107 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:12:58,107 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:12:58,154 - __main__ - INFO - データ更新完了
+2025-06-22 19:13:04,194 - __main__ - INFO - データ更新開始
+2025-06-22 19:13:04,298 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:13:04,321 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:13:04,321 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:13:04,343 - __main__ - INFO - データ更新完了
+2025-06-22 19:13:10,381 - __main__ - INFO - データ更新開始
+2025-06-22 19:13:10,483 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:13:10,502 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:13:10,502 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:13:10,523 - __main__ - INFO - データ更新完了
+2025-06-22 19:17:23,639 - __main__ - INFO - データ更新開始
+2025-06-22 19:17:23,774 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:17:23,843 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 19:17:23,843 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:17:23,844 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:17:23,895 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 19:17:23,910 - __main__ - INFO - 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 19:17:23,911 - __main__ - INFO - データ更新完了
+2025-06-22 19:17:29,950 - __main__ - INFO - データ更新開始
+2025-06-22 19:17:30,057 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:17:30,079 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 19:17:30,079 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:17:30,079 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:17:30,100 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 19:17:30,119 - __main__ - INFO - 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 19:17:30,119 - __main__ - INFO - データ更新完了
+2025-06-22 19:17:36,154 - __main__ - INFO - データ更新開始
+2025-06-22 19:17:36,259 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:17:36,284 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 19:17:36,284 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:17:36,284 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:17:36,304 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 19:17:36,325 - __main__ - INFO - 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 19:17:36,325 - __main__ - INFO - データ更新完了
+2025-06-22 19:17:55,450 - __main__ - INFO - データ更新開始
+2025-06-22 19:17:55,598 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:17:55,650 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 19:17:55,651 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:17:55,651 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:17:55,702 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 19:17:55,720 - __main__ - INFO - 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 19:17:55,720 - __main__ - INFO - データ更新完了
+2025-06-22 19:18:01,765 - __main__ - INFO - データ更新開始
+2025-06-22 19:18:01,868 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:18:01,892 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 19:18:01,893 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:18:01,893 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:18:01,913 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 19:18:01,931 - __main__ - INFO - 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 19:18:01,931 - __main__ - INFO - データ更新完了
+2025-06-22 19:18:07,977 - __main__ - INFO - データ更新開始
+2025-06-22 19:18:08,081 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 19:18:08,102 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 19:18:08,102 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 19:18:08,102 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 19:18:08,122 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 19:18:08,138 - __main__ - INFO - 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 19:18:08,139 - __main__ - INFO - データ更新完了
+2025-06-22 20:57:38,651 - __main__ - INFO - データ更新開始
+2025-06-22 20:57:39,170 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 20:57:39,519 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 20:57:39,520 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 20:57:39,520 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 20:57:39,695 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 20:57:39,713 - __main__ - INFO - 環境省公式WBGT値を使用: 23.0°C
+2025-06-22 20:57:39,713 - __main__ - INFO - データ更新完了
+2025-06-22 20:57:45,764 - __main__ - INFO - データ更新開始
+2025-06-22 20:57:45,868 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 20:57:45,886 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 20:57:45,887 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 20:57:45,887 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 20:57:45,907 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 20:57:45,923 - __main__ - INFO - 環境省公式WBGT値を使用: 23.0°C
+2025-06-22 20:57:45,923 - __main__ - INFO - データ更新完了
+2025-06-22 20:57:51,963 - __main__ - INFO - データ更新開始
+2025-06-22 20:57:52,055 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 20:57:52,074 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 20:57:52,075 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 20:57:52,075 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 20:57:52,093 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 20:57:52,112 - __main__ - INFO - 環境省公式WBGT値を使用: 23.0°C
+2025-06-22 20:57:52,112 - __main__ - INFO - データ更新完了
+2025-06-22 21:05:55,595 - __main__ - INFO - データ更新開始
+2025-06-22 21:05:55,724 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:05:55,787 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:05:55,788 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:05:55,788 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 21:05:55,834 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 21:05:55,852 - __main__ - INFO - 環境省公式WBGT値を使用: 23.0°C
+2025-06-22 21:05:55,852 - __main__ - INFO - データ更新完了
+2025-06-22 21:06:01,891 - __main__ - INFO - データ更新開始
+2025-06-22 21:06:01,992 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:06:02,012 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:06:02,012 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:06:02,013 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 21:06:02,033 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 21:06:02,050 - __main__ - INFO - 環境省公式WBGT値を使用: 23.0°C
+2025-06-22 21:06:02,051 - __main__ - INFO - データ更新完了
+2025-06-22 21:06:08,089 - __main__ - INFO - データ更新開始
+2025-06-22 21:06:08,186 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:06:08,201 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:06:08,202 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:06:08,202 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 21:06:08,221 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 21:06:08,237 - __main__ - INFO - 環境省公式WBGT値を使用: 23.0°C
+2025-06-22 21:06:08,237 - __main__ - INFO - データ更新完了
+2025-06-22 21:08:03,509 - __main__ - INFO - データ更新開始
+2025-06-22 21:08:03,783 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:08:03,900 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:08:03,900 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:08:03,900 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 21:08:04,026 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 21:08:04,075 - __main__ - INFO - 環境省公式WBGT値を使用: 23.0°C
+2025-06-22 21:08:04,075 - __main__ - INFO - データ更新完了
+2025-06-22 21:08:10,117 - __main__ - INFO - データ更新開始
+2025-06-22 21:08:10,211 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:08:10,232 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:08:10,232 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:08:10,232 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 21:08:10,256 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 21:08:10,272 - __main__ - INFO - 環境省公式WBGT値を使用: 23.0°C
+2025-06-22 21:08:10,272 - __main__ - INFO - データ更新完了
+2025-06-22 21:08:16,316 - __main__ - INFO - データ更新開始
+2025-06-22 21:08:16,417 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:08:16,433 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:08:16,433 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:08:16,433 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_tokyo_202506.csv
+2025-06-22 21:08:16,470 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_tokyo.csv
+2025-06-22 21:08:16,486 - __main__ - INFO - 環境省公式WBGT値を使用: 23.0°C
+2025-06-22 21:08:16,486 - __main__ - INFO - データ更新完了
+2025-06-22 21:15:26,929 - __main__ - INFO - データ更新開始
+2025-06-22 21:15:27,052 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:15:27,118 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:15:27,118 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:15:27,118 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:15:27,163 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:15:27,179 - __main__ - INFO - 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:15:27,179 - __main__ - INFO - データ更新完了
+2025-06-22 21:15:33,216 - __main__ - INFO - データ更新開始
+2025-06-22 21:15:33,314 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:15:33,332 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:15:33,333 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:15:33,333 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:15:33,353 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:15:33,367 - __main__ - INFO - 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:15:33,367 - __main__ - INFO - データ更新完了
+2025-06-22 21:15:39,412 - __main__ - INFO - データ更新開始
+2025-06-22 21:15:39,513 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:15:39,531 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:15:39,532 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:15:39,532 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:15:39,551 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:15:39,570 - __main__ - INFO - 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:15:39,570 - __main__ - INFO - データ更新完了
+2025-06-22 21:24:39,016 - __main__ - INFO - データ更新開始
+2025-06-22 21:24:39,151 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:24:39,237 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:24:39,238 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:24:39,238 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:24:39,282 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:24:39,300 - __main__ - INFO - 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:24:39,300 - __main__ - INFO - データ更新完了
+2025-06-22 21:24:45,345 - __main__ - INFO - データ更新開始
+2025-06-22 21:24:45,440 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:24:45,460 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:24:45,461 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:24:45,461 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:24:45,478 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:24:45,494 - __main__ - INFO - 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:24:45,494 - __main__ - INFO - データ更新完了
+2025-06-22 21:24:51,537 - __main__ - INFO - データ更新開始
+2025-06-22 21:24:51,643 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250622_17.csv
+2025-06-22 21:24:51,661 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-22 21:24:51,661 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-22 21:24:51,661 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:24:51,677 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:24:51,693 - __main__ - INFO - 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:24:51,693 - __main__ - INFO - データ更新完了
+2025-06-22 21:33:59,285 - __main__ - INFO - データ更新開始
+2025-06-22 21:33:59,402 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:33:59,402 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:33:59,444 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:33:59,508 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:33:59,526 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:33:59,618 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:33:59,619 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:33:59,660 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-22 21:33:59,680 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-22 21:33:59,697 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 21:33:59,698 - __main__ - INFO - データ更新完了
+2025-06-22 21:34:05,740 - __main__ - INFO - データ更新開始
+2025-06-22 21:34:05,838 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:34:05,839 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:34:05,883 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:34:05,900 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:34:05,916 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:34:06,008 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:34:06,008 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:34:06,047 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-22 21:34:06,068 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-22 21:34:06,084 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 21:34:06,084 - __main__ - INFO - データ更新完了
+2025-06-22 21:34:12,122 - __main__ - INFO - データ更新開始
+2025-06-22 21:34:12,217 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:34:12,218 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:34:12,259 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:34:12,277 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:34:12,296 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:34:12,390 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:34:12,391 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:34:12,434 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-22 21:34:12,456 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-22 21:34:12,474 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 21:34:12,474 - __main__ - INFO - データ更新完了
+2025-06-22 21:34:31,544 - __main__ - INFO - データ更新開始
+2025-06-22 21:34:31,667 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:34:31,667 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:34:31,707 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:34:31,748 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:34:31,762 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:34:31,867 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:34:31,867 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:34:31,906 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-22 21:34:31,924 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-22 21:34:31,939 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 21:34:31,939 - __main__ - INFO - データ更新完了
+2025-06-22 21:34:37,967 - __main__ - INFO - データ更新開始
+2025-06-22 21:34:38,070 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:34:38,071 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:34:38,112 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:34:38,131 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:34:38,151 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:34:38,240 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:34:38,240 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:34:38,282 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-22 21:34:38,303 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-22 21:34:38,323 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 21:34:38,323 - __main__ - INFO - データ更新完了
+2025-06-22 21:34:44,357 - __main__ - INFO - データ更新開始
+2025-06-22 21:34:44,454 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:34:44,454 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:34:44,494 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:34:44,511 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:34:44,528 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:34:44,627 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:34:44,628 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:34:44,668 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-22 21:34:44,694 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-22 21:34:44,713 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 21:34:44,713 - __main__ - INFO - データ更新完了
+2025-06-22 21:55:11,497 - wbgt_kiosk - INFO - ターミナルキオスクアプリケーション開始
+2025-06-22 21:58:53,364 - __main__ - INFO - データ更新開始
+2025-06-22 21:58:53,486 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:58:53,486 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:58:53,521 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-22 21:58:53,597 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-22 21:58:53,614 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 24.0°C
+2025-06-22 21:58:53,703 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-22 21:58:53,704 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-22 21:58:53,746 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-22 21:58:53,767 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-22 21:58:53,783 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 22.0°C
+2025-06-22 21:58:53,783 - __main__ - INFO - データ更新完了
+2025-06-22 21:58:53,786 - __main__ - INFO - GUI版キオスクアプリケーション開始
+2025-06-22 21:59:58,278 - __main__ - INFO - GUI版キオスクアプリケーション終了
+2025-06-23 20:52:56,876 - __main__ - INFO - データ更新開始
+2025-06-23 20:52:56,982 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-23 20:52:56,982 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-23 20:52:57,019 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 20:52:58,105 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 20:52:58,123 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 20:52:58,237 - env_wbgt_api - ERROR - 環境省アラートデータ取得エラー: 'str' object has no attribute 'get'
+2025-06-23 20:52:58,237 - heatstroke_alert - INFO - JMA APIを使用してアラート情報を推定
+2025-06-23 20:52:58,278 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 20:52:58,298 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 20:52:58,313 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 20:52:58,314 - __main__ - INFO - データ更新完了
+2025-06-23 20:52:58,316 - __main__ - INFO - GUI版キオスクアプリケーション開始
+2025-06-23 20:54:33,983 - __main__ - INFO - GUI版キオスクアプリケーション終了
+2025-06-23 20:56:44,570 - __main__ - INFO - データ更新開始
+2025-06-23 20:56:44,690 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:56:44,765 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:56:44,766 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:56:44,766 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 20:56:44,810 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 20:56:44,828 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 20:56:44,920 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:56:44,939 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:56:44,939 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:56:44,939 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 20:56:44,956 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 20:56:44,971 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 20:56:44,972 - __main__ - INFO - データ更新完了
+2025-06-23 20:56:51,012 - __main__ - INFO - データ更新開始
+2025-06-23 20:56:51,109 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:56:51,130 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:56:51,131 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:56:51,131 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 20:56:51,152 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 20:56:51,170 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 20:56:51,260 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:56:51,276 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:56:51,277 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:56:51,277 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 20:56:51,296 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 20:56:51,313 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 20:56:51,313 - __main__ - INFO - データ更新完了
+2025-06-23 20:56:57,347 - __main__ - INFO - データ更新開始
+2025-06-23 20:56:57,435 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:56:57,461 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:56:57,461 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:56:57,461 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 20:56:57,485 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 20:56:57,512 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 20:56:57,596 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:56:57,616 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:56:57,616 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:56:57,616 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 20:56:57,639 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 20:56:57,657 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 20:56:57,657 - __main__ - INFO - データ更新完了
+2025-06-23 20:57:16,312 - __main__ - INFO - データ更新開始
+2025-06-23 20:57:16,401 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:57:16,444 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:57:16,444 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:57:16,444 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 20:57:16,494 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 20:57:16,506 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 20:57:16,588 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:57:16,607 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:57:16,607 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:57:16,608 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 20:57:16,629 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 20:57:16,642 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 20:57:16,642 - __main__ - INFO - データ更新完了
+2025-06-23 20:57:16,643 - __main__ - INFO - GUI版キオスクアプリケーション開始
+2025-06-23 20:58:03,784 - __main__ - INFO - GUI版キオスクアプリケーション終了
+2025-06-23 20:58:16,419 - __main__ - INFO - ターミナルキオスクアプリケーション開始
+2025-06-23 20:58:16,419 - __main__ - INFO - データ更新開始
+2025-06-23 20:58:16,536 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:58:16,598 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:58:16,599 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:58:16,599 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 20:58:16,641 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 20:58:16,659 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 20:58:16,756 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:58:16,772 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:58:16,772 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:58:16,772 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 20:58:16,792 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 20:58:16,809 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 20:58:16,809 - __main__ - INFO - データ更新完了
+2025-06-23 20:58:17,814 - __main__ - INFO - データ更新開始
+2025-06-23 20:58:17,911 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:58:17,930 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:58:17,930 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:58:17,930 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 20:58:17,946 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 20:58:17,965 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 20:58:18,053 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:58:18,070 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:58:18,070 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:58:18,070 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 20:58:18,092 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 20:58:18,106 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 20:58:18,106 - __main__ - INFO - データ更新完了
+2025-06-23 20:59:53,324 - __main__ - INFO - データ更新開始
+2025-06-23 20:59:53,447 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:59:53,515 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:59:53,515 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:59:53,515 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 20:59:53,560 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 20:59:53,579 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 20:59:53,665 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:59:53,684 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:59:53,684 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:59:53,684 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 20:59:53,702 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 20:59:53,720 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 20:59:53,720 - __main__ - INFO - データ更新完了
+2025-06-23 20:59:59,756 - __main__ - INFO - データ更新開始
+2025-06-23 20:59:59,848 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 20:59:59,874 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 20:59:59,874 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 20:59:59,875 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 20:59:59,894 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 20:59:59,911 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:00:00,006 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:00:00,024 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:00:00,025 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:00:00,025 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:00:00,045 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:00:00,066 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:00:00,067 - __main__ - INFO - データ更新完了
+2025-06-23 21:00:06,098 - __main__ - INFO - データ更新開始
+2025-06-23 21:00:06,192 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:00:06,210 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:00:06,210 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:00:06,211 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:00:06,231 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:00:06,247 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:00:06,334 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:00:06,350 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:00:06,350 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:00:06,350 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:00:06,368 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:00:06,384 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:00:06,384 - __main__ - INFO - データ更新完了
+2025-06-23 21:00:18,719 - __main__ - INFO - ユーザーによってアプリケーションが終了されました
+2025-06-23 21:00:18,730 - __main__ - INFO - ターミナルキオスクアプリケーション終了
+2025-06-23 21:00:25,386 - __main__ - INFO - ターミナルキオスクアプリケーション開始
+2025-06-23 21:00:25,386 - __main__ - INFO - データ更新開始
+2025-06-23 21:00:25,475 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:00:25,516 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:00:25,516 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:00:25,516 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:00:25,558 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:00:25,573 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:00:25,669 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:00:25,686 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:00:25,687 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:00:25,687 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:00:25,708 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:00:25,725 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:00:25,725 - __main__ - INFO - データ更新完了
+2025-06-23 21:00:26,730 - __main__ - INFO - データ更新開始
+2025-06-23 21:00:26,824 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:00:26,842 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:00:26,842 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:00:26,842 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:00:26,857 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:00:26,873 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:00:26,961 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:00:26,977 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:00:26,978 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:00:26,978 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:00:27,000 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:00:27,016 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:00:27,016 - __main__ - INFO - データ更新完了
+2025-06-23 21:01:53,321 - __main__ - INFO - データ更新開始
+2025-06-23 21:01:53,452 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:01:54,328 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:01:54,329 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:01:54,329 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:01:54,376 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:01:54,393 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:01:54,492 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:01:54,510 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:01:54,510 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:01:54,510 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:01:54,534 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:01:54,553 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:01:54,553 - __main__ - INFO - データ更新完了
+2025-06-23 21:02:00,587 - __main__ - INFO - データ更新開始
+2025-06-23 21:02:00,674 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:02:00,690 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:02:00,690 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:02:00,690 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:02:00,708 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:02:00,723 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:02:00,815 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:02:00,833 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:02:00,833 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:02:00,834 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:02:00,853 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:02:00,870 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:02:00,870 - __main__ - INFO - データ更新完了
+2025-06-23 21:02:06,905 - __main__ - INFO - データ更新開始
+2025-06-23 21:02:07,009 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:02:07,027 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:02:07,027 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:02:07,028 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:02:07,047 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:02:07,066 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:02:07,164 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:02:07,198 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:02:07,198 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:02:07,199 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:02:07,218 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:02:07,236 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:02:07,236 - __main__ - INFO - データ更新完了
+2025-06-23 21:02:27,691 - __main__ - INFO - ユーザーによってアプリケーションが終了されました
+2025-06-23 21:02:27,705 - __main__ - INFO - ターミナルキオスクアプリケーション終了
+2025-06-23 21:02:31,782 - __main__ - INFO - ターミナルキオスクアプリケーション開始
+2025-06-23 21:02:31,782 - __main__ - INFO - データ更新開始
+2025-06-23 21:02:31,873 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:02:31,914 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:02:31,915 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:02:31,915 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:02:31,962 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:02:31,974 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:02:32,064 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:02:32,081 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:02:32,081 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:02:32,082 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:02:32,101 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:02:32,119 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:02:32,119 - __main__ - INFO - データ更新完了
+2025-06-23 21:02:33,125 - __main__ - INFO - データ更新開始
+2025-06-23 21:02:33,229 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:02:33,249 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:02:33,249 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:02:33,249 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:02:33,266 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:02:33,283 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:02:33,374 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:02:33,392 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:02:33,392 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:02:33,393 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:02:33,409 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:02:33,424 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:02:33,424 - __main__ - INFO - データ更新完了
+2025-06-23 21:02:47,185 - __main__ - INFO - ユーザーによってアプリケーションが終了されました
+2025-06-23 21:02:47,194 - __main__ - INFO - ターミナルキオスクアプリケーション終了
+2025-06-23 21:14:48,026 - __main__ - INFO - データ更新開始
+2025-06-23 21:14:48,151 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:14:48,215 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:14:48,216 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:14:48,216 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:14:48,259 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:14:48,275 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:14:48,369 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:14:48,385 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:14:48,386 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:14:48,386 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:14:48,408 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:14:48,424 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:14:48,424 - __main__ - INFO - データ更新完了
+2025-06-23 21:14:54,456 - __main__ - INFO - データ更新開始
+2025-06-23 21:14:54,546 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:14:54,563 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:14:54,564 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:14:54,564 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:14:54,582 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:14:54,597 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:14:54,684 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:14:54,705 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:14:54,706 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:14:54,706 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:14:54,724 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:14:54,743 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:14:54,743 - __main__ - INFO - データ更新完了
+2025-06-23 21:15:00,781 - __main__ - INFO - データ更新開始
+2025-06-23 21:15:00,878 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:15:00,897 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:15:00,897 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:15:00,897 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:15:00,916 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:15:00,933 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:15:01,028 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:15:01,068 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:15:01,068 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:15:01,068 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:15:01,091 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:15:01,108 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:15:01,109 - __main__ - INFO - データ更新完了
+2025-06-23 21:37:03,359 - __main__ - INFO - ターミナルキオスクアプリケーション開始
+2025-06-23 21:37:03,359 - __main__ - INFO - データ更新開始
+2025-06-23 21:37:03,462 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:37:03,544 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:37:03,545 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:37:03,545 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:37:03,589 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:37:03,607 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:37:03,713 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:37:03,733 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:37:03,733 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:37:03,733 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:37:03,753 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:37:03,770 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:37:03,770 - __main__ - INFO - データ更新完了
+2025-06-23 21:37:04,776 - __main__ - INFO - データ更新開始
+2025-06-23 21:37:04,878 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:37:04,896 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:37:04,896 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:37:04,896 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:37:04,916 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:37:04,932 - __main__ - INFO - 横浜 環境省公式WBGT値を使用: 25.0°C
+2025-06-23 21:37:05,023 - env_wbgt_api - INFO - 熱中症警戒アラートデータ取得URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:37:05,042 - env_wbgt_api - INFO - アラートCSVから64行のデータを抽出
+2025-06-23 21:37:05,043 - heatstroke_alert - INFO - 環境省公式アラートデータを取得
+2025-06-23 21:37:05,043 - env_wbgt_api - INFO - WBGT実況値データ取得URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:37:05,061 - env_wbgt_api - INFO - WBGT予測値データ取得URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:37:05,077 - __main__ - INFO - 銚子 環境省公式WBGT値を使用: 24.0°C
+2025-06-23 21:37:05,077 - __main__ - INFO - データ更新完了
+2025-06-23 21:37:09,250 - __main__ - INFO - ユーザーによってアプリケーションが終了されました
+2025-06-23 21:37:09,266 - __main__ - INFO - ターミナルキオスクアプリケーション終了

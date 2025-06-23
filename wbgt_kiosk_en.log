@@ -1,0 +1,85 @@
+2025-06-23 21:10:31,331 - __main__ - INFO - Starting data update
+2025-06-23 21:10:31,463 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:10:31,547 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:10:31,548 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:10:31,548 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:10:31,596 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:10:31,702 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:10:31,719 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:10:31,720 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:10:31,720 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:10:31,738 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:10:31,756 - __main__ - INFO - Data update completed
+2025-06-23 21:10:36,794 - __main__ - INFO - Starting data update
+2025-06-23 21:10:36,953 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:10:36,972 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:10:36,973 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:10:36,973 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:10:36,989 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:10:37,097 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:10:37,114 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:10:37,115 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:10:37,115 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:10:37,133 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:10:37,150 - __main__ - INFO - Data update completed
+2025-06-23 21:10:42,180 - __main__ - INFO - Starting data update
+2025-06-23 21:10:42,276 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:10:42,297 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:10:42,298 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:10:42,298 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:10:42,314 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:10:42,412 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:10:42,429 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:10:42,429 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:10:42,429 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:10:42,450 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:10:42,464 - __main__ - INFO - Data update completed
+2025-06-23 21:15:14,170 - __main__ - INFO - Starting data update
+2025-06-23 21:15:14,263 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:15:14,304 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:15:14,304 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:15:14,304 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:15:14,345 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:15:14,464 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:15:14,483 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:15:14,483 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:15:14,483 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:15:14,502 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:15:14,518 - __main__ - INFO - Data update completed
+2025-06-23 21:15:19,550 - __main__ - INFO - Starting data update
+2025-06-23 21:15:19,637 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:15:19,653 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:15:19,653 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:15:19,653 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:15:19,670 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:15:19,775 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:15:19,791 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:15:19,792 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:15:19,792 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:15:19,809 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:15:19,825 - __main__ - INFO - Data update completed
+2025-06-23 21:15:24,857 - __main__ - INFO - Starting data update
+2025-06-23 21:15:24,954 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:15:24,974 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:15:24,974 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:15:24,974 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:15:24,991 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:15:25,084 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:15:25,101 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:15:25,102 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:15:25,102 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:15:25,119 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:15:25,134 - __main__ - INFO - Data update completed
+2025-06-23 21:37:17,222 - __main__ - INFO - Starting data update
+2025-06-23 21:37:17,312 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:37:17,352 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:37:17,353 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:37:17,353 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_kanagawa_202506.csv
+2025-06-23 21:37:17,400 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_kanagawa.csv
+2025-06-23 21:37:17,501 - env_wbgt_api_en - INFO - Heat stroke warning alert data URL: https://www.wbgt.env.go.jp/alert/dl/2025/alert_20250623_17.csv
+2025-06-23 21:37:17,517 - env_wbgt_api_en - INFO - Extracted 64 lines of data from alert CSV
+2025-06-23 21:37:17,517 - heatstroke_alert_en - INFO - Retrieved official Environment Ministry alert data
+2025-06-23 21:37:17,517 - env_wbgt_api_en - INFO - WBGT current data URL: https://www.wbgt.env.go.jp/est15WG/dl/wbgt_chiba_202506.csv
+2025-06-23 21:37:17,534 - env_wbgt_api_en - INFO - WBGT forecast data URL: https://www.wbgt.env.go.jp/prev15WG/dl/yohou_chiba.csv
+2025-06-23 21:37:17,551 - __main__ - INFO - Data update completed
+2025-06-23 21:38:11,185 - __main__ - INFO - Shutdown signal received
