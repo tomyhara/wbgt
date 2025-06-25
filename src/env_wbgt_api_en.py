@@ -24,6 +24,20 @@ class EnvWBGTAPIEN:
             'User-Agent': 'WBGT-Kiosk/1.0 (Heat Stroke Prevention System)'
         })
         
+        # SSL configuration for corporate Windows environments
+        try:
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
+            from config import SSL_VERIFY, SSL_CERT_PATH
+            self.ssl_verify = SSL_VERIFY
+            self.ssl_cert_path = SSL_CERT_PATH
+            if not self.ssl_verify:
+                import urllib3
+                urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+                logger.warning("SSL certificate verification disabled (corporate environment setting)")
+        except ImportError:
+            self.ssl_verify = True
+            self.ssl_cert_path = None
+        
         # Prefecture name mapping (alphabetic notation for Environment Ministry service)
         self.prefecture_names = {
             'Hokkaido': 'hokkaido',
@@ -98,7 +112,7 @@ class EnvWBGTAPIEN:
             url = f"{self.base_url}/prev15WG/dl/yohou_{pref_name}.csv"
             logger.info(f"WBGT forecast data URL: {url}")
             
-            response = self.session.get(url, timeout=10)
+            response = self.session.get(url, timeout=10, verify=self.ssl_verify)
             
             if response.status_code == 200:
                 return self._parse_forecast_csv_data(response.text, location)
@@ -135,7 +149,7 @@ class EnvWBGTAPIEN:
             url = f"{self.base_url}/est15WG/dl/wbgt_{pref_name}_{year_month}.csv"
             logger.info(f"WBGT current data URL: {url}")
             
-            response = self.session.get(url, timeout=10)
+            response = self.session.get(url, timeout=10, verify=self.ssl_verify)
             
             if response.status_code == 200:
                 return self._parse_current_csv_data(response.text, location)
@@ -189,7 +203,7 @@ class EnvWBGTAPIEN:
             url = f"{self.base_url}/alert/dl/{now.year}/alert_{target_date}_{file_time}.csv"
             logger.info(f"Heat stroke warning alert data URL: {url}")
             
-            response = self.session.get(url, timeout=10)
+            response = self.session.get(url, timeout=10, verify=self.ssl_verify)
             
             if response.status_code == 200:
                 return self._parse_alert_data(response.text, prefecture)

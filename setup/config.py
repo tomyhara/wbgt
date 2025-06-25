@@ -78,3 +78,7 @@ FULLSCREEN = False
 
 LOG_LEVEL = "INFO"
 LOG_FILE = "wbgt_kiosk.log"
+
+# SSL設定（Windows企業環境向け）
+SSL_VERIFY = True  # False に設定するとSSL証明書検証をスキップ
+SSL_CERT_PATH = None  # カスタム証明書パスがある場合に設定

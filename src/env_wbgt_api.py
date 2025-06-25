@@ -24,6 +24,20 @@ class EnvWBGTAPI:
             'User-Agent': 'WBGT-Kiosk/1.0 (Heat Stroke Prevention System)'
         })
         
+        # SSL設定の読み込み（Windows企業環境対応）
+        try:
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
+            from config import SSL_VERIFY, SSL_CERT_PATH
+            self.ssl_verify = SSL_VERIFY
+            self.ssl_cert_path = SSL_CERT_PATH
+            if not self.ssl_verify:
+                import urllib3
+                urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+                logger.warning("SSL証明書検証が無効化されています（企業環境向け設定）")
+        except ImportError:
+            self.ssl_verify = True
+            self.ssl_cert_path = None
+        
         # 都道府県名マッピング（環境省サービス用アルファベット表記）
         self.prefecture_names = {
             '北海道': 'hokkaido',
@@ -98,7 +112,7 @@ class EnvWBGTAPI:
             url = f"{self.base_url}/prev15WG/dl/yohou_{pref_name}.csv"
             logger.info(f"WBGT予測値データ取得URL: {url}")
             
-            response = self.session.get(url, timeout=10)
+            response = self.session.get(url, timeout=10, verify=self.ssl_verify)
             
             if response.status_code == 200:
                 return self._parse_forecast_csv_data(response.text, location)
@@ -135,7 +149,7 @@ class EnvWBGTAPI:
             url = f"{self.base_url}/est15WG/dl/wbgt_{pref_name}_{year_month}.csv"
             logger.info(f"WBGT実況値データ取得URL: {url}")
             
-            response = self.session.get(url, timeout=10)
+            response = self.session.get(url, timeout=10, verify=self.ssl_verify)
             
             if response.status_code == 200:
                 return self._parse_current_csv_data(response.text, location)
@@ -189,7 +203,7 @@ class EnvWBGTAPI:
             url = f"{self.base_url}/alert/dl/{now.year}/alert_{target_date}_{file_time}.csv"
             logger.info(f"熱中症警戒アラートデータ取得URL: {url}")
             
-            response = self.session.get(url, timeout=10)
+            response = self.session.get(url, timeout=10, verify=self.ssl_verify)
             
             if response.status_code == 200:
                 return self._parse_alert_data(response.text, prefecture)

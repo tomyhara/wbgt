@@ -1,5 +1,7 @@
 import requests
 import json
+import os
+import sys
 from datetime import datetime, timedelta
 import logging
 from env_wbgt_api_en import EnvWBGTAPIEN
@@ -13,6 +15,20 @@ class HeatstrokeAlertEN:
         
         # Fallback JMA API data
         self.base_url = "https://www.jma.go.jp/bosai/forecast/data/forecast"
+        
+        # SSL configuration loading (for Windows corporate environments)
+        try:
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
+            from config import SSL_VERIFY, SSL_CERT_PATH
+            self.ssl_verify = SSL_VERIFY
+            self.ssl_cert_path = SSL_CERT_PATH
+            if not self.ssl_verify:
+                import urllib3
+                urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+                logger.warning("SSL certificate verification is disabled (corporate environment setting)")
+        except ImportError:
+            self.ssl_verify = True
+            self.ssl_cert_path = None
         self.area_codes = {
             'Hokkaido': '016000',
             'Aomori': '020000',
@@ -81,7 +97,7 @@ class HeatstrokeAlertEN:
         url = f"{self.base_url}/{area_code}.json"
         
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=10, verify=self.ssl_verify)
             response.raise_for_status()
             data = response.json()
             return self._parse_alert_data(data, prefecture)
