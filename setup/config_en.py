@@ -6,14 +6,14 @@ LOCATIONS = [
     {
         'name': 'Yokohama',                    # Display name
         'area_code': '140000',                 # JMA area code
-        'prefecture': 'Kanagawa',              # Prefecture name (for Environment Ministry API)
-        'wbgt_location_code': '45132'          # Environment Ministry WBGT location code
+        'prefecture': '神奈川県',              # Prefecture name (for Environment Ministry API) - must be Japanese
+        'wbgt_location_code': '46106'          # Environment Ministry WBGT location code
     },
     {
         'name': 'Choshi',                      # Display name
         'area_code': '120000',                 # JMA area code
-        'prefecture': 'Chiba',                 # Prefecture name (for Environment Ministry API)
-        'wbgt_location_code': '44132'          # Environment Ministry WBGT location code
+        'prefecture': '千葉県',                # Prefecture name (for Environment Ministry API) - must be Japanese
+        'wbgt_location_code': '45148'          # Environment Ministry WBGT location code
     }
 ]
 

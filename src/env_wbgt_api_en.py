@@ -8,6 +8,7 @@ import logging
 import re
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class EnvWBGTAPIEN:
     """
@@ -206,7 +207,8 @@ class EnvWBGTAPIEN:
             response = self.session.get(url, timeout=10, verify=self.ssl_verify)
             
             if response.status_code == 200:
-                return self._parse_alert_data(response.text, prefecture)
+                csv_content = response.content.decode('utf-8')
+                return self._parse_alert_data(csv_content, prefecture)
             else:
                 logger.warning(f"Failed to get Environment Ministry alert data: {response.status_code} - URL: {url}")
                 return None
@@ -313,6 +315,7 @@ class EnvWBGTAPIEN:
             data_lines = []
             for line in lines:
                 # Skip metadata lines (Title, Encoding, TimeZone, etc.)
+                # Include prefecture data lines (comma-separated with 8+ items)
                 if (not line.startswith('Title,') and 
                     not line.startswith('Encoding,') and 
                     not line.startswith('TimeZone,') and 
@@ -322,29 +325,35 @@ class EnvWBGTAPIEN:
                     not line.startswith('ReportDate,') and 
                     not line.startswith('ReportTime,') and 
                     not line.startswith('TargetDate') and 
+                    not line.startswith('TargetTime') and 
                     not line.startswith('DurationTime') and 
                     not line.startswith('BriefComment') and 
-                    not line.startswith('Key Message') and 
+                    not line.startswith('KeyMessage') and 
                     not line.startswith('FlagExplanation') and 
                     not line.startswith('Status') and 
                     not line.startswith('InternalFlag') and
-                    line.strip()):
+                    not line.startswith('府県予報区,') and
+                    line.strip() and
+                    len(line.split(',')) >= 8):  # Prefecture data lines have minimum 8 items
                     data_lines.append(line)
+                    logger.debug(f"Added data line: {line[:50]}...")
             
             logger.info(f"Extracted {len(data_lines)} lines of data from alert CSV")
             
             # Parse CSV data lines
             for line in data_lines:
                 data = line.split(',')
-                if len(data) >= 12:
+                if len(data) >= 8:  # Prefecture data lines have minimum 8 items
                     prefecture_name = data[4] if len(data) > 4 else ''
                     target_date1_flag = data[6] if len(data) > 6 else '0'
                     target_date2_flag = data[7] if len(data) > 7 else '0'
                     
                     logger.debug(f"Prefecture: {prefecture_name}, Flag1: {target_date1_flag}, Flag2: {target_date2_flag}")
+                    logger.debug(f"target_prefecture='{target_prefecture}', prefecture_name='{prefecture_name}'")
+                    logger.debug(f"target_short='{target_prefecture.replace('県', '').replace('府', '').replace('都', '').replace('道', '')}'")
                     
                     # Search for target prefecture data (partial match of prefecture name)
-                    target_short = target_prefecture.replace('Prefecture', '').replace('Metropolis', '').replace('Prefecture', '')
+                    target_short = target_prefecture.replace('県', '').replace('府', '').replace('都', '').replace('道', '')
                     if (target_short in prefecture_name or 
                         prefecture_name in target_short or 
                         target_prefecture == prefecture_name):
@@ -371,6 +380,8 @@ class EnvWBGTAPIEN:
     
     def _parse_alert_flag(self, flag_value):
         """Parse alert flag"""
+        logger.debug(f"Alert flag analysis: flag_value='{flag_value}' (type: {type(flag_value)})")
+        
         flag_map = {
             '0': {'status': 'No Alert', 'level': 0, 'message': ''},
             '1': {'status': 'Heat Stroke Alert', 'level': 3, 'message': 'Please be alert for heat stroke'},
@@ -379,7 +390,9 @@ class EnvWBGTAPIEN:
             '9': {'status': 'Outside Alert Hours', 'level': 0, 'message': 'Outside alert hours'}
         }
         
-        return flag_map.get(str(flag_value), {'status': 'No Information', 'level': 0, 'message': ''})
+        result = flag_map.get(str(flag_value), {'status': 'No Information', 'level': 0, 'message': ''})
+        logger.debug(f"Alert flag analysis result: {result}")
+        return result
     
     def _get_alert_numeric_level(self, alert_level):
         """Convert alert level to numeric value"""

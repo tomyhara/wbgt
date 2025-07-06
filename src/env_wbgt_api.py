@@ -8,6 +8,7 @@ import logging
 import re
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class EnvWBGTAPI:
     """
@@ -206,7 +207,8 @@ class EnvWBGTAPI:
             response = self.session.get(url, timeout=10, verify=self.ssl_verify)
             
             if response.status_code == 200:
-                return self._parse_alert_data(response.text, prefecture)
+                csv_content = response.content.decode('utf-8')
+                return self._parse_alert_data(csv_content, prefecture)
             else:
                 logger.warning(f"環境省アラートデータ取得に失敗: {response.status_code} - URL: {url}")
                 return None
@@ -313,6 +315,7 @@ class EnvWBGTAPI:
             data_lines = []
             for line in lines:
                 # メタデータ行をスキップ（Title, Encoding, TimeZoneなど）
+                # 都道府県データ行は含める（カンマ区切りで12項目以上あり、数字で始まらないもの）
                 if (not line.startswith('Title,') and 
                     not line.startswith('Encoding,') and 
                     not line.startswith('TimeZone,') and 
@@ -322,26 +325,32 @@ class EnvWBGTAPI:
                     not line.startswith('ReportDate,') and 
                     not line.startswith('ReportTime,') and 
                     not line.startswith('TargetDate') and 
+                    not line.startswith('TargetTime') and 
                     not line.startswith('DurationTime') and 
                     not line.startswith('BriefComment') and 
-                    not line.startswith('Key Message') and 
+                    not line.startswith('KeyMessage') and 
                     not line.startswith('FlagExplanation') and 
                     not line.startswith('Status') and 
                     not line.startswith('InternalFlag') and
-                    line.strip()):
+                    not line.startswith('府県予報区,') and
+                    line.strip() and
+                    len(line.split(',')) >= 8):  # 都道府県データ行は最低8項目以上
                     data_lines.append(line)
+                    logger.debug(f"データ行として追加: {line[:50]}...")
             
             logger.info(f"アラートCSVから{len(data_lines)}行のデータを抽出")
             
             # CSVのデータ行を解析
             for line in data_lines:
                 data = line.split(',')
-                if len(data) >= 12:
+                if len(data) >= 8:  # 都道府県データ行は最低8項目以上
                     prefecture_name = data[4] if len(data) > 4 else ''
                     target_date1_flag = data[6] if len(data) > 6 else '0'
                     target_date2_flag = data[7] if len(data) > 7 else '0'
                     
                     logger.debug(f"都道府県: {prefecture_name}, フラグ1: {target_date1_flag}, フラグ2: {target_date2_flag}")
+                    logger.debug(f"target_prefecture='{target_prefecture}', prefecture_name='{prefecture_name}'")
+                    logger.debug(f"target_short='{target_prefecture.replace('県', '').replace('府', '').replace('都', '').replace('道', '')}'")
                     
                     # 対象都道府県のデータを検索（都道府県名の部分一致）
                     target_short = target_prefecture.replace('県', '').replace('府', '').replace('都', '').replace('道', '')
@@ -371,6 +380,8 @@ class EnvWBGTAPI:
     
     def _parse_alert_flag(self, flag_value):
         """アラートフラグを解析"""
+        logger.debug(f"アラートフラグ解析: flag_value='{flag_value}' (type: {type(flag_value)})")
+        
         flag_map = {
             '0': {'status': '発表なし', 'level': 0, 'message': ''},
             '1': {'status': '熱中症警戒情報', 'level': 3, 'message': '熱中症に警戒してください'},
@@ -379,7 +390,9 @@ class EnvWBGTAPI:
             '9': {'status': '発表時間外', 'level': 0, 'message': '発表時間外です'}
         }
         
-        return flag_map.get(str(flag_value), {'status': '情報なし', 'level': 0, 'message': ''})
+        result = flag_map.get(str(flag_value), {'status': '情報なし', 'level': 0, 'message': ''})
+        logger.debug(f"アラートフラグ解析結果: {result}")
+        return result
     
     def _get_alert_numeric_level(self, alert_level):
         """アラートレベルを数値に変換"""

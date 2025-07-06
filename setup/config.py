@@ -76,7 +76,7 @@ FONT_SIZE_SMALL = 14
 
 FULLSCREEN = False
 
-LOG_LEVEL = "INFO"
+LOG_LEVEL = "DEBUG"
 LOG_FILE = "wbgt_kiosk.log"
 
 # SSL設定（Windows企業環境向け）

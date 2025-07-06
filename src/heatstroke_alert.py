@@ -7,6 +7,7 @@ import logging
 from env_wbgt_api import EnvWBGTAPI
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class HeatstrokeAlert:
     def __init__(self):
