@@ -139,19 +139,35 @@ class WBGTKiosk:
                 
                 # 環境省WBGTサービスからデータ取得（サービス期間内の場合）
                 if self.env_wbgt_api.is_service_available():
-                    # まず実況値を試す
-                    location_data['env_wbgt_data'] = self.env_wbgt_api.get_wbgt_current_data(location)
+                    # 実況値と予測値の両方を取得
+                    current_data = self.env_wbgt_api.get_wbgt_current_data(location)
+                    forecast_data = self.env_wbgt_api.get_wbgt_forecast_data(location)
                     
-                    # 実況値が取得できない場合は予測値を試す
-                    if not location_data['env_wbgt_data']:
-                        location_data['env_wbgt_data'] = self.env_wbgt_api.get_wbgt_forecast_data(location)
+                    # GUI版の場合は時系列データも取得
+                    if self.gui_mode:
+                        forecast_timeseries = self.env_wbgt_api.get_wbgt_forecast_timeseries(location)
+                        location_data['env_wbgt_timeseries'] = forecast_timeseries
+                    
+                    # 両方のデータを保持
+                    location_data['env_wbgt_current'] = current_data
+                    location_data['env_wbgt_forecast'] = forecast_data
+                    
+                    # 表示用のメインデータを決定（実況値を優先）
+                    if current_data:
+                        location_data['env_wbgt_data'] = current_data
+                    elif forecast_data:
+                        location_data['env_wbgt_data'] = forecast_data
                     
                     if location_data['env_wbgt_data']:
                         # 環境省の公式データがある場合は優先使用
                         self._integrate_env_wbgt_data(location_data)
                         if not self.demo_mode:
-                            data_type = location_data['env_wbgt_data'].get('data_type', 'unknown')
-                            print(self.colored_text(f"✅ {location['name']} 環境省公式WBGTデータ取得完了 ({data_type})", 'green'))
+                            data_types = []
+                            if current_data:
+                                data_types.append('実況値')
+                            if forecast_data:
+                                data_types.append('予測値')
+                            print(self.colored_text(f"✅ {location['name']} 環境省公式WBGTデータ取得完了 ({'/'.join(data_types)})", 'green'))
                 
                 self.locations_data.append(location_data)
             
@@ -241,6 +257,26 @@ class WBGTKiosk:
         
         print(f"WBGT指数: {self.colored_text(wbgt_text, wbgt_color)} " + 
               self.colored_text(level_text, wbgt_color))
+        
+        # 環境省データの実況値と予測値を両方表示
+        current_data = location_data.get('env_wbgt_current')
+        forecast_data = location_data.get('env_wbgt_forecast')
+        
+        if current_data or forecast_data:
+            print()
+            print(f"📊 環境省公式データ:")
+            if current_data:
+                current_level, current_color, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
+                print(f"   実況値: {self.colored_text(f'{current_data['wbgt_value']}°C', current_color)} " +
+                      f"({self.colored_text(current_level, current_color)})")
+                if 'datetime' in current_data:
+                    print(f"   更新時刻: {current_data['datetime']}")
+            if forecast_data:
+                forecast_level, forecast_color, _ = self.env_wbgt_api.get_wbgt_level_info(forecast_data['wbgt_value'])
+                print(f"   予測値: {self.colored_text(f'{forecast_data['wbgt_value']}°C', forecast_color)} " +
+                      f"({self.colored_text(forecast_level, forecast_color)})")
+                if 'update_time' in forecast_data:
+                    print(f"   更新時刻: {forecast_data['update_time']}")
         
         # データソース表示
         if 'wbgt_source' in weather_data:
@@ -415,8 +451,14 @@ class WBGTKiosk:
             import tkinter as tk
             from tkinter import ttk
             from datetime import datetime
+            import os
             
-            print("🪟 WBGT熱中症警戒キオスク GUI版を起動中...")
+            # macOS環境でのGUI表示確認
+            if os.environ.get('DISPLAY') is None and 'Darwin' in os.uname().sysname:
+                print("🪟 WBGT熱中症警戒キオスク GUI版を起動中...")
+                print("⚠️  macOS環境でのGUI起動を試行中...")
+            
+            print("✅ GUI準備完了")
             
             # メインウィンドウ設定
             root = tk.Tk()
@@ -456,6 +498,8 @@ class WBGTKiosk:
             locations_frame = tk.Frame(main_frame, bg='#1a1a1a')
             locations_frame.pack(fill=tk.BOTH, expand=True)
             
+            
+            # 拠点情報フレームを再構築（2列レイアウト）
             location_frames = []
             for i, location in enumerate(self.locations):
                 col = i % 2
@@ -484,22 +528,39 @@ class WBGTKiosk:
                 weather_label = tk.Label(weather_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
                 weather_label.pack(anchor='w')
                 
-                # WBGT情報フレーム
-                wbgt_frame = tk.LabelFrame(location_frame, text="🌡️ WBGT指数", 
+                # WBGT予測値表フレーム
+                wbgt_frame = tk.LabelFrame(location_frame, text="📊 WBGT予測値", 
                                          font=data_font, fg='#00ccff', bg='#2a2a2a')
-                wbgt_frame.pack(fill=tk.X, padx=10, pady=5)
+                wbgt_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
                 
-                wbgt_value_label = tk.Label(wbgt_frame, text="", font=title_font, fg='white', bg='#2a2a2a')
-                wbgt_value_label.pack()
+                # 予測値表の作成
+                table_frame = tk.Frame(wbgt_frame, bg='#2a2a2a')
+                table_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
                 
-                wbgt_level_label = tk.Label(wbgt_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
-                wbgt_level_label.pack()
+                # Treeviewで表を作成（各拠点用の小さな表）
+                columns = ('time', 'value', 'level')
+                location_forecast_table = ttk.Treeview(table_frame, columns=columns, show='headings', height=4)
                 
-                wbgt_advice_label = tk.Label(wbgt_frame, text="", font=data_font, fg='white', bg='#2a2a2a', wraplength=250)
-                wbgt_advice_label.pack()
+                # カラムヘッダーの設定
+                location_forecast_table.heading('time', text='時間')
+                location_forecast_table.heading('value', text='WBGT')
+                location_forecast_table.heading('level', text='警戒レベル')
                 
-                wbgt_source_label = tk.Label(wbgt_frame, text="", font=('Helvetica', 10), fg='#888888', bg='#2a2a2a')
-                wbgt_source_label.pack()
+                # カラム幅の設定
+                location_forecast_table.column('time', width=60, anchor='center')
+                location_forecast_table.column('value', width=60, anchor='center')
+                location_forecast_table.column('level', width=80, anchor='center')
+                
+                # 表のスタイル設定
+                style = ttk.Style()
+                style.theme_use('clam')
+                style.configure('Treeview', background='#2a2a2a', foreground='white', 
+                              fieldbackground='#2a2a2a', borderwidth=1)
+                style.configure('Treeview.Heading', background='#404040', foreground='white',
+                              borderwidth=1)
+                style.map('Treeview', background=[('selected', '#505050')])
+                
+                location_forecast_table.pack(fill=tk.BOTH, expand=True)
                 
                 # アラート情報フレーム
                 alert_frame = tk.LabelFrame(location_frame, text="🚨 熱中症警戒アラート", 
@@ -516,10 +577,7 @@ class WBGTKiosk:
                     'temp': temp_label,
                     'humidity': humidity_label,
                     'weather': weather_label,
-                    'wbgt_value': wbgt_value_label,
-                    'wbgt_level': wbgt_level_label,
-                    'wbgt_advice': wbgt_advice_label,
-                    'wbgt_source': wbgt_source_label,
+                    'forecast_table': location_forecast_table,
                     'today_alert': today_alert_label,
                     'tomorrow_alert': tomorrow_alert_label
                 })
@@ -557,6 +615,7 @@ class WBGTKiosk:
                 else:
                     return '#888888'
             
+
             def update_gui():
                 """GUI表示を更新"""
                 try:
@@ -582,14 +641,29 @@ class WBGTKiosk:
                                     frames['humidity'].config(text=f"湿度: {weather_data['humidity']}%")
                                     frames['weather'].config(text=f"天気: {weather_data['weather_description']}")
                                     
-                                    # WBGT情報
-                                    wbgt_color = get_wbgt_color(weather_data['wbgt_level'])
-                                    frames['wbgt_value'].config(text=f"{weather_data['wbgt']}°C", fg=wbgt_color)
-                                    frames['wbgt_level'].config(text=f"({weather_data['wbgt_level']})", fg=wbgt_color)
-                                    frames['wbgt_advice'].config(text=weather_data['wbgt_advice'])
+                                    # WBGT予測値表を更新
+                                    forecast_table = frames['forecast_table']
                                     
-                                    source_text = weather_data.get('wbgt_source', '気象庁API（計算値）')
-                                    frames['wbgt_source'].config(text=f"データソース: {source_text}")
+                                    # 既存の行をクリア
+                                    for item in forecast_table.get_children():
+                                        forecast_table.delete(item)
+                                    
+                                    # 現在値を追加
+                                    current_data = location_data.get('env_wbgt_current')
+                                    if current_data:
+                                        level, _, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
+                                        forecast_table.insert('', 'end', values=('現在', f"{current_data['wbgt_value']:.1f}°C", level))
+                                    
+                                    # 時系列予測値を追加
+                                    timeseries_data = location_data.get('env_wbgt_timeseries')
+                                    if timeseries_data and 'timeseries' in timeseries_data:
+                                        timeseries = timeseries_data['timeseries']
+                                        # 最初の3つの予測値を表示
+                                        for j, data_point in enumerate(timeseries[:3]):
+                                            level, _, _ = self.env_wbgt_api.get_wbgt_level_info(data_point['wbgt_value'])
+                                            time_str = data_point['datetime_str']
+                                            value_str = f"{data_point['wbgt_value']:.1f}°C"
+                                            forecast_table.insert('', 'end', values=(time_str, value_str, level))
                                 
                                 if alert_data and 'alerts' in alert_data:
                                     # アラート情報
@@ -624,8 +698,13 @@ class WBGTKiosk:
             self.logger.info("GUI版キオスクアプリケーション開始")
             root.mainloop()
             
-        except ImportError:
-            print("❌ tkinterが利用できません。ターミナル版を起動します。")
+        except ImportError as e:
+            print(f"❌ 必要なライブラリが利用できません: {e}")
+            print("ターミナル版を起動します。")
+            self.run_terminal_mode()
+        except tk.TclError as e:
+            print(f"❌ GUI表示エラー: {e}")
+            print("ディスプレイ環境を確認してください。ターミナル版を起動します。")
             self.run_terminal_mode()
         except Exception as e:
             print(f"❌ GUI版でエラーが発生しました: {e}")

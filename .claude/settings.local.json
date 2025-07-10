@@ -6,7 +6,9 @@
       "Bash(cat:*)",
       "Bash(sed:*)",
       "Bash(cp:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(python3:*)",
+      "Bash(pip3 install:*)"
     ],
     "deny": []
   }

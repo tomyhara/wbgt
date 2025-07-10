@@ -138,12 +138,24 @@ class WBGTKioskEN:
                 
                 # Get data from Environment Ministry WBGT service (if available)
                 if self.env_wbgt_api.is_service_available():
-                    # Try current data first
-                    location_data['env_wbgt_data'] = self.env_wbgt_api.get_wbgt_current_data(location)
+                    # Get both current and forecast data
+                    current_data = self.env_wbgt_api.get_wbgt_current_data(location)
+                    forecast_data = self.env_wbgt_api.get_wbgt_forecast_data(location)
                     
-                    # If current data unavailable, try forecast data
-                    if not location_data['env_wbgt_data']:
-                        location_data['env_wbgt_data'] = self.env_wbgt_api.get_wbgt_forecast_data(location)
+                    # For GUI mode, also get timeseries data
+                    if self.gui_mode:
+                        forecast_timeseries = self.env_wbgt_api.get_wbgt_forecast_timeseries(location)
+                        location_data['env_wbgt_timeseries'] = forecast_timeseries
+                    
+                    # Store both data types
+                    location_data['env_wbgt_current'] = current_data
+                    location_data['env_wbgt_forecast'] = forecast_data
+                    
+                    # Determine main data for display (prioritize current data)
+                    if current_data:
+                        location_data['env_wbgt_data'] = current_data
+                    elif forecast_data:
+                        location_data['env_wbgt_data'] = forecast_data
                     
                     if location_data['env_wbgt_data']:
                         # Use official Environment Ministry data when available
@@ -157,6 +169,14 @@ class WBGTKioskEN:
                             location_data['weather_data']['wbgt_color'] = color
                             location_data['weather_data']['wbgt_advice'] = advice
                             location_data['weather_data']['wbgt_source'] = 'Official Environment Ministry Data'
+                        
+                        if not self.demo_mode:
+                            data_types = []
+                            if current_data:
+                                data_types.append('Current')
+                            if forecast_data:
+                                data_types.append('Forecast')
+                            print(self.colored_text(f"✅ {location['name']} Official Environment Ministry WBGT data acquired ({'/'.join(data_types)})", 'green'))
                         
                         self.logger.info(f"{location['name']} Using official Environment Ministry WBGT: {wbgt_value}°C")
                 
@@ -225,6 +245,26 @@ class WBGTKioskEN:
         
         print(f"WBGT Index: {self.colored_text(wbgt_text, wbgt_color)} " + 
               self.colored_text(level_text, wbgt_color))
+        
+        # Display Environment Ministry data for both current and forecast
+        current_data = location_data.get('env_wbgt_current')
+        forecast_data = location_data.get('env_wbgt_forecast')
+        
+        if current_data or forecast_data:
+            print()
+            print(f"📊 Official Environment Ministry Data:")
+            if current_data:
+                current_level, current_color, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
+                print(f"   Current: {self.colored_text(f'{current_data['wbgt_value']}°C', current_color)} " +
+                      f"({self.colored_text(current_level, current_color)})")
+                if 'datetime' in current_data:
+                    print(f"   Update Time: {current_data['datetime']}")
+            if forecast_data:
+                forecast_level, forecast_color, _ = self.env_wbgt_api.get_wbgt_level_info(forecast_data['wbgt_value'])
+                print(f"   Forecast: {self.colored_text(f'{forecast_data['wbgt_value']}°C', forecast_color)} " +
+                      f"({self.colored_text(forecast_level, forecast_color)})")
+                if 'update_time' in forecast_data:
+                    print(f"   Update Time: {forecast_data['update_time']}")
         
         # Display data source
         if 'wbgt_source' in weather_data:
@@ -456,8 +496,41 @@ class WBGTKioskEN:
                 frames['weather'] = tk.Label(weather_frame, font=('Arial', config_en.FONT_SIZE_SMALL), bg='black')
                 frames['weather'].grid(row=1, column=0, columnspan=2, sticky='w', padx=5)
                 
-                frames['wbgt'] = tk.Label(weather_frame, font=('Arial', config_en.FONT_SIZE_MEDIUM, 'bold'), bg='black')
-                frames['wbgt'].grid(row=2, column=0, columnspan=2, sticky='w', padx=5, pady=5)
+                # WBGT forecast table frame
+                wbgt_frame = tk.LabelFrame(location_frame, text="📊 WBGT Forecast", 
+                                         font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'), fg='cyan', bg='black')
+                wbgt_frame.grid(row=2, column=0, columnspan=2, sticky='ew', padx=5, pady=5)
+                
+                # Create forecast table
+                table_frame = tk.Frame(wbgt_frame, bg='black')
+                table_frame.pack(fill='both', expand=True, padx=5, pady=5)
+                
+                # Create Treeview table for this location
+                columns = ('time', 'value', 'level')
+                location_forecast_table = ttk.Treeview(table_frame, columns=columns, show='headings', height=4)
+                
+                # Configure column headers
+                location_forecast_table.heading('time', text='Time')
+                location_forecast_table.heading('value', text='WBGT')
+                location_forecast_table.heading('level', text='Alert Level')
+                
+                # Configure column widths
+                location_forecast_table.column('time', width=60, anchor='center')
+                location_forecast_table.column('value', width=60, anchor='center')
+                location_forecast_table.column('level', width=80, anchor='center')
+                
+                # Configure table style
+                style = ttk.Style()
+                style.theme_use('clam')
+                style.configure('Treeview', background='#2a2a2a', foreground='white', 
+                              fieldbackground='#2a2a2a', borderwidth=1)
+                style.configure('Treeview.Heading', background='#404040', foreground='white',
+                              borderwidth=1)
+                style.map('Treeview', background=[('selected', '#505050')])
+                
+                location_forecast_table.pack(fill='both', expand=True)
+                
+                frames['forecast_table'] = location_forecast_table
                 
                 frames['today_alert'] = tk.Label(weather_frame, font=('Arial', config_en.FONT_SIZE_SMALL), bg='black')
                 frames['today_alert'].grid(row=3, column=0, sticky='w', padx=5)
@@ -466,6 +539,7 @@ class WBGTKioskEN:
                 frames['tomorrow_alert'].grid(row=3, column=1, sticky='w', padx=5)
                 
                 location_frames.append(frames)
+            
             
             # Update time label
             update_time_label = tk.Label(
@@ -498,11 +572,29 @@ class WBGTKioskEN:
                                     frames['humidity'].config(text=f"💧 {weather_data['humidity']}%", fg='lightblue')
                                     frames['weather'].config(text=f"☁️ {weather_data['weather_description']}", fg='lightgreen')
                                     
-                                    wbgt_color = weather_data['wbgt_color']
-                                    frames['wbgt'].config(
-                                        text=f"🌡️ WBGT: {weather_data['wbgt']}°C ({weather_data['wbgt_level']})",
-                                        fg=wbgt_color
-                                    )
+                                    # Update WBGT forecast table
+                                    forecast_table = frames['forecast_table']
+                                    
+                                    # Clear existing rows
+                                    for item in forecast_table.get_children():
+                                        forecast_table.delete(item)
+                                    
+                                    # Add current value
+                                    current_data = location_data.get('env_wbgt_current')
+                                    if current_data:
+                                        level, _, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
+                                        forecast_table.insert('', 'end', values=('Current', f"{current_data['wbgt_value']:.1f}°C", level))
+                                    
+                                    # Add time series forecast values
+                                    timeseries_data = location_data.get('env_wbgt_timeseries')
+                                    if timeseries_data and 'timeseries' in timeseries_data:
+                                        timeseries = timeseries_data['timeseries']
+                                        # Show first 3 forecast values
+                                        for j, data_point in enumerate(timeseries[:3]):
+                                            level, _, _ = self.env_wbgt_api.get_wbgt_level_info(data_point['wbgt_value'])
+                                            time_str = data_point['datetime_str']
+                                            value_str = f"{data_point['wbgt_value']:.1f}°C"
+                                            forecast_table.insert('', 'end', values=(time_str, value_str, level))
                                 
                                 if alert_data and 'alerts' in alert_data:
                                     today_alert = alert_data['alerts']['today']

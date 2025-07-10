@@ -261,6 +261,110 @@ class EnvWBGTAPIEN:
         except Exception as e:
             logger.error(f"Forecast CSV data parsing error: {e}")
             return None
+
+    def get_wbgt_forecast_timeseries(self, location=None):
+        """
+        Get WBGT forecast time series data
+        
+        Args:
+            location (dict): Location information (including prefecture)
+            
+        Returns:
+            dict: Time series WBGT forecast data
+        """
+        try:
+            if location is None:
+                sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
+                from config_en import LOCATIONS
+                location = LOCATIONS[0]
+            
+            prefecture = location.get('prefecture')
+            pref_name = self.prefecture_names.get(prefecture, 'kanagawa')
+            
+            # Official URL structure for Environment Ministry data service (prefecture-specific forecast)
+            url = f"{self.base_url}/prev15WG/dl/yohou_{pref_name}.csv"
+            logger.info(f"WBGT forecast time series data URL: {url}")
+            
+            response = self.session.get(url, timeout=10, verify=self.ssl_verify)
+            
+            if response.status_code == 200:
+                return self._parse_forecast_timeseries_csv_data(response.text, location)
+            else:
+                logger.warning(f"Failed to get Environment Ministry WBGT time series data: {response.status_code} - URL: {url}")
+                return None
+                
+        except Exception as e:
+            logger.error(f"Environment Ministry WBGT time series data retrieval error: {e}")
+            return None
+
+    def _parse_forecast_timeseries_csv_data(self, csv_content, location):
+        """Parse forecast time series CSV data"""
+        try:
+            from datetime import datetime, timedelta
+            
+            lines = csv_content.strip().split('\n')
+            if len(lines) < 2:
+                return None
+            
+            # 1st line: time headers
+            time_headers = lines[0].split(',')[2:]  # Skip first 2 columns
+            
+            # From 2nd line onwards: location data
+            data_lines = lines[1:]
+            target_location_code = location.get('wbgt_location_code')
+            
+            # Search for data for specified location
+            for data_row_str in data_lines:
+                data_row = data_row_str.split(',')
+                if len(data_row) >= 3 and data_row[0] == target_location_code:
+                    location_code = data_row[0]
+                    update_time = data_row[1]
+                    
+                    # Create time series data
+                    timeseries_data = []
+                    for i, time_str in enumerate(time_headers):
+                        if i + 2 < len(data_row) and data_row[i + 2].strip():
+                            try:
+                                # WBGT value is multiplied by 10, so divide by 10
+                                wbgt_val = int(data_row[i + 2].strip()) / 10.0
+                                
+                                # Parse time string (YYYYMMDDHH format)
+                                if len(time_str.strip()) == 10:
+                                    year = int(time_str[0:4])
+                                    month = int(time_str[4:6])
+                                    day = int(time_str[6:8])
+                                    hour = int(time_str[8:10])
+                                    
+                                    # Convert 24:00 to 00:00 of next day
+                                    if hour == 24:
+                                        dt = datetime(year, month, day) + timedelta(days=1)
+                                    else:
+                                        dt = datetime(year, month, day, hour)
+                                    
+                                    timeseries_data.append({
+                                        'datetime': dt,
+                                        'wbgt_value': wbgt_val,
+                                        'datetime_str': dt.strftime('%m/%d %H:%M')
+                                    })
+                            except (ValueError, TypeError) as e:
+                                logger.debug(f"Time series data parsing error (time: {time_str}): {e}")
+                                continue
+                    
+                    if timeseries_data:
+                        return {
+                            'location_code': location_code,
+                            'location_name': location.get('name'),
+                            'update_time': update_time,
+                            'timeseries': timeseries_data,
+                            'data_type': 'forecast_timeseries',
+                            'source': 'Environment Ministry Heat Stroke Prevention Information Site (Forecast Time Series)'
+                        }
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Forecast time series CSV data parsing error: {e}")
+            return None
     
     def _parse_current_csv_data(self, csv_content, location):
         """Parse current CSV data"""
@@ -271,20 +375,33 @@ class EnvWBGTAPIEN:
             
             target_location_code = location.get('wbgt_location_code')
             
-            for line in reversed(lines):  # Search from latest
+            # Get location code index from header row
+            header = lines[0].split(',')
+            target_column_index = -1
+            
+            for i, column_name in enumerate(header):
+                if column_name.strip() == target_location_code:
+                    target_column_index = i
+                    break
+            
+            if target_column_index == -1:
+                logger.warning(f"Location code {target_location_code} not found in header: {header}")
+                return None
+            
+            # Search from latest data rows (bottom to top)
+            for line in reversed(lines[1:]):  # Skip header row
                 data = line.split(',')
-                if len(data) >= 4 and data[0] == target_location_code:
-                    location_code = data[0]
-                    date_time = data[1]
+                if len(data) > target_column_index:
+                    date_time = f"{data[0]} {data[1]}" if len(data) > 1 else data[0]
                     
                     try:
-                        # WBGT value is multiplied by 10, so divide by 10
-                        wbgt_val = int(data[2]) / 10.0 if data[2].strip() else None
+                        # Current values don't need division by 10 (already actual values)
+                        wbgt_val = float(data[target_column_index]) if data[target_column_index].strip() else None
                         
                         if wbgt_val is not None:
                             return {
                                 'wbgt_value': wbgt_val,
-                                'location_code': location_code,
+                                'location_code': target_location_code,
                                 'location_name': location.get('name'),
                                 'datetime': date_time,
                                 'data_type': 'current',
