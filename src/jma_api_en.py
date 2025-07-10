@@ -204,14 +204,37 @@ class JMAWeatherAPIEN:
         }
     
     def _simplify_weather_description(self, weather_desc):
-        """Remove extra spaces from weather description"""
+        """Simplify weather description"""
         if not weather_desc:
             return "Unknown"
         
         # Remove full-width and half-width spaces
         cleaned = weather_desc.replace('　', '').replace(' ', '')
         
-        return cleaned
+        # Simplify long descriptions
+        if '晴' in cleaned:
+            if '時々' in cleaned or 'のち' in cleaned:
+                return "Partly Cloudy" if '曇' in cleaned else "Sunny"
+            return "Sunny"
+        elif '曇' in cleaned:
+            if '雨' in cleaned or '雷' in cleaned:
+                return "Cloudy/Rain"
+            elif '晴' in cleaned:
+                return "Partly Sunny"
+            return "Cloudy"
+        elif '雨' in cleaned:
+            if '雷' in cleaned:
+                return "Rain/Thunder"
+            elif '雪' in cleaned:
+                return "Rain/Snow"
+            return "Rain"
+        elif '雪' in cleaned:
+            if '雨' in cleaned:
+                return "Snow/Rain"
+            return "Snow"
+        else:
+            # For other cases, limit to first 15 characters
+            return cleaned[:15]
     
     def calculate_wbgt(self, temp, humidity):
         """Calculate WBGT index"""

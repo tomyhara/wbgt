@@ -204,14 +204,37 @@ class JMAWeatherAPI:
         }
     
     def _simplify_weather_description(self, weather_desc):
-        """天気の説明から余分なスペースを除去"""
+        """天気の説明を短縮"""
         if not weather_desc:
             return "不明"
         
         # 全角スペースと半角スペースを除去
         cleaned = weather_desc.replace('　', '').replace(' ', '')
         
-        return cleaned
+        # 長い文章を短縮
+        if '晴' in cleaned:
+            if '時々' in cleaned or 'のち' in cleaned:
+                return "晴れ時々曇り" if '曇' in cleaned else "晴れ"
+            return "晴れ"
+        elif '曇' in cleaned:
+            if '雨' in cleaned or '雷' in cleaned:
+                return "曇り時々雨"
+            elif '晴' in cleaned:
+                return "曇り時々晴れ"
+            return "曇り"
+        elif '雨' in cleaned:
+            if '雷' in cleaned:
+                return "雨・雷"
+            elif '雪' in cleaned:
+                return "雨・雪"
+            return "雨"
+        elif '雪' in cleaned:
+            if '雨' in cleaned:
+                return "雪・雨"
+            return "雪"
+        else:
+            # その他の場合は最初の10文字まで
+            return cleaned[:10]
     
     def calculate_wbgt(self, temp, humidity):
         """WBGT指数を計算"""
