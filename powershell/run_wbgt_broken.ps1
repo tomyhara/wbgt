@@ -113,7 +113,7 @@ function Test-ExecutionPolicy {
     $restrictivePolicies = @("Restricted", "AllSigned")
     
     if ($currentPolicy -in $restrictivePolicies) {
-        Write-Host "WARNING: Current execution policy is '$currentPolicy'" -ForegroundColor Yellow
+        Write-Host "⚠️  WARNING: Current execution policy is '$currentPolicy'" -ForegroundColor Yellow
         Write-Host "This may prevent the script from running properly." -ForegroundColor Yellow
         Write-Host ""
         Write-Host "To fix this, run the following command as an administrator:" -ForegroundColor Cyan
@@ -141,7 +141,7 @@ try {
     
     Write-Host ""
     Write-Host "WBGT Kiosk Launcher - PowerShell Edition" -ForegroundColor Cyan
-    Write-Host "===============================================================================" -ForegroundColor Cyan
+    Write-Host "═══════════════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
     Write-Host ""
     
     # Check execution policy
