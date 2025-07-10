@@ -505,7 +505,7 @@ class WBGTKiosk:
                 col = i % 2
                 location_frame = tk.Frame(locations_frame, bg='#2a2a2a', relief=tk.RAISED, bd=2)
                 location_frame.grid(row=0, column=col, sticky='nsew', padx=10, pady=10)
-                locations_frame.grid_columnconfigure(col, weight=1)
+                locations_frame.grid_columnconfigure(col, weight=1, uniform='location')
                 locations_frame.grid_rowconfigure(0, weight=1)
                 
                 # 拠点名
@@ -652,7 +652,12 @@ class WBGTKiosk:
                                     current_data = location_data.get('env_wbgt_current')
                                     if current_data:
                                         level, _, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
-                                        forecast_table.insert('', 'end', values=('現在', f"{current_data['wbgt_value']:.1f}°C", level))
+                                        color = get_wbgt_color(level)
+                                        item = forecast_table.insert('', 'end', values=('現在', f"{current_data['wbgt_value']:.1f}°C", level))
+                                        forecast_table.set(item, 'level', level)
+                                        # 行に色を適用
+                                        forecast_table.tag_configure(f'level_{level}', background=color, foreground='black')
+                                        forecast_table.item(item, tags=(f'level_{level}',))
                                     
                                     # 時系列予測値を追加
                                     timeseries_data = location_data.get('env_wbgt_timeseries')
@@ -663,7 +668,11 @@ class WBGTKiosk:
                                             level, _, _ = self.env_wbgt_api.get_wbgt_level_info(data_point['wbgt_value'])
                                             time_str = data_point['datetime_str']
                                             value_str = f"{data_point['wbgt_value']:.1f}°C"
-                                            forecast_table.insert('', 'end', values=(time_str, value_str, level))
+                                            color = get_wbgt_color(level)
+                                            item = forecast_table.insert('', 'end', values=(time_str, value_str, level))
+                                            # 行に色を適用
+                                            forecast_table.tag_configure(f'level_{level}', background=color, foreground='black')
+                                            forecast_table.item(item, tags=(f'level_{level}',))
                                 
                                 if alert_data and 'alerts' in alert_data:
                                     # アラート情報

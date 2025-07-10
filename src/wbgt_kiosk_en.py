@@ -468,41 +468,48 @@ class WBGTKioskEN:
             )
             status_label.pack(pady=(0, 10))
             
-            # Location frames
+            # Locations container frame
+            locations_frame = tk.Frame(main_frame, bg='black')
+            locations_frame.pack(fill='both', expand=True, pady=10)
+            
+            # Location frames (2-column layout)
             location_frames = []
             for i, location in enumerate(self.locations):
-                location_frame = tk.LabelFrame(
-                    main_frame,
-                    text=f"📍 {location['name']}",
-                    font=('Arial', config_en.FONT_SIZE_MEDIUM, 'bold'),
-                    fg='white',
-                    bg='black',
-                    bd=2,
-                    relief='ridge'
-                )
-                location_frame.pack(fill='x', pady=10)
+                col = i % 2
+                location_frame = tk.Frame(locations_frame, bg='#2a2a2a', relief=tk.RAISED, bd=2)
+                location_frame.grid(row=0, column=col, sticky='nsew', padx=10, pady=10)
+                locations_frame.grid_columnconfigure(col, weight=1, uniform='location')
+                locations_frame.grid_rowconfigure(0, weight=1)
+                
+                # Location title
+                location_title = tk.Label(location_frame, 
+                                        text=f"📍 {location['name']}",
+                                        font=('Arial', config_en.FONT_SIZE_MEDIUM, 'bold'), 
+                                        fg='#00ccff', bg='#2a2a2a')
+                location_title.pack(pady=10)
                 
                 # Weather info frame
-                weather_frame = tk.Frame(location_frame, bg='black')
-                weather_frame.pack(fill='x', padx=10, pady=5)
+                weather_frame = tk.LabelFrame(location_frame, text="🌤️ Weather Info", 
+                                            font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'), fg='#00ccff', bg='#2a2a2a')
+                weather_frame.pack(fill=tk.X, padx=10, pady=5)
                 
                 frames = {}
-                frames['temp'] = tk.Label(weather_frame, font=('Arial', config_en.FONT_SIZE_SMALL), bg='black')
-                frames['temp'].grid(row=0, column=0, sticky='w', padx=5)
+                frames['temp'] = tk.Label(weather_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
+                frames['temp'].pack(anchor='w')
                 
-                frames['humidity'] = tk.Label(weather_frame, font=('Arial', config_en.FONT_SIZE_SMALL), bg='black')
-                frames['humidity'].grid(row=0, column=1, sticky='w', padx=5)
+                frames['humidity'] = tk.Label(weather_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
+                frames['humidity'].pack(anchor='w')
                 
-                frames['weather'] = tk.Label(weather_frame, font=('Arial', config_en.FONT_SIZE_SMALL), bg='black')
-                frames['weather'].grid(row=1, column=0, columnspan=2, sticky='w', padx=5)
+                frames['weather'] = tk.Label(weather_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
+                frames['weather'].pack(anchor='w')
                 
                 # WBGT forecast table frame
                 wbgt_frame = tk.LabelFrame(location_frame, text="📊 WBGT Forecast", 
-                                         font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'), fg='cyan', bg='black')
-                wbgt_frame.grid(row=2, column=0, columnspan=2, sticky='ew', padx=5, pady=5)
+                                         font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'), fg='#00ccff', bg='#2a2a2a')
+                wbgt_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
                 
                 # Create forecast table
-                table_frame = tk.Frame(wbgt_frame, bg='black')
+                table_frame = tk.Frame(wbgt_frame, bg='#2a2a2a')
                 table_frame.pack(fill='both', expand=True, padx=5, pady=5)
                 
                 # Create Treeview table for this location
@@ -530,14 +537,18 @@ class WBGTKioskEN:
                 
                 location_forecast_table.pack(fill='both', expand=True)
                 
+                # Alert info frame
+                alert_frame = tk.LabelFrame(location_frame, text="🚨 Heat Stroke Alert", 
+                                          font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'), fg='#00ccff', bg='#2a2a2a')
+                alert_frame.pack(fill=tk.X, padx=10, pady=5)
+                
+                frames['today_alert'] = tk.Label(alert_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
+                frames['today_alert'].pack(anchor='w')
+                
+                frames['tomorrow_alert'] = tk.Label(alert_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
+                frames['tomorrow_alert'].pack(anchor='w')
+                
                 frames['forecast_table'] = location_forecast_table
-                
-                frames['today_alert'] = tk.Label(weather_frame, font=('Arial', config_en.FONT_SIZE_SMALL), bg='black')
-                frames['today_alert'].grid(row=3, column=0, sticky='w', padx=5)
-                
-                frames['tomorrow_alert'] = tk.Label(weather_frame, font=('Arial', config_en.FONT_SIZE_SMALL), bg='black')
-                frames['tomorrow_alert'].grid(row=3, column=1, sticky='w', padx=5)
-                
                 location_frames.append(frames)
             
             
@@ -550,6 +561,18 @@ class WBGTKioskEN:
                 bg='black'
             )
             update_time_label.pack(side='bottom', pady=10)
+            
+            def get_wbgt_color(level):
+                """Return color based on WBGT warning level"""
+                colors = {
+                    'Safe': '#0080ff',
+                    'Caution': '#00ff00',
+                    'Warning': '#ffff00',
+                    'Severe Warning': '#ff8000',
+                    'Dangerous': '#ff0000',
+                    'Extremely Dangerous': '#800000'
+                }
+                return colors.get(level, '#ffffff')
             
             # Data update function
             def update_gui():
@@ -583,7 +606,12 @@ class WBGTKioskEN:
                                     current_data = location_data.get('env_wbgt_current')
                                     if current_data:
                                         level, _, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
-                                        forecast_table.insert('', 'end', values=('Current', f"{current_data['wbgt_value']:.1f}°C", level))
+                                        color = get_wbgt_color(level)
+                                        item = forecast_table.insert('', 'end', values=('Current', f"{current_data['wbgt_value']:.1f}°C", level))
+                                        forecast_table.set(item, 'level', level)
+                                        # Apply color to row
+                                        forecast_table.tag_configure(f'level_{level}', background=color, foreground='black')
+                                        forecast_table.item(item, tags=(f'level_{level}',))
                                     
                                     # Add time series forecast values
                                     timeseries_data = location_data.get('env_wbgt_timeseries')
@@ -594,7 +622,11 @@ class WBGTKioskEN:
                                             level, _, _ = self.env_wbgt_api.get_wbgt_level_info(data_point['wbgt_value'])
                                             time_str = data_point['datetime_str']
                                             value_str = f"{data_point['wbgt_value']:.1f}°C"
-                                            forecast_table.insert('', 'end', values=(time_str, value_str, level))
+                                            color = get_wbgt_color(level)
+                                            item = forecast_table.insert('', 'end', values=(time_str, value_str, level))
+                                            # Apply color to row
+                                            forecast_table.tag_configure(f'level_{level}', background=color, foreground='black')
+                                            forecast_table.item(item, tags=(f'level_{level}',))
                                 
                                 if alert_data and 'alerts' in alert_data:
                                     today_alert = alert_data['alerts']['today']
