@@ -117,22 +117,42 @@ class JMAWeatherAPI:
             weather_desc_raw = areas['weathers'][0] if areas.get('weathers') else '晴れ'
             weather_desc = self._simplify_weather_description(weather_desc_raw)
             
-            # 気温データ（利用可能な場合）
-            temp_data = None
-            if len(time_series) > 2:
-                temp_data = time_series[2]
+            # 気温データを取得
+            current_temp = None
+            forecast_high = None
+            forecast_low = None
             
-            # デフォルト値（実際の観測データが取得できない場合）
-            temperature = 25.0  # デフォルト気温
-            humidity = 60  # デフォルト湿度
+            # JMA予報データから気温を取得
+            for ts in time_series:
+                if 'temps' in ts:
+                    # 気温予報データが含まれている
+                    areas_temp = ts.get('areas', [])
+                    if areas_temp:
+                        temps = areas_temp[0].get('temps', [])
+                        if len(temps) >= 2:
+                            # 最低気温と最高気温
+                            forecast_low = int(temps[0]) if temps[0] else None
+                            forecast_high = int(temps[1]) if temps[1] else None
             
-            # 天気コードから推定気温と湿度を設定
-            temp_humidity = self._estimate_temp_humidity_from_weather(weather_code, weather_desc)
-            temperature = temp_humidity['temperature']
-            humidity = temp_humidity['humidity']
+            # 現在気温と予想気温のデフォルト値
+            if not current_temp:
+                # 天気コードから現在気温を推定
+                temp_humidity = self._estimate_temp_humidity_from_weather(weather_code, weather_desc)
+                current_temp = temp_humidity['temperature']
+                humidity = temp_humidity['humidity']
+            else:
+                humidity = 60  # デフォルト湿度
+            
+            # 予想最高気温がない場合は現在気温をベースに推定
+            if not forecast_high:
+                forecast_high = current_temp + 3
+            if not forecast_low:
+                forecast_low = current_temp - 2
             
             return {
-                'temperature': temperature,
+                'temperature': current_temp,
+                'forecast_high': forecast_high,
+                'forecast_low': forecast_low,
                 'humidity': humidity,
                 'weather_description': weather_desc,
                 'weather_code': weather_code,
@@ -232,6 +252,8 @@ class JMAWeatherAPI:
         
         return {
             'temperature': round(temp, 1),
+            'forecast_high': weather_data['forecast_high'],
+            'forecast_low': weather_data['forecast_low'],
             'humidity': humidity,
             'weather_description': weather_data['weather_description'],
             'weather_code': weather_data['weather_code'],

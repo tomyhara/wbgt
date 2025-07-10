@@ -497,8 +497,21 @@ class WBGTKioskEN:
                 frames['temp'] = tk.Label(weather_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
                 frames['temp'].pack(anchor='w')
                 
-                frames['humidity'] = tk.Label(weather_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
-                frames['humidity'].pack(anchor='w')
+                # Forecast temperature frame (color-coded min/max display)
+                forecast_temp_frame = tk.Frame(weather_frame, bg='#2a2a2a')
+                forecast_temp_frame.pack(anchor='w', fill='x')
+                
+                forecast_label = tk.Label(forecast_temp_frame, text="📊 Forecast: ", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
+                forecast_label.pack(side='left')
+                
+                frames['forecast_low'] = tk.Label(forecast_temp_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='lightblue', bg='#2a2a2a')
+                frames['forecast_low'].pack(side='left')
+                
+                forecast_dash_label = tk.Label(forecast_temp_frame, text=" - ", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
+                forecast_dash_label.pack(side='left')
+                
+                frames['forecast_high'] = tk.Label(forecast_temp_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='red', bg='#2a2a2a')
+                frames['forecast_high'].pack(side='left')
                 
                 frames['weather'] = tk.Label(weather_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
                 frames['weather'].pack(anchor='w')
@@ -591,8 +604,9 @@ class WBGTKioskEN:
                                 alert_data = location_data.get('alert_data')
                                 
                                 if weather_data:
-                                    frames['temp'].config(text=f"🌡️ {weather_data['temperature']}°C", fg='yellow')
-                                    frames['humidity'].config(text=f"💧 {weather_data['humidity']}%", fg='lightblue')
+                                    frames['temp'].config(text=f"🌡️ Current: {weather_data['temperature']}°C", fg='yellow')
+                                    frames['forecast_low'].config(text=f"{weather_data['forecast_low']}°C")
+                                    frames['forecast_high'].config(text=f"{weather_data['forecast_high']}°C")
                                     frames['weather'].config(text=f"☁️ {weather_data['weather_description']}", fg='lightgreen')
                                     
                                     # Update WBGT forecast table

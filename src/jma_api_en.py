@@ -117,22 +117,42 @@ class JMAWeatherAPIEN:
             weather_desc_raw = areas['weathers'][0] if areas.get('weathers') else 'Clear'
             weather_desc = self._simplify_weather_description(weather_desc_raw)
             
-            # Temperature data (if available)
-            temp_data = None
-            if len(time_series) > 2:
-                temp_data = time_series[2]
+            # Get temperature data
+            current_temp = None
+            forecast_high = None
+            forecast_low = None
             
-            # Default values (when actual observation data is unavailable)
-            temperature = 25.0  # Default temperature
-            humidity = 60  # Default humidity
+            # Get temperature from JMA forecast data
+            for ts in time_series:
+                if 'temps' in ts:
+                    # Temperature forecast data is included
+                    areas_temp = ts.get('areas', [])
+                    if areas_temp:
+                        temps = areas_temp[0].get('temps', [])
+                        if len(temps) >= 2:
+                            # Minimum and maximum temperature
+                            forecast_low = int(temps[0]) if temps[0] else None
+                            forecast_high = int(temps[1]) if temps[1] else None
             
-            # Estimate temperature and humidity from weather code
-            temp_humidity = self._estimate_temp_humidity_from_weather(weather_code, weather_desc)
-            temperature = temp_humidity['temperature']
-            humidity = temp_humidity['humidity']
+            # Default values for current and forecast temperatures
+            if not current_temp:
+                # Estimate current temperature from weather code
+                temp_humidity = self._estimate_temp_humidity_from_weather(weather_code, weather_desc)
+                current_temp = temp_humidity['temperature']
+                humidity = temp_humidity['humidity']
+            else:
+                humidity = 60  # Default humidity
+            
+            # If no forecast high temperature, estimate based on current temperature
+            if not forecast_high:
+                forecast_high = current_temp + 3
+            if not forecast_low:
+                forecast_low = current_temp - 2
             
             return {
-                'temperature': temperature,
+                'temperature': current_temp,
+                'forecast_high': forecast_high,
+                'forecast_low': forecast_low,
                 'humidity': humidity,
                 'weather_description': weather_desc,
                 'weather_code': weather_code,
@@ -232,6 +252,8 @@ class JMAWeatherAPIEN:
         
         return {
             'temperature': round(temp, 1),
+            'forecast_high': weather_data['forecast_high'],
+            'forecast_low': weather_data['forecast_low'],
             'humidity': humidity,
             'weather_description': weather_data['weather_description'],
             'weather_code': weather_data['weather_code'],

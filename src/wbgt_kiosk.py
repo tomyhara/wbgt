@@ -522,8 +522,21 @@ class WBGTKiosk:
                 temp_label = tk.Label(weather_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
                 temp_label.pack(anchor='w')
                 
-                humidity_label = tk.Label(weather_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
-                humidity_label.pack(anchor='w')
+                # 予想気温フレーム（最低気温と最高気温を色分け表示）
+                forecast_temp_frame = tk.Frame(weather_frame, bg='#2a2a2a')
+                forecast_temp_frame.pack(anchor='w', fill='x')
+                
+                forecast_label = tk.Label(forecast_temp_frame, text="予想気温: ", font=data_font, fg='white', bg='#2a2a2a')
+                forecast_label.pack(side='left')
+                
+                forecast_low_label = tk.Label(forecast_temp_frame, text="", font=data_font, fg='lightblue', bg='#2a2a2a')
+                forecast_low_label.pack(side='left')
+                
+                forecast_dash_label = tk.Label(forecast_temp_frame, text=" - ", font=data_font, fg='white', bg='#2a2a2a')
+                forecast_dash_label.pack(side='left')
+                
+                forecast_high_label = tk.Label(forecast_temp_frame, text="", font=data_font, fg='red', bg='#2a2a2a')
+                forecast_high_label.pack(side='left')
                 
                 weather_label = tk.Label(weather_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
                 weather_label.pack(anchor='w')
@@ -575,7 +588,8 @@ class WBGTKiosk:
                 
                 location_frames.append({
                     'temp': temp_label,
-                    'humidity': humidity_label,
+                    'forecast_low': forecast_low_label,
+                    'forecast_high': forecast_high_label,
                     'weather': weather_label,
                     'forecast_table': location_forecast_table,
                     'today_alert': today_alert_label,
@@ -637,8 +651,9 @@ class WBGTKiosk:
                                 
                                 if weather_data:
                                     # 天気情報
-                                    frames['temp'].config(text=f"気温: {weather_data['temperature']}°C")
-                                    frames['humidity'].config(text=f"湿度: {weather_data['humidity']}%")
+                                    frames['temp'].config(text=f"現在気温: {weather_data['temperature']}°C")
+                                    frames['forecast_low'].config(text=f"{weather_data['forecast_low']}°C")
+                                    frames['forecast_high'].config(text=f"{weather_data['forecast_high']}°C")
                                     frames['weather'].config(text=f"天気: {weather_data['weather_description']}")
                                     
                                     # WBGT予測値表を更新

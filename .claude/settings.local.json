@@ -8,7 +8,8 @@
       "Bash(cp:*)",
       "Bash(mv:*)",
       "Bash(python3:*)",
-      "Bash(pip3 install:*)"
+      "Bash(pip3 install:*)",
+      "Bash(timeout 10 python3 src/wbgt_kiosk_en.py --gui)"
     ],
     "deny": []
   }
