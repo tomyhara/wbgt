@@ -13,6 +13,7 @@ Raspberry Piを使用した熱中症警戒アラート情報と天気予報を�
 - 🖥️ **ターミナル版** - 安定動作、低負荷
 - 🪟 **GUI版** - 実験的サポート
 - 📅 **季節対応** - 環境省サービス期間（4-10月）の自動判定
+- 📁 **CSVモード** - SSL証明書問題に対応したオフライン動作
 
 ## 🛠️ 必要な環境
 
@@ -178,13 +179,22 @@ wbgt/
 │   ├── run_wbgt.bat         # 実行スクリプト（日本語版・Windows）
 │   ├── run_wbgt_en.sh       # 実行スクリプト（英語版）
 │   ├── run_wbgt_en.bat      # 実行スクリプト（英語版・Windows）
+│   ├── run_with_csv.sh      # CSVモード実行スクリプト
+│   ├── download_all_data.sh # 全データダウンロード
+│   ├── download_jma_data.sh # JMA気象データダウンロード
+│   ├── download_wbgt_data.sh # 環境省WBGTデータダウンロード
 │   ├── autostart.sh         # 自動起動スクリプト（Linux/macOS）
 │   ├── autostart.bat        # 自動起動スクリプト（Windows）
 │   └── wbgt                 # 実行ファイル（Linux）
+├── data/                    # 📁 データファイル
+│   └── csv/                 # CSVモード用ダウンロードデータ
+├── logs/                    # 📁 ログファイル
 ├── venv/                    # 📁 Python仮想環境
 ├── wbgt-kiosk.service       # ⚙️ systemdサービス設定
+├── test_csv_mode.py         # 🧪 CSVモードテストスクリプト
 ├── README.md                # 📖 このファイル（日本語版）
 ├── README_EN.md             # 📖 英語版ドキュメント
+├── CSV_USAGE_README.md      # 📖 CSVモード使用方法
 └── doc/                     # 📚 ドキュメント
 ```
 
@@ -196,6 +206,53 @@ wbgt/
 - **ハイブリッド方式** - 公式データ優先、フォールバック対応
 - **信頼性の高いデータ** - 日本の公式気象データ
 
+## 🔧 SSL証明書問題とCSVモード
+
+### SSL証明書エラーの対処法
+
+企業環境などでSSL証明書の問題が発生した場合、CSVモードを使用してオフラインでデータを利用できます。
+
+#### CSVモードの使用方法
+
+**1. CSVデータのみダウンロード：**
+```bash
+./scripts/run_with_csv.sh --download-only
+```
+
+**2. CSVデータでシステム実行（日本語版）：**
+```bash
+./scripts/run_with_csv.sh
+```
+
+**3. CSVデータでシステム実行（英語版）：**
+```bash
+./scripts/run_with_csv.sh --english
+```
+
+**4. 既存CSVデータを使用（ダウンロードなし）：**
+```bash
+./scripts/run_with_csv.sh --run-only
+```
+
+#### 個別データダウンロード
+```bash
+# JMA気象データのみ
+./scripts/download_jma_data.sh
+
+# 環境省WBGTデータのみ
+./scripts/download_wbgt_data.sh
+
+# 全データダウンロード
+./scripts/download_all_data.sh
+```
+
+#### CSVモードのテスト
+```bash
+python3 test_csv_mode.py
+```
+
+詳細は [CSV_USAGE_README.md](CSV_USAGE_README.md) をご覧ください。
+
 ## 🔍 トラブルシューティング
 
 ### よくある問題
@@ -204,7 +261,14 @@ wbgt/
 A: ターミナル版をお試しください：`./run_wbgt.sh`
 
 **Q: データが取得できない**
-A: インターネット接続を確認してください
+A: インターネット接続を確認してください。SSL証明書エラーの場合はCSVモードをお試しください：`./scripts/run_with_csv.sh`
+
+**Q: SSL証明書エラーが発生する**
+A: CSVモードを使用してください：
+```bash
+./scripts/run_with_csv.sh --download-only  # データダウンロード
+./scripts/run_with_csv.sh --run-only       # CSVデータで実行
+```
 
 **Q: 地域を変更したい**
 A: `config.py`の`AREA_CODE`を変更してください
@@ -225,7 +289,8 @@ chmod +x run_wbgt.sh
 
 ### ログ確認
 ```bash
-tail -f wbgt_kiosk.log
+tail -f wbgt_kiosk.log              # アプリケーションログ
+tail -f logs/master_download.log    # CSVダウンロードログ
 ```
 
 ## 🤝 貢献

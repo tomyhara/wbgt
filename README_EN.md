@@ -11,6 +11,7 @@ A professional kiosk system for displaying heat stroke warning information and w
 - **Professional Display**: Color-coded warning levels and clean interface
 - **Cross-platform**: Runs on Linux, macOS, and Windows
 - **Multiple Modes**: Terminal and GUI versions available
+- **CSV Mode**: Offline operation for SSL certificate issues
 
 ## 📋 Requirements
 
@@ -192,6 +193,53 @@ Today:    Heat Stroke Alert
 Tomorrow: No Alert
 ```
 
+## 🔧 SSL Certificate Issues and CSV Mode
+
+### Handling SSL Certificate Errors
+
+When SSL certificate issues occur in corporate environments, you can use CSV mode to operate with offline data.
+
+#### CSV Mode Usage
+
+**1. Download CSV data only:**
+```bash
+./scripts/run_with_csv.sh --download-only
+```
+
+**2. Run system with CSV data (Japanese version):**
+```bash
+./scripts/run_with_csv.sh
+```
+
+**3. Run system with CSV data (English version):**
+```bash
+./scripts/run_with_csv.sh --english
+```
+
+**4. Use existing CSV data (no download):**
+```bash
+./scripts/run_with_csv.sh --run-only
+```
+
+#### Individual Data Downloads
+```bash
+# JMA weather data only
+./scripts/download_jma_data.sh
+
+# Environment Ministry WBGT data only
+./scripts/download_wbgt_data.sh
+
+# Download all data
+./scripts/download_all_data.sh
+```
+
+#### Testing CSV Mode
+```bash
+python3 test_csv_mode.py
+```
+
+For detailed instructions, see [CSV_USAGE_README.md](CSV_USAGE_README.md).
+
 ## 🛠️ Troubleshooting
 
 ### Common Issues
@@ -206,6 +254,13 @@ pip install requests
 cp config_en.sample.py config_en.py
 ```
 
+**SSL Certificate errors**
+Use CSV mode to bypass SSL issues:
+```bash
+./scripts/run_with_csv.sh --download-only  # Download data
+./scripts/run_with_csv.sh --run-only       # Run with CSV data
+```
+
 **GUI not available**
 - Install tkinter: `sudo apt-get install python3-tk` (Linux)
 - Reinstall Python with tkinter support (Windows/macOS)
@@ -214,12 +269,14 @@ cp config_en.sample.py config_en.py
 - Check internet connection
 - Verify firewall settings
 - Check proxy configuration (corporate environments)
+- Try CSV mode for offline operation
 
 ### Logging
 
 Application logs are saved to `wbgt_kiosk_en.log`:
 ```bash
-tail -f wbgt_kiosk_en.log  # View real-time logs
+tail -f wbgt_kiosk_en.log        # View real-time application logs
+tail -f logs/master_download.log # View CSV download logs
 ```
 
 ## 🔄 Data Sources

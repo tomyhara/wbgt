@@ -1,6 +1,7 @@
 import requests
 import json
 import math
+import os
 from datetime import datetime
 import logging
 
@@ -78,6 +79,13 @@ class JMAWeatherAPI:
     
     def get_current_weather(self):
         """現在の天気データを取得"""
+        # 強制CSV モードの確認
+        force_csv = os.environ.get('FORCE_CSV_MODE', '0') == '1'
+        
+        if force_csv:
+            logger.info("強制CSVモードが有効: CSVファイルからのデータ読み込みを試行中...")
+            return self._get_weather_from_csv()
+        
         try:
             forecast_url = f"{self.base_url}/forecast/data/forecast/{self.area_code}.json"
             response = requests.get(forecast_url, timeout=10, verify=self.ssl_verify)
@@ -93,10 +101,12 @@ class JMAWeatherAPI:
             
         except requests.exceptions.RequestException as e:
             logger.error(f"気象データの取得に失敗しました: {e}")
-            return None
+            logger.info("CSVファイルからのデータ読み込みを試行中...")
+            return self._get_weather_from_csv()
         except Exception as e:
             logger.error(f"データ解析エラー: {e}")
-            return None
+            logger.info("CSVファイルからのデータ読み込みを試行中...")
+            return self._get_weather_from_csv()
     
     def _parse_weather_data(self, forecast_data):
         """予報データを解析"""
@@ -290,3 +300,32 @@ class JMAWeatherAPI:
             'publishing_office': weather_data['publishing_office'],
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
+    
+    def _get_weather_from_csv(self):
+        """CSVファイルから天気データを取得（APIアクセス失敗時のフォールバック）"""
+        try:
+            # JSONファイルのパスを構築
+            script_dir = os.path.dirname(os.path.dirname(__file__))
+            json_file = os.path.join(script_dir, 'data', 'csv', f'jma_forecast_{self.area_code}.json')
+            
+            if not os.path.exists(json_file):
+                logger.warning(f"JMA JSONファイルが見つかりません: {json_file}")
+                return None
+            
+            # ファイルの更新時間をチェック（24時間以内かどうか）
+            file_mtime = os.path.getmtime(json_file)
+            current_time = datetime.now().timestamp()
+            if current_time - file_mtime > 24 * 3600:  # 24時間
+                logger.warning(f"JMA JSONファイルが古すぎます（{(current_time - file_mtime) / 3600:.1f}時間前）")
+                return None
+            
+            # JSONファイルを読み込み
+            with open(json_file, 'r', encoding='utf-8') as f:
+                forecast_data = json.load(f)
+            
+            logger.info(f"JSONファイルからデータを正常に読み込みました: {json_file}")
+            return self._parse_weather_data(forecast_data)
+            
+        except Exception as e:
+            logger.error(f"JSONファイルからのデータ読み込みエラー: {e}")
+            return None

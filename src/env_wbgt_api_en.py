@@ -149,6 +149,17 @@ class EnvWBGTAPIEN:
         Returns:
             dict: WBGT forecast data
         """
+        # Check for forced CSV mode
+        force_csv = os.environ.get('FORCE_CSV_MODE', '0') == '1'
+        
+        if force_csv:
+            logger.info("Forced CSV mode enabled: Attempting to read data from CSV file...")
+            if location is None:
+                sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
+                from config_en import LOCATIONS
+                location = LOCATIONS[0]
+            return self._get_wbgt_forecast_from_csv(location)
+        
         try:
             if location is None:
                 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
@@ -168,11 +179,12 @@ class EnvWBGTAPIEN:
                 return self._parse_forecast_csv_data(response.text, location)
             else:
                 logger.warning(f"Failed to get data from Environment Ministry WBGT service: {response.status_code} - URL: {url}")
-                return None
+                return self._get_wbgt_forecast_from_csv(location)
                 
         except Exception as e:
             logger.error(f"Environment Ministry WBGT data retrieval error: {e}")
-            return None
+            logger.info("Attempting to read WBGT forecast data from CSV file...")
+            return self._get_wbgt_forecast_from_csv(location)
     
     def get_wbgt_current_data(self, location=None):
         """
@@ -184,6 +196,17 @@ class EnvWBGTAPIEN:
         Returns:
             dict: WBGT current data
         """
+        # Check for forced CSV mode
+        force_csv = os.environ.get('FORCE_CSV_MODE', '0') == '1'
+        
+        if force_csv:
+            logger.info("Forced CSV mode enabled: Attempting to read data from CSV file...")
+            if location is None:
+                sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
+                from config_en import LOCATIONS
+                location = LOCATIONS[0]
+            return self._get_wbgt_current_from_csv(location)
+        
         try:
             if location is None:
                 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
@@ -205,11 +228,12 @@ class EnvWBGTAPIEN:
                 return self._parse_current_csv_data(response.text, location)
             else:
                 logger.warning(f"Failed to get Environment Ministry WBGT current data: {response.status_code} - URL: {url}")
-                return None
+                return self._get_wbgt_current_from_csv(location)
                 
         except Exception as e:
             logger.error(f"Environment Ministry WBGT current data retrieval error: {e}")
-            return None
+            logger.info("Attempting to read WBGT current data from CSV file...")
+            return self._get_wbgt_current_from_csv(location)
     
     def get_alert_data(self, location=None):
         """
@@ -260,11 +284,12 @@ class EnvWBGTAPIEN:
                 return self._parse_alert_data(csv_content, prefecture)
             else:
                 logger.warning(f"Failed to get Environment Ministry alert data: {response.status_code} - URL: {url}")
-                return None
+                return self._get_alert_from_csv(target_date, file_time, prefecture)
                 
         except Exception as e:
             logger.error(f"Environment Ministry alert data retrieval error: {e}")
-            return None
+            logger.info("Attempting to read alert data from CSV file...")
+            return self._get_alert_from_csv(target_date, file_time, prefecture)
     
     def _parse_forecast_csv_data(self, csv_content, location):
         """Parse forecast CSV data"""
@@ -340,11 +365,12 @@ class EnvWBGTAPIEN:
                 return self._parse_forecast_timeseries_csv_data(response.text, location)
             else:
                 logger.warning(f"Failed to get Environment Ministry WBGT time series data: {response.status_code} - URL: {url}")
-                return None
+                return self._get_wbgt_timeseries_from_csv(location)
                 
         except Exception as e:
             logger.error(f"Environment Ministry WBGT time series data retrieval error: {e}")
-            return None
+            logger.info("Attempting to read WBGT time series data from CSV file...")
+            return self._get_wbgt_timeseries_from_csv(location)
 
     def _parse_forecast_timeseries_csv_data(self, csv_content, location):
         """Parse forecast time series CSV data"""
@@ -603,3 +629,130 @@ class EnvWBGTAPIEN:
         # For testing: Force current period to be valid (for implementation testing)
         # In actual operation, uncomment the following line
         return True  # return service_start <= now <= service_end
+    
+    def _get_wbgt_forecast_from_csv(self, location):
+        """Get WBGT forecast data from CSV file (fallback when API access fails)"""
+        try:
+            prefecture = location.get('prefecture')
+            pref_name = self.prefecture_names.get(prefecture, 'kanagawa')
+            
+            # Build CSV file path
+            script_dir = os.path.dirname(os.path.dirname(__file__))
+            csv_file = os.path.join(script_dir, 'data', 'csv', f'wbgt_forecast_{pref_name}.csv')
+            
+            if not os.path.exists(csv_file):
+                logger.warning(f"WBGT forecast CSV file not found: {csv_file}")
+                return None
+            
+            # Check file modification time (whether within 24 hours)
+            file_mtime = os.path.getmtime(csv_file)
+            current_time = datetime.now().timestamp()
+            if current_time - file_mtime > 24 * 3600:  # 24 hours
+                logger.warning(f"WBGT forecast CSV file is too old ({(current_time - file_mtime) / 3600:.1f} hours ago)")
+                return None
+            
+            # Read CSV file
+            with open(csv_file, 'r', encoding='utf-8') as f:
+                csv_content = f.read()
+            
+            logger.info(f"Successfully read WBGT forecast data from CSV file: {csv_file}")
+            return self._parse_forecast_csv_data(csv_content, location)
+            
+        except Exception as e:
+            logger.error(f"Error reading WBGT forecast data from CSV file: {e}")
+            return None
+    
+    def _get_wbgt_current_from_csv(self, location):
+        """Get WBGT current data from CSV file (fallback when API access fails)"""
+        try:
+            prefecture = location.get('prefecture')
+            pref_name = self.prefecture_names.get(prefecture, 'kanagawa')
+            now = datetime.now()
+            year_month = f"{now.year}{now.month:02d}"
+            
+            # Build CSV file path
+            script_dir = os.path.dirname(os.path.dirname(__file__))
+            csv_file = os.path.join(script_dir, 'data', 'csv', f'wbgt_current_{pref_name}_{year_month}.csv')
+            
+            if not os.path.exists(csv_file):
+                logger.warning(f"WBGT current CSV file not found: {csv_file}")
+                return None
+            
+            # Check file modification time (whether within 6 hours)
+            file_mtime = os.path.getmtime(csv_file)
+            current_time = datetime.now().timestamp()
+            if current_time - file_mtime > 6 * 3600:  # 6 hours
+                logger.warning(f"WBGT current CSV file is too old ({(current_time - file_mtime) / 3600:.1f} hours ago)")
+                return None
+            
+            # Read CSV file
+            with open(csv_file, 'r', encoding='utf-8') as f:
+                csv_content = f.read()
+            
+            logger.info(f"Successfully read WBGT current data from CSV file: {csv_file}")
+            return self._parse_current_csv_data(csv_content, location)
+            
+        except Exception as e:
+            logger.error(f"Error reading WBGT current data from CSV file: {e}")
+            return None
+    
+    def _get_wbgt_timeseries_from_csv(self, location):
+        """Get WBGT time series data from CSV file (fallback when API access fails)"""
+        try:
+            prefecture = location.get('prefecture')
+            pref_name = self.prefecture_names.get(prefecture, 'kanagawa')
+            
+            # Build CSV file path
+            script_dir = os.path.dirname(os.path.dirname(__file__))
+            csv_file = os.path.join(script_dir, 'data', 'csv', f'wbgt_forecast_{pref_name}.csv')
+            
+            if not os.path.exists(csv_file):
+                logger.warning(f"WBGT time series CSV file not found: {csv_file}")
+                return None
+            
+            # Check file modification time (whether within 24 hours)
+            file_mtime = os.path.getmtime(csv_file)
+            current_time = datetime.now().timestamp()
+            if current_time - file_mtime > 24 * 3600:  # 24 hours
+                logger.warning(f"WBGT time series CSV file is too old ({(current_time - file_mtime) / 3600:.1f} hours ago)")
+                return None
+            
+            # Read CSV file
+            with open(csv_file, 'r', encoding='utf-8') as f:
+                csv_content = f.read()
+            
+            logger.info(f"Successfully read WBGT time series data from CSV file: {csv_file}")
+            return self._parse_forecast_timeseries_csv_data(csv_content, location)
+            
+        except Exception as e:
+            logger.error(f"Error reading WBGT time series data from CSV file: {e}")
+            return None
+    
+    def _get_alert_from_csv(self, target_date, file_time, prefecture):
+        """Get alert data from CSV file (fallback when API access fails)"""
+        try:
+            # Build CSV file path
+            script_dir = os.path.dirname(os.path.dirname(__file__))
+            csv_file = os.path.join(script_dir, 'data', 'csv', f'alert_{target_date}_{file_time}.csv')
+            
+            if not os.path.exists(csv_file):
+                logger.warning(f"Alert CSV file not found: {csv_file}")
+                return None
+            
+            # Check file modification time (whether within 24 hours)
+            file_mtime = os.path.getmtime(csv_file)
+            current_time = datetime.now().timestamp()
+            if current_time - file_mtime > 24 * 3600:  # 24 hours
+                logger.warning(f"Alert CSV file is too old ({(current_time - file_mtime) / 3600:.1f} hours ago)")
+                return None
+            
+            # Read CSV file
+            with open(csv_file, 'r', encoding='utf-8') as f:
+                csv_content = f.read()
+            
+            logger.info(f"Successfully read alert data from CSV file: {csv_file}")
+            return self._parse_alert_data(csv_content, prefecture)
+            
+        except Exception as e:
+            logger.error(f"Error reading alert data from CSV file: {e}")
+            return None

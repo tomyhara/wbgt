@@ -100,6 +100,17 @@ class EnvWBGTAPI:
         Returns:
             dict: WBGT予測データ
         """
+        # 強制CSV モードの確認
+        force_csv = os.environ.get('FORCE_CSV_MODE', '0') == '1'
+        
+        if force_csv:
+            logger.info("強制CSVモードが有効: CSVファイルからのデータ読み込みを試行中...")
+            if location is None:
+                sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
+                from config import LOCATIONS
+                location = LOCATIONS[0]
+            return self._get_wbgt_forecast_from_csv(location)
+        
         try:
             if location is None:
                 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
@@ -119,11 +130,12 @@ class EnvWBGTAPI:
                 return self._parse_forecast_csv_data(response.text, location)
             else:
                 logger.warning(f"環境省WBGTサービスからのデータ取得に失敗: {response.status_code} - URL: {url}")
-                return None
+                return self._get_wbgt_forecast_from_csv(location)
                 
         except Exception as e:
             logger.error(f"環境省WBGTデータ取得エラー: {e}")
-            return None
+            logger.info("CSVファイルからのWBGT予測データ読み込みを試行中...")
+            return self._get_wbgt_forecast_from_csv(location)
     
     def get_wbgt_current_data(self, location=None):
         """
@@ -135,6 +147,17 @@ class EnvWBGTAPI:
         Returns:
             dict: WBGT実況データ
         """
+        # 強制CSV モードの確認
+        force_csv = os.environ.get('FORCE_CSV_MODE', '0') == '1'
+        
+        if force_csv:
+            logger.info("強制CSVモードが有効: CSVファイルからのデータ読み込みを試行中...")
+            if location is None:
+                sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
+                from config import LOCATIONS
+                location = LOCATIONS[0]
+            return self._get_wbgt_current_from_csv(location)
+        
         try:
             if location is None:
                 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
@@ -156,11 +179,12 @@ class EnvWBGTAPI:
                 return self._parse_current_csv_data(response.text, location)
             else:
                 logger.warning(f"環境省WBGT実況データ取得に失敗: {response.status_code} - URL: {url}")
-                return None
+                return self._get_wbgt_current_from_csv(location)
                 
         except Exception as e:
             logger.error(f"環境省WBGT実況データ取得エラー: {e}")
-            return None
+            logger.info("CSVファイルからのWBGT実況データ読み込みを試行中...")
+            return self._get_wbgt_current_from_csv(location)
     
     def get_alert_data(self, location=None):
         """
@@ -172,34 +196,41 @@ class EnvWBGTAPI:
         Returns:
             dict: アラート情報
         """
+        if location is None:
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
+            from config import LOCATIONS
+            location = LOCATIONS[0]
+            
+        prefecture = location.get('prefecture')
+        now = datetime.now()
+        date_str = now.strftime('%Y%m%d')
+        
+        # 時刻に応じて適切なファイルを選択
+        if now.hour < 5:
+            # 当日5時前は前日17時のファイル
+            file_time = '17'
+            target_date = (now - timedelta(days=1)).strftime('%Y%m%d')
+        elif now.hour < 14:
+            # 14時前は当日5時のファイル
+            file_time = '05'
+            target_date = date_str
+        elif now.hour < 17:
+            # 17時前は当日14時のファイル（特別警戒情報）
+            file_time = '14'
+            target_date = date_str
+        else:
+            # 17時以降は当日17時のファイル
+            file_time = '17'
+            target_date = date_str
+        
+        # 強制CSV モードの確認
+        force_csv = os.environ.get('FORCE_CSV_MODE', '0') == '1'
+        
+        if force_csv:
+            logger.info("強制CSVモードが有効: CSVファイルからのデータ読み込みを試行中...")
+            return self._get_alert_from_csv(target_date, file_time, prefecture)
+        
         try:
-            if location is None:
-                sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
-                from config import LOCATIONS
-                location = LOCATIONS[0]
-                
-            prefecture = location.get('prefecture')
-            now = datetime.now()
-            date_str = now.strftime('%Y%m%d')
-            
-            # 時刻に応じて適切なファイルを選択
-            if now.hour < 5:
-                # 当日5時前は前日17時のファイル
-                file_time = '17'
-                target_date = (now - timedelta(days=1)).strftime('%Y%m%d')
-            elif now.hour < 14:
-                # 14時前は当日5時のファイル
-                file_time = '05'
-                target_date = date_str
-            elif now.hour < 17:
-                # 17時前は当日14時のファイル（特別警戒情報）
-                file_time = '14'
-                target_date = date_str
-            else:
-                # 17時以降は当日17時のファイル
-                file_time = '17'
-                target_date = date_str
-            
             # 環境省データサービスの正式URL構造（アラート情報）
             url = f"{self.base_url}/alert/dl/{now.year}/alert_{target_date}_{file_time}.csv"
             logger.info(f"熱中症警戒アラートデータ取得URL: {url}")
@@ -211,11 +242,12 @@ class EnvWBGTAPI:
                 return self._parse_alert_data(csv_content, prefecture)
             else:
                 logger.warning(f"環境省アラートデータ取得に失敗: {response.status_code} - URL: {url}")
-                return None
+                return self._get_alert_from_csv(target_date, file_time, prefecture)
                 
         except Exception as e:
             logger.error(f"環境省アラートデータ取得エラー: {e}")
-            return None
+            logger.info("CSVファイルからのアラートデータ読み込みを試行中...")
+            return self._get_alert_from_csv(target_date, file_time, prefecture)
     
     def _parse_forecast_csv_data(self, csv_content, location):
         """予測値CSVデータを解析"""
@@ -554,3 +586,98 @@ class EnvWBGTAPI:
         # テスト用：現在の期間を強制的に有効として扱う（実装テスト用）
         # 実際の運用では以下のコメントアウトを外してください
         return True  # return service_start <= now <= service_end
+    
+    def _get_wbgt_forecast_from_csv(self, location):
+        """CSVファイルからWBGT予測データを取得（APIアクセス失敗時のフォールバック）"""
+        try:
+            prefecture = location.get('prefecture')
+            pref_name = self.prefecture_names.get(prefecture, 'kanagawa')
+            
+            # CSVファイルのパスを構築
+            script_dir = os.path.dirname(os.path.dirname(__file__))
+            csv_file = os.path.join(script_dir, 'data', 'csv', f'wbgt_forecast_{pref_name}.csv')
+            
+            if not os.path.exists(csv_file):
+                logger.warning(f"WBGT予測CSVファイルが見つかりません: {csv_file}")
+                return None
+            
+            # ファイルの更新時間をチェック（24時間以内かどうか）
+            file_mtime = os.path.getmtime(csv_file)
+            current_time = datetime.now().timestamp()
+            if current_time - file_mtime > 24 * 3600:  # 24時間
+                logger.warning(f"WBGT予測CSVファイルが古すぎます（{(current_time - file_mtime) / 3600:.1f}時間前）")
+                return None
+            
+            # CSVファイルを読み込み
+            with open(csv_file, 'r', encoding='utf-8') as f:
+                csv_content = f.read()
+            
+            logger.info(f"CSVファイルからWBGT予測データを正常に読み込みました: {csv_file}")
+            return self._parse_forecast_csv_data(csv_content, location)
+            
+        except Exception as e:
+            logger.error(f"CSVファイルからのWBGT予測データ読み込みエラー: {e}")
+            return None
+    
+    def _get_wbgt_current_from_csv(self, location):
+        """CSVファイルからWBGT実況データを取得（APIアクセス失敗時のフォールバック）"""
+        try:
+            prefecture = location.get('prefecture')
+            pref_name = self.prefecture_names.get(prefecture, 'kanagawa')
+            now = datetime.now()
+            year_month = f"{now.year}{now.month:02d}"
+            
+            # CSVファイルのパスを構築
+            script_dir = os.path.dirname(os.path.dirname(__file__))
+            csv_file = os.path.join(script_dir, 'data', 'csv', f'wbgt_current_{pref_name}_{year_month}.csv')
+            
+            if not os.path.exists(csv_file):
+                logger.warning(f"WBGT実況CSVファイルが見つかりません: {csv_file}")
+                return None
+            
+            # ファイルの更新時間をチェック（6時間以内かどうか）
+            file_mtime = os.path.getmtime(csv_file)
+            current_time = datetime.now().timestamp()
+            if current_time - file_mtime > 6 * 3600:  # 6時間
+                logger.warning(f"WBGT実況CSVファイルが古すぎます（{(current_time - file_mtime) / 3600:.1f}時間前）")
+                return None
+            
+            # CSVファイルを読み込み
+            with open(csv_file, 'r', encoding='utf-8') as f:
+                csv_content = f.read()
+            
+            logger.info(f"CSVファイルからWBGT実況データを正常に読み込みました: {csv_file}")
+            return self._parse_current_csv_data(csv_content, location)
+            
+        except Exception as e:
+            logger.error(f"CSVファイルからのWBGT実況データ読み込みエラー: {e}")
+            return None
+    
+    def _get_alert_from_csv(self, target_date, file_time, prefecture):
+        """CSVファイルからアラートデータを取得（APIアクセス失敗時のフォールバック）"""
+        try:
+            # CSVファイルのパスを構築
+            script_dir = os.path.dirname(os.path.dirname(__file__))
+            csv_file = os.path.join(script_dir, 'data', 'csv', f'alert_{target_date}_{file_time}.csv')
+            
+            if not os.path.exists(csv_file):
+                logger.warning(f"アラートCSVファイルが見つかりません: {csv_file}")
+                return None
+            
+            # ファイルの更新時間をチェック（24時間以内かどうか）
+            file_mtime = os.path.getmtime(csv_file)
+            current_time = datetime.now().timestamp()
+            if current_time - file_mtime > 24 * 3600:  # 24時間
+                logger.warning(f"アラートCSVファイルが古すぎます（{(current_time - file_mtime) / 3600:.1f}時間前）")
+                return None
+            
+            # CSVファイルを読み込み
+            with open(csv_file, 'r', encoding='utf-8') as f:
+                csv_content = f.read()
+            
+            logger.info(f"CSVファイルからアラートデータを正常に読み込みました: {csv_file}")
+            return self._parse_alert_data(csv_content, prefecture)
+            
+        except Exception as e:
+            logger.error(f"CSVファイルからのアラートデータ読み込みエラー: {e}")
+            return None

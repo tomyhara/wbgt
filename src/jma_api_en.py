@@ -78,6 +78,13 @@ class JMAWeatherAPIEN:
     
     def get_current_weather(self):
         """Get current weather data"""
+        # Check for forced CSV mode
+        force_csv = os.environ.get('FORCE_CSV_MODE', '0') == '1'
+        
+        if force_csv:
+            logger.info("Forced CSV mode enabled: Attempting to read data from CSV file...")
+            return self._get_weather_from_csv()
+        
         try:
             forecast_url = f"{self.base_url}/forecast/data/forecast/{self.area_code}.json"
             response = requests.get(forecast_url, timeout=10, verify=self.ssl_verify)
@@ -93,10 +100,12 @@ class JMAWeatherAPIEN:
             
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to get weather data: {e}")
-            return None
+            logger.info("Attempting to read data from CSV file...")
+            return self._get_weather_from_csv()
         except Exception as e:
             logger.error(f"Data parsing error: {e}")
-            return None
+            logger.info("Attempting to read data from CSV file...")
+            return self._get_weather_from_csv()
     
     def _parse_weather_data(self, forecast_data):
         """Parse forecast data"""
@@ -290,3 +299,32 @@ class JMAWeatherAPIEN:
             'publishing_office': weather_data['publishing_office'],
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
+    
+    def _get_weather_from_csv(self):
+        """Get weather data from CSV file (fallback when API access fails)"""
+        try:
+            # Build JSON file path
+            script_dir = os.path.dirname(os.path.dirname(__file__))
+            json_file = os.path.join(script_dir, 'data', 'csv', f'jma_forecast_{self.area_code}.json')
+            
+            if not os.path.exists(json_file):
+                logger.warning(f"JMA JSON file not found: {json_file}")
+                return None
+            
+            # Check file modification time (whether within 24 hours)
+            file_mtime = os.path.getmtime(json_file)
+            current_time = datetime.now().timestamp()
+            if current_time - file_mtime > 24 * 3600:  # 24 hours
+                logger.warning(f"JMA JSON file is too old ({(current_time - file_mtime) / 3600:.1f} hours ago)")
+                return None
+            
+            # Read JSON file
+            with open(json_file, 'r', encoding='utf-8') as f:
+                forecast_data = json.load(f)
+            
+            logger.info(f"Successfully read data from JSON file: {json_file}")
+            return self._parse_weather_data(forecast_data)
+            
+        except Exception as e:
+            logger.error(f"Error reading data from JSON file: {e}")
+            return None

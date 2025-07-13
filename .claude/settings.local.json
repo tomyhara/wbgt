@@ -9,7 +9,12 @@
       "Bash(mv:*)",
       "Bash(python3:*)",
       "Bash(pip3 install:*)",
-      "Bash(timeout 10 python3 src/wbgt_kiosk_en.py --gui)"
+      "Bash(timeout 10 python3 src/wbgt_kiosk_en.py --gui)",
+      "Bash(chmod:*)",
+      "Bash(mkdir:*)",
+      "Bash(./scripts/download_jma_data.sh:*)",
+      "Bash(./scripts/download_wbgt_data.sh:*)",
+      "Bash(./scripts/run_with_csv.sh:*)"
     ],
     "deny": []
   }
