@@ -340,6 +340,30 @@ cache/
 *.7z
 
 # =============================================================================
+# CSV Mode and Downloaded Data
+# =============================================================================
+# Downloaded CSV/JSON data files (regenerable from APIs)
+data/csv/
+data/json/
+
+# CSV download logs
+logs/
+logs/*.log
+*_download.log
+master_download.log
+jma_download.log
+wbgt_download.log
+
+# Temporary data files
+data/temp/
+data/tmp/
+data/*.tmp
+
+# Data backup files
+data/*.bak
+data/*.backup
+
+# =============================================================================
 # Service and System Files
 # =============================================================================
 # systemd service files with custom paths
