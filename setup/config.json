@@ -81,7 +81,7 @@
     "verify": true,
     "cert_path": null
   },
-  "openweather_api_key": "YOUR_OPENWEATHERMAP_API_KEY_HERE",
+  "openweather_api_key": "your_openweather_api_key_here",
   "weather_api": {
     "provider": "openweathermap",
     "fallback_to_jma": true,

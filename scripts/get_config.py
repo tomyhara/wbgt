@@ -59,9 +59,31 @@ def main():
                 print(f"{area_code}:{name}")
     
     elif output_type == "locations":
-        # Output locations as JSON for easier parsing
+        # Output locations in CSV format for OpenWeather download script
         locations = config.get('locations', [])
-        print(json.dumps(locations, ensure_ascii=False))
+        
+        # Location coordinates mapping (from OpenWeatherAPI)
+        location_coords = {
+            '横浜': (35.4478, 139.6425),
+            '東京': (35.6762, 139.6503),
+            '千葉': (35.6074, 140.1065),
+            '銚子': (35.7347, 140.8317),
+            '札幌': (43.0642, 141.3469),
+            '仙台': (38.2682, 140.8694),
+            '大阪': (34.6937, 135.5023),
+            '名古屋': (35.1815, 136.9066),
+            '福岡': (33.5904, 130.4017),
+        }
+        
+        for location in locations:
+            name = location.get('name', '')
+            coords = location_coords.get(name)
+            if coords:
+                lat, lon = coords
+                print(f"{name},{lat},{lon}")
+            else:
+                # Default to Tokyo coordinates if not found
+                print(f"{name},35.6762,139.6503")
     
     elif output_type == "prefectures":
         # Output prefectures for WBGT download (mapping common prefecture names)

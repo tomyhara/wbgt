@@ -24,7 +24,9 @@
       "Bash(timeout:*)",
       "Bash(pkill:*)",
       "Bash(true)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(./scripts/download_openweather_data.sh:*)",
+      "Bash(gtimeout:*)"
     ],
     "deny": []
   }
