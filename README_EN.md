@@ -45,19 +45,48 @@ python src/wbgt_kiosk_en.py --demo
 
 ## ⚙️ Configuration
 
-Edit `setup/config_en.py` to customize your setup:
+### JSON Configuration (Recommended)
+
+Edit `setup/config.json` to customize your setup:
+
+```json
+{
+  "locations": [
+    {
+      "name": "Tokyo",
+      "area_code": "130000",
+      "wbgt_location_code": "44132",
+      "prefecture": "Tokyo"
+    },
+    {
+      "name": "Yokohama", 
+      "area_code": "140000",
+      "wbgt_location_code": "46106",
+      "prefecture": "Kanagawa"
+    }
+  ],
+  "update_interval_minutes": 30,
+  "display": {
+    "width": 800,
+    "height": 600,
+    "fullscreen": false
+  }
+}
+```
+
+### Python Configuration (Legacy)
+
+Edit `setup/config_en.py`:
 
 ```python
 LOCATIONS = [
     {
-        'name': 'Tokyo',                      # Display name
-        'area_code': '130000',                # JMA area code
-        'prefecture': 'Tokyo',                # Prefecture for Environment Ministry API
-        'wbgt_location_code': '44132'         # Environment Ministry WBGT code
+        'name': 'Tokyo',
+        'area_code': '130000',
+        'prefecture': 'Tokyo',
+        'wbgt_location_code': '44132'
     }
 ]
-
-UPDATE_INTERVAL_MINUTES = 5  # Update frequency
 ```
 
 ### Finding Location Codes
@@ -251,14 +280,20 @@ pip install requests
 
 **Config file not found**
 ```bash
-cp config_en.sample.py config_en.py
+# JSON config (recommended)
+cp setup/config.json setup/config.json.bak
+nano setup/config.json
+
+# Python config (legacy)
+cp setup/config_en.sample.py setup/config_en.py
 ```
 
 **SSL Certificate errors**
 Use CSV mode to bypass SSL issues:
 ```bash
-./scripts/run_with_csv.sh --download-only  # Download data
-./scripts/run_with_csv.sh --run-only       # Run with CSV data
+./scripts/download_all_data.sh           # Download data
+./scripts/run_with_csv.sh --english      # Run English version with CSV
+./scripts/run_with_csv.sh --run-only     # Use existing CSV data
 ```
 
 **GUI not available**
@@ -297,34 +332,58 @@ tail -f logs/master_download.log # View CSV download logs
 - Application: `wbgt_kiosk_en.log`
 - Service (Linux): `journalctl -u wbgt-kiosk-en.service`
 
+### Configuration Tools
+```bash
+# Check current settings
+python3 scripts/get_config.py locations
+python3 scripts/get_config.py area_codes
+python3 scripts/get_config.py prefectures
+
+# Test CSV mode
+python3 test_csv_mode.py
+```
+
 ### Reset Configuration
 ```bash
+# JSON config
+cp setup/config.json setup/config.json.bak
+
+# Python config
 cp setup/config_en.sample.py setup/config_en.py
 ```
 
-### Update Dependencies
-```bash
-pip install -r setup/requirements.txt --upgrade
-```
+## 🔗 Related Documentation
+
+- [CSV_USAGE_README.md](CSV_USAGE_README.md) - Detailed CSV mode guide
+- [QUICKSTART.md](QUICKSTART.md) - Quick start guide  
+- [SSL_README.md](SSL_README.md) - SSL certificate troubleshooting
+- [LANGUAGE_SWITCHING.md](LANGUAGE_SWITCHING.md) - Multi-language support
+- [WINDOWS_README.md](WINDOWS_README.md) - Windows-specific guide
 
 ## 🌍 Localization
 
-This is the English version of the WBGT Heat Stroke Warning Kiosk. For the Japanese version, use:
+This is the English version. For Japanese version:
 - `src/wbgt_kiosk.py` (Japanese main application)
-- `setup/config.py` (Japanese configuration)
+- `setup/config.json` or `setup/config.py` (Configuration)
 - `README.md` (Japanese documentation)
+
+## 🤝 Contributing & Support
+
+- Bug reports and feature requests: Please use Issues
+- Pull requests are welcome
+- Security issues: Please contact privately
 
 ## 📄 License
 
-This project is designed for heat stroke prevention and public safety purposes.
+MIT License - Open source project for heat stroke prevention and public safety.
 
-## 🤝 Contributing
+## 🏷️ Version
 
-Contributions are welcome! Please ensure:
-- Code follows existing style
-- Add appropriate error handling
-- Test with both JMA and Environment Ministry data sources
-- Update documentation for any new features
+**Version 2.0.0** - July 2025
+- JSON configuration file support
+- CSV download script integration with config
+- Multi-location monitoring support  
+- Backward compatibility maintained
 
 ---
 

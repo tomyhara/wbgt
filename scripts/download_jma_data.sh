@@ -78,9 +78,35 @@ download_jma_observation() {
 # Main execution
 log_message "=== JMA Data Download Started ==="
 
-# Area codes for major cities (matching the configuration)
-AREA_CODES=("130000" "140000" "270000" "230000" "400000" "016000" "040000")
-AREA_NAMES=("Tokyo" "Yokohama" "Osaka" "Nagoya" "Fukuoka" "Sapporo" "Sendai")
+# Get area codes from configuration
+log_message "Reading area codes from configuration..."
+CONFIG_DATA=$(python3 "$SCRIPT_DIR/get_config.py" area_codes 2>/dev/null)
+
+if [ -z "$CONFIG_DATA" ]; then
+    log_message "Warning: No configuration found, using default area codes"
+    # Fallback to default area codes
+    AREA_CODES=("130000" "140000" "270000" "230000" "400000" "016000" "040000")
+    AREA_NAMES=("Tokyo" "Yokohama" "Osaka" "Nagoya" "Fukuoka" "Sapporo" "Sendai")
+else
+    # Parse configuration data
+    AREA_CODES=()
+    AREA_NAMES=()
+    while IFS=':' read -r area_code area_name; do
+        if [ -n "$area_code" ] && [ -n "$area_name" ]; then
+            AREA_CODES+=("$area_code")
+            AREA_NAMES+=("$area_name")
+        fi
+    done <<< "$CONFIG_DATA"
+    
+    # Add default areas if none configured
+    if [ ${#AREA_CODES[@]} -eq 0 ]; then
+        log_message "Warning: No areas configured, using defaults"
+        AREA_CODES=("130000" "140000" "270000" "230000" "400000" "016000" "040000")
+        AREA_NAMES=("Tokyo" "Yokohama" "Osaka" "Nagoya" "Fukuoka" "Sapporo" "Sendai")
+    fi
+fi
+
+log_message "Downloading data for ${#AREA_CODES[@]} configured areas"
 
 # Download forecast data for configured areas
 success_count=0

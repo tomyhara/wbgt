@@ -115,16 +115,33 @@ download_heatstroke_alert() {
 # Main execution
 log_message "=== Environment Ministry WBGT Data Download Started ==="
 
-# Prefecture codes for major areas
-PREFECTURES=(
-    "tokyo"
-    "kanagawa" 
-    "osaka"
-    "aichi"
-    "fukuoka"
-    "hokkaido"
-    "miyagi"
-)
+# Get prefecture codes from configuration
+log_message "Reading prefecture codes from configuration..."
+CONFIG_PREFECTURES=$(python3 "$SCRIPT_DIR/get_config.py" prefectures 2>/dev/null)
+
+if [ -z "$CONFIG_PREFECTURES" ]; then
+    log_message "Warning: No configuration found, using default prefectures"
+    # Fallback to default prefectures
+    PREFECTURES=(
+        "tokyo"
+        "kanagawa" 
+        "osaka"
+        "aichi"
+        "fukuoka"
+        "hokkaido"
+        "miyagi"
+    )
+else
+    # Parse configuration data
+    PREFECTURES=()
+    while IFS= read -r prefecture; do
+        if [ -n "$prefecture" ]; then
+            PREFECTURES+=("$prefecture")
+        fi
+    done <<< "$CONFIG_PREFECTURES"
+fi
+
+log_message "Downloading WBGT data for ${#PREFECTURES[@]} prefectures: ${PREFECTURES[*]}"
 
 # Get current date information
 CURRENT_DATE=$(date '+%Y%m%d')
