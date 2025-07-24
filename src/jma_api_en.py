@@ -136,21 +136,47 @@ class JMAWeatherAPIEN:
                 areas_temp = ts.get('areas', [])
                 if areas_temp and 'temps' in areas_temp[0]:
                     # Temperature forecast data is included
-                    temps = areas_temp[0].get('temps', [])
                     time_defines = ts.get('timeDefines', [])
+                    
+                    # Find area matching the configured location name
+                    target_area = None
+                    # Map area codes to target location names
+                    target_names = {
+                        '140000': ['Yokohama', '横浜'],  # Kanagawa
+                        '120000': ['Choshi', '銚子', 'Chiba', '千葉']  # Chiba
+                    }
+                    
+                    possible_names = target_names.get(self.area_code, [])
+                    
+                    for area in areas_temp:
+                        area_name = area['area']['name']
+                        for possible_name in possible_names:
+                            if possible_name in area_name or area_name in possible_name:
+                                target_area = area
+                                logger.info(f"Found target area: {area_name}")
+                                break
+                        if target_area:
+                            break
+                    
+                    # Use first area if target area not found
+                    if not target_area:
+                        target_area = areas_temp[0]
+                        logger.warning(f"Target area not found, using first area: {target_area['area']['name']}")
+                    
+                    temps = target_area.get('temps', [])
                     
                     # temps array structure: [today_high, today_high(duplicate), tomorrow_low, tomorrow_high]
                     # Main logic: directly get from array
                     if len(temps) >= 1 and temps[0]:
                         forecast_high = int(temps[0])  # Today's high temperature
-                        logger.info(f"Got today's high temperature: {forecast_high}°C")
+                        logger.info(f"Got today's high temperature: {forecast_high}°C ({target_area['area']['name']})")
                     
                     if len(temps) >= 3 and temps[2]:
                         forecast_low = int(temps[2])   # Use tomorrow's low as today's low
-                        logger.info(f"Got today's low temperature: {forecast_low}°C")
+                        logger.info(f"Got today's low temperature: {forecast_low}°C ({target_area['area']['name']})")
                     elif len(temps) >= 2 and temps[1]:
                         forecast_low = int(temps[1])   # Fallback
-                        logger.info(f"Got today's low temperature (fallback): {forecast_low}°C")
+                        logger.info(f"Got today's low temperature (fallback): {forecast_low}°C ({target_area['area']['name']})")
                     
                     # Break after finding first temps data
                     break

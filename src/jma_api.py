@@ -137,21 +137,60 @@ class JMAWeatherAPI:
                 areas_temp = ts.get('areas', [])
                 if areas_temp and 'temps' in areas_temp[0]:
                     # 気温予報データが含まれている
-                    temps = areas_temp[0].get('temps', [])
                     time_defines = ts.get('timeDefines', [])
+                    
+                    # 設定で指定された地域名に一致するエリアを探す
+                    target_area = None
+                    # エリアコードから目標地域名を推定（優先度順）
+                    target_names = {
+                        '140000': ['横浜'],  # 神奈川県
+                        '120000': ['銚子']  # 千葉県（銚子を優先）
+                    }
+                    
+                    possible_names = target_names.get(self.area_code, [])
+                    
+                    # 最初に具体的な地域名で探す
+                    for possible_name in possible_names:
+                        for area in areas_temp:
+                            area_name = area['area']['name']
+                            if area_name == possible_name:  # 完全一致を優先
+                                target_area = area
+                                logger.info(f"目標地域を発見(完全一致): {area_name}")
+                                break
+                        if target_area:
+                            break
+                    
+                    # 完全一致がない場合は部分一致で探す
+                    if not target_area:
+                        for possible_name in possible_names:
+                            for area in areas_temp:
+                                area_name = area['area']['name']
+                                if possible_name in area_name or area_name in possible_name:
+                                    target_area = area
+                                    logger.info(f"目標地域を発見(部分一致): {area_name}")
+                                    break
+                            if target_area:
+                                break
+                    
+                    # 目標地域が見つからない場合は最初のエリアを使用
+                    if not target_area:
+                        target_area = areas_temp[0]
+                        logger.warning(f"目標地域が見つからないため、最初のエリアを使用: {target_area['area']['name']}")
+                    
+                    temps = target_area.get('temps', [])
                     
                     # temps配列の構造: [今日最高, 今日最高(重複), 明日最低, 明日最高]
                     # メインロジック: シンプルに配列から直接取得
                     if len(temps) >= 1 and temps[0]:
                         forecast_high = int(temps[0])  # 今日の最高気温
-                        logger.info(f"今日の最高気温を取得: {forecast_high}°C")
+                        logger.info(f"今日の最高気温を取得: {forecast_high}°C ({target_area['area']['name']})")
                     
                     if len(temps) >= 3 and temps[2]:
                         forecast_low = int(temps[2])   # 明日の最低気温を今日の最低気温として使用
-                        logger.info(f"今日の最低気温を取得: {forecast_low}°C")
+                        logger.info(f"今日の最低気温を取得: {forecast_low}°C ({target_area['area']['name']})")
                     elif len(temps) >= 2 and temps[1]:
                         forecast_low = int(temps[1])   # フォールバック
-                        logger.info(f"今日の最低気温を取得(フォールバック): {forecast_low}°C")
+                        logger.info(f"今日の最低気温を取得(フォールバック): {forecast_low}°C ({target_area['area']['name']})")
                     
                     # 最初のtempsデータを取得したらループ終了
                     break
