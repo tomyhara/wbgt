@@ -23,6 +23,7 @@ show_usage() {
     echo "  -d, --download-only    CSVデータのみダウンロード / Only download CSV data"
     echo "  -r, --run-only         既存CSVデータで実行 / Run with existing CSV data"
     echo "  -e, --english          英語版を実行 / Run English version"
+    echo "  -g, --gui              GUI版で実行 / Run in GUI mode"
     echo "  -h, --help             ヘルプ表示 / Show this help"
     echo "  -v, --verbose          詳細ログ / Verbose logging"
     echo
@@ -30,6 +31,7 @@ show_usage() {
     echo "  $0                     CSVダウンロード後、日本語版実行"
     echo "  $0 --download-only     CSVデータのみダウンロード"
     echo "  $0 --run-only --english 既存CSVで英語版実行"
+    echo "  $0 --english --gui     CSVダウンロード後、英語版GUI実行"
     echo
     print_colored green "データソース / Data Sources:"
     echo "  • 環境省熱中症予防情報サイト / Ministry of Environment WBGT"
@@ -41,6 +43,7 @@ show_usage() {
 DOWNLOAD_ONLY=false
 RUN_ONLY=false
 ENGLISH=false
+GUI=false
 VERBOSE=false
 
 while [[ $# -gt 0 ]]; do
@@ -55,6 +58,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -e|--english)
             ENGLISH=true
+            shift
+            ;;
+        -g|--gui)
+            GUI=true
             shift
             ;;
         -v|--verbose)
@@ -139,12 +146,18 @@ if ! check_file "$APP_PATH" "WBGT application"; then
     cleanup_and_exit 1 "Application not found"
 fi
 
+# Prepare application arguments
+APP_ARGS=()
+if [ "$GUI" = true ]; then
+    APP_ARGS+=(--gui)
+fi
+
 # Run the application
 if [ "$VERBOSE" = true ]; then
-    python3 "$APP_PATH" 2>&1 | tee -a "$LOG_FILE"
+    python3 "$APP_PATH" "${APP_ARGS[@]}" 2>&1 | tee -a "$LOG_FILE"
     app_exit_code=${PIPESTATUS[0]}
 else
-    python3 "$APP_PATH" >> "$LOG_FILE" 2>&1
+    python3 "$APP_PATH" "${APP_ARGS[@]}" >> "$LOG_FILE" 2>&1
     app_exit_code=$?
 fi
 

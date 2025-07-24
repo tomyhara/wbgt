@@ -29,6 +29,7 @@ show_help() {
     echo "  $0 ja --demo        日本語版デモモード / Japanese demo mode"
     echo "  $0 en --gui         英語版GUI / English GUI version"
     echo "  $0 auto --csv       自動言語検出・CSV / Auto detection with CSV mode"
+    echo "  $0 en --csv --gui   英語版CSVモードGUI / English CSV mode GUI"
     echo
     print_colored green "セットアップ / Setup:"
     echo "  仮想環境: ./setup/setup_venv.sh"
