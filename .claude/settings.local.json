@@ -24,7 +24,8 @@
       "Bash(timeout:*)",
       "Bash(pkill:*)",
       "Bash(true)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "WebFetch(domain:www.jma.go.jp)"
     ],
     "deny": []
   }

@@ -133,30 +133,50 @@ class JMAWeatherAPIEN:
             
             # Get temperature from JMA forecast data
             for ts in time_series:
-                if 'temps' in ts:
+                areas_temp = ts.get('areas', [])
+                if areas_temp and 'temps' in areas_temp[0]:
                     # Temperature forecast data is included
-                    areas_temp = ts.get('areas', [])
-                    if areas_temp:
-                        temps = areas_temp[0].get('temps', [])
-                        if len(temps) >= 2:
-                            # Minimum and maximum temperature
-                            forecast_low = int(temps[0]) if temps[0] else None
-                            forecast_high = int(temps[1]) if temps[1] else None
+                    temps = areas_temp[0].get('temps', [])
+                    time_defines = ts.get('timeDefines', [])
+                    
+                    # temps array structure: [today_high, today_high(duplicate), tomorrow_low, tomorrow_high]
+                    # Main logic: directly get from array
+                    if len(temps) >= 1 and temps[0]:
+                        forecast_high = int(temps[0])  # Today's high temperature
+                        logger.info(f"Got today's high temperature: {forecast_high}°C")
+                    
+                    if len(temps) >= 3 and temps[2]:
+                        forecast_low = int(temps[2])   # Use tomorrow's low as today's low
+                        logger.info(f"Got today's low temperature: {forecast_low}°C")
+                    elif len(temps) >= 2 and temps[1]:
+                        forecast_low = int(temps[1])   # Fallback
+                        logger.info(f"Got today's low temperature (fallback): {forecast_low}°C")
+                    
+                    # Break after finding first temps data
+                    break
             
             # Default values for current and forecast temperatures
             if not current_temp:
-                # Estimate current temperature from weather code
-                temp_humidity = self._estimate_temp_humidity_from_weather(weather_code, weather_desc)
-                current_temp = temp_humidity['temperature']
-                humidity = temp_humidity['humidity']
+                # Try to get current temperature from AMeDAS real-time data
+                current_temp = self._get_current_temperature_from_amedas()
+                
+                if not current_temp:
+                    # Fall back to estimation from weather code if AMeDAS data unavailable
+                    temp_humidity = self._estimate_temp_humidity_from_weather(weather_code, weather_desc)
+                    current_temp = temp_humidity['temperature']
+                    humidity = temp_humidity['humidity']
+                else:
+                    humidity = 60  # Default humidity
             else:
                 humidity = 60  # Default humidity
             
-            # If no forecast high temperature, estimate based on current temperature
+            # Only estimate if forecast temperatures cannot be obtained
             if not forecast_high:
                 forecast_high = current_temp + 3
+                logger.warning(f"Using estimated high temperature as forecast data unavailable: {forecast_high}°C")
             if not forecast_low:
                 forecast_low = current_temp - 2
+                logger.warning(f"Using estimated low temperature as forecast data unavailable: {forecast_low}°C")
             
             return {
                 'temperature': current_temp,
@@ -219,6 +239,129 @@ class JMAWeatherAPIEN:
         
         # Remove full-width and half-width spaces
         cleaned = weather_desc.replace('　', '').replace(' ', '')
+        
+        # Simplify long descriptions
+        if '晴' in cleaned:
+            if '時々' in cleaned or 'のち' in cleaned:
+                return "Partly Cloudy" if '曇' in cleaned else "Sunny"
+            return "Sunny"
+        elif '曇' in cleaned:
+            if '雨' in cleaned or '雷' in cleaned:
+                return "Cloudy/Rain"
+            elif '晴' in cleaned:
+                return "Partly Sunny"
+            return "Cloudy"
+        elif '雨' in cleaned:
+            if '雷' in cleaned:
+                return "Rain/Thunder"
+            elif '雪' in cleaned:
+                return "Rain/Snow"
+            return "Rain"
+        elif '雪' in cleaned:
+            if '雨' in cleaned:
+                return "Snow/Rain"
+            return "Snow"
+        else:
+            # For other cases, limit to first 15 characters
+            return cleaned[:15]
+    
+    def _get_current_temperature_from_amedas(self):
+        """Get current temperature from JMA overview_forecast API"""
+        try:
+            # overview_forecast endpoint URL
+            overview_url = f"https://www.jma.go.jp/bosai/forecast/data/overview_forecast/{self.area_code}.json"
+            
+            response = requests.get(overview_url, timeout=10, verify=self.ssl_verify)
+            response.raise_for_status()
+            overview_data = response.json()
+            
+            # Try to get current temperature data
+            if 'targetArea' in overview_data:
+                target_area = overview_data['targetArea']
+                # Extract temperature information from text
+                text = overview_data.get('text', '')
+                
+                # Look for patterns like "current temperature is X degrees"
+                import re
+                temp_patterns = [
+                    r'current.*?temperature.*?(\d+(?:\.\d+)?).*?degree',
+                    r'temperature.*?(\d+(?:\.\d+)?).*?degree',
+                    r'(\d+(?:\.\d+)?).*?degree.*?temperature',
+                    r'現在.*?気温.*?(\d+(?:\.\d+)?)度',  # Japanese patterns as fallback
+                    r'気温.*?(\d+(?:\.\d+)?)度',
+                    r'(\d+(?:\.\d+)?)度.*?気温'
+                ]
+                
+                for pattern in temp_patterns:
+                    match = re.search(pattern, text, re.IGNORECASE)
+                    if match:
+                        temp = float(match.group(1))
+                        logger.info(f"overview_forecast temperature acquired: {temp}°C (area: {target_area})")
+                        return temp
+                
+                logger.debug(f"overview_forecast text: {text}")
+            
+            # Fall back to traditional AMeDAS method if overview_forecast doesn't work
+            return self._get_current_temperature_from_amedas_fallback()
+            
+        except Exception as e:
+            logger.error(f"overview_forecast temperature acquisition error: {e}")
+            # Fall back to traditional method on error
+            return self._get_current_temperature_from_amedas_fallback()
+    
+    def _get_current_temperature_from_amedas_fallback(self):
+        """Get current temperature from AMeDAS real-time data (fallback)"""
+        try:
+            from datetime import datetime, timedelta
+            import json
+            
+            # Get data from 1 hour ago (considering AMeDAS data update frequency)
+            now = datetime.now()
+            target_time = now - timedelta(hours=1)
+            date_str = target_time.strftime('%Y%m%d')
+            hour_str = target_time.strftime('%H')
+            
+            # AMeDAS real-time data URL
+            amedas_url = f"https://www.jma.go.jp/bosai/amedas/data/map/{date_str}{hour_str}0000.json"
+            
+            response = requests.get(amedas_url, timeout=10, verify=self.ssl_verify)
+            response.raise_for_status()
+            amedas_data = response.json()
+            
+            # Search for AMeDAS stations corresponding to area codes
+            # Yokohama: 46106, Chiba(Choshi): 45148, etc.
+            target_stations = {
+                '140000': ['46106', '46078'],  # Kanagawa: Yokohama, Odawara
+                '120000': ['45148', '45056']   # Chiba: Choshi, Kisarazu
+            }
+            
+            stations_to_check = target_stations.get(self.area_code, [])
+            
+            # Search data for relevant stations
+            for station_id in stations_to_check:
+                if station_id in amedas_data:
+                    station_data = amedas_data[station_id]
+                    if 'temp' in station_data and station_data['temp'][0] is not None:
+                        temp = float(station_data['temp'][0])
+                        logger.info(f"AMeDAS temperature acquired: {temp}°C (station: {station_id})")
+                        return temp
+            
+            # Try major stations in Tokyo metropolitan area as fallback
+            fallback_stations = ['44132', '44136', '46106', '45148']  # Tokyo, Nerima, Yokohama, Choshi
+            for station_id in fallback_stations:
+                if station_id in amedas_data:
+                    station_data = amedas_data[station_id]
+                    if 'temp' in station_data and station_data['temp'][0] is not None:
+                        temp = float(station_data['temp'][0])
+                        logger.info(f"AMeDAS temperature acquired (fallback): {temp}°C (station: {station_id})")
+                        return temp
+            
+            logger.warning("Could not acquire temperature from AMeDAS real-time data")
+            return None
+            
+        except Exception as e:
+            logger.error(f"AMeDAS real-time data acquisition error: {e}")
+            return None
         
         # Simplify long descriptions
         if '晴' in cleaned:

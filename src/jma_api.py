@@ -134,30 +134,50 @@ class JMAWeatherAPI:
             
             # JMA予報データから気温を取得
             for ts in time_series:
-                if 'temps' in ts:
+                areas_temp = ts.get('areas', [])
+                if areas_temp and 'temps' in areas_temp[0]:
                     # 気温予報データが含まれている
-                    areas_temp = ts.get('areas', [])
-                    if areas_temp:
-                        temps = areas_temp[0].get('temps', [])
-                        if len(temps) >= 2:
-                            # 最低気温と最高気温
-                            forecast_low = int(temps[0]) if temps[0] else None
-                            forecast_high = int(temps[1]) if temps[1] else None
+                    temps = areas_temp[0].get('temps', [])
+                    time_defines = ts.get('timeDefines', [])
+                    
+                    # temps配列の構造: [今日最高, 今日最高(重複), 明日最低, 明日最高]
+                    # メインロジック: シンプルに配列から直接取得
+                    if len(temps) >= 1 and temps[0]:
+                        forecast_high = int(temps[0])  # 今日の最高気温
+                        logger.info(f"今日の最高気温を取得: {forecast_high}°C")
+                    
+                    if len(temps) >= 3 and temps[2]:
+                        forecast_low = int(temps[2])   # 明日の最低気温を今日の最低気温として使用
+                        logger.info(f"今日の最低気温を取得: {forecast_low}°C")
+                    elif len(temps) >= 2 and temps[1]:
+                        forecast_low = int(temps[1])   # フォールバック
+                        logger.info(f"今日の最低気温を取得(フォールバック): {forecast_low}°C")
+                    
+                    # 最初のtempsデータを取得したらループ終了
+                    break
             
             # 現在気温と予想気温のデフォルト値
             if not current_temp:
-                # 天気コードから現在気温を推定
-                temp_humidity = self._estimate_temp_humidity_from_weather(weather_code, weather_desc)
-                current_temp = temp_humidity['temperature']
-                humidity = temp_humidity['humidity']
+                # アメダス実況データから現在気温を取得を試行
+                current_temp = self._get_current_temperature_from_amedas()
+                
+                if not current_temp:
+                    # アメダスデータが取得できない場合は天気コードから推定
+                    temp_humidity = self._estimate_temp_humidity_from_weather(weather_code, weather_desc)
+                    current_temp = temp_humidity['temperature']
+                    humidity = temp_humidity['humidity']
+                else:
+                    humidity = 60  # デフォルト湿度
             else:
                 humidity = 60  # デフォルト湿度
             
-            # 予想最高気温がない場合は現在気温をベースに推定
+            # 予想最高・最低気温が取得できない場合のみ推定
             if not forecast_high:
                 forecast_high = current_temp + 3
+                logger.warning(f"予報最高気温が取得できないため推定値を使用: {forecast_high}°C")
             if not forecast_low:
                 forecast_low = current_temp - 2
+                logger.warning(f"予報最低気温が取得できないため推定値を使用: {forecast_low}°C")
             
             return {
                 'temperature': current_temp,
@@ -245,6 +265,101 @@ class JMAWeatherAPI:
         else:
             # その他の場合は最初の10文字まで
             return cleaned[:10]
+    
+    def _get_current_temperature_from_amedas(self):
+        """気象庁overview_forecastAPIから現在気温を取得"""
+        try:
+            # overview_forecastエンドポイントのURL
+            overview_url = f"https://www.jma.go.jp/bosai/forecast/data/overview_forecast/{self.area_code}.json"
+            
+            response = requests.get(overview_url, timeout=10, verify=self.ssl_verify)
+            response.raise_for_status()
+            overview_data = response.json()
+            
+            # 現在気温データの取得を試行
+            if 'targetArea' in overview_data:
+                target_area = overview_data['targetArea']
+                # テキストから気温情報を抽出
+                text = overview_data.get('text', '')
+                
+                # "現在の気温は○度"のようなパターンを探す
+                import re
+                temp_patterns = [
+                    r'現在.*?気温.*?(\d+(?:\.\d+)?)度',
+                    r'気温.*?(\d+(?:\.\d+)?)度',
+                    r'(\d+(?:\.\d+)?)度.*?気温'
+                ]
+                
+                for pattern in temp_patterns:
+                    match = re.search(pattern, text)
+                    if match:
+                        temp = float(match.group(1))
+                        logger.info(f"overview_forecast気温取得成功: {temp}°C (地域: {target_area})")
+                        return temp
+                
+                logger.debug(f"overview_forecastテキスト: {text}")
+            
+            # overview_forecastで取得できない場合は、従来のアメダス方式を試行
+            return self._get_current_temperature_from_amedas_fallback()
+            
+        except Exception as e:
+            logger.error(f"overview_forecast気温取得エラー: {e}")
+            # エラーの場合も従来方式にフォールバック
+            return self._get_current_temperature_from_amedas_fallback()
+    
+    def _get_current_temperature_from_amedas_fallback(self):
+        """アメダス実況データから現在気温を取得（フォールバック）"""
+        try:
+            from datetime import datetime, timedelta
+            import json
+            
+            # 現在時刻の1時間前のデータを取得（実況データの更新頻度を考慮）
+            now = datetime.now()
+            target_time = now - timedelta(hours=1)
+            date_str = target_time.strftime('%Y%m%d')
+            hour_str = target_time.strftime('%H')
+            
+            # アメダス実況データのURL
+            amedas_url = f"https://www.jma.go.jp/bosai/amedas/data/map/{date_str}{hour_str}0000.json"
+            
+            response = requests.get(amedas_url, timeout=10, verify=self.ssl_verify)
+            response.raise_for_status()
+            amedas_data = response.json()
+            
+            # 地域コードに対応するアメダス観測点を探す
+            # 横浜: 46106, 千葉(銚子): 45148などから近い観測点を選択
+            target_stations = {
+                '140000': ['46106', '46078'],  # 神奈川県: 横浜、小田原
+                '120000': ['45148', '45056']   # 千葉県: 銚子、木更津
+            }
+            
+            stations_to_check = target_stations.get(self.area_code, [])
+            
+            # 該当観測点のデータを検索
+            for station_id in stations_to_check:
+                if station_id in amedas_data:
+                    station_data = amedas_data[station_id]
+                    if 'temp' in station_data and station_data['temp'][0] is not None:
+                        temp = float(station_data['temp'][0])
+                        logger.info(f"アメダス実況気温取得成功: {temp}°C (観測点: {station_id})")
+                        return temp
+            
+            # 該当観測点がない場合は、首都圏の主要観測点を試行
+            fallback_stations = ['44132', '44136', '46106', '45148']  # 東京、練馬、横浜、銚子
+            for station_id in fallback_stations:
+                if station_id in amedas_data:
+                    station_data = amedas_data[station_id]
+                    if 'temp' in station_data and station_data['temp'][0] is not None:
+                        temp = float(station_data['temp'][0])
+                        logger.info(f"アメダス実況気温取得成功(代替): {temp}°C (観測点: {station_id})")
+                        return temp
+            
+            logger.warning("アメダス実況データから気温を取得できませんでした")
+            return None
+            
+        except Exception as e:
+            logger.error(f"アメダス実況データ取得エラー: {e}")
+            return None
     
     def calculate_wbgt(self, temp, humidity):
         """WBGT指数を計算"""
