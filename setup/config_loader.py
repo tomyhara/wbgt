@@ -10,50 +10,34 @@ from typing import Dict, Any, List
 
 def load_config() -> Dict[str, Any]:
     """
-    Load configuration from JSON file with fallback to Python config
+    Load configuration from JSON file only
     Returns a standardized configuration dictionary
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # Try to load JSON config first
     json_config_path = os.path.join(script_dir, 'config.json')
+    
+    # Try to load JSON config
     if os.path.exists(json_config_path):
         try:
             with open(json_config_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError) as e:
-            print(f"Warning: Failed to load JSON config: {e}")
+            print(f"Error: Failed to load JSON config: {e}")
+            print("Using default configuration...")
+    else:
+        # Create default JSON config if it doesn't exist
+        print(f"Config file not found: {json_config_path}")
+        print("Creating default configuration...")
+        default_config = get_default_config()
+        try:
+            with open(json_config_path, 'w', encoding='utf-8') as f:
+                json.dump(default_config, f, indent=2, ensure_ascii=False)
+            print(f"Created default config file: {json_config_path}")
+            return default_config
+        except IOError as e:
+            print(f"Warning: Failed to create config file: {e}")
     
-    # Fallback to Python config
-    try:
-        import config
-        return {
-            "locations": getattr(config, 'LOCATIONS', []),
-            "area_codes": getattr(config, 'AREA_CODES', {}),
-            "update_interval_minutes": getattr(config, 'UPDATE_INTERVAL_MINUTES', 30),
-            "display": {
-                "width": getattr(config, 'DISPLAY_WIDTH', 800),
-                "height": getattr(config, 'DISPLAY_HEIGHT', 600),
-                "fullscreen": getattr(config, 'FULLSCREEN', False)
-            },
-            "font_sizes": {
-                "large": getattr(config, 'FONT_SIZE_LARGE', 24),
-                "medium": getattr(config, 'FONT_SIZE_MEDIUM', 18),
-                "small": getattr(config, 'FONT_SIZE_SMALL', 14)
-            },
-            "logging": {
-                "level": getattr(config, 'LOG_LEVEL', 'INFO'),
-                "file": getattr(config, 'LOG_FILE', 'wbgt_kiosk.log')
-            },
-            "ssl": {
-                "verify": getattr(config, 'SSL_VERIFY', True),
-                "cert_path": getattr(config, 'SSL_CERT_PATH', None)
-            }
-        }
-    except ImportError as e:
-        print(f"Warning: Failed to load Python config: {e}")
-    
-    # Return default config if both fail
+    # Return default config if JSON loading fails
     return get_default_config()
 
 def get_default_config() -> Dict[str, Any]:
@@ -61,14 +45,66 @@ def get_default_config() -> Dict[str, Any]:
     return {
         "locations": [
             {
-                "name": "東京",
-                "area_code": "130000",
-                "wbgt_location_code": "44132",
-                "prefecture": "東京都"
+                "name": "横浜",
+                "area_code": "140000",
+                "wbgt_location_code": "46106",
+                "prefecture": "神奈川県"
+            },
+            {
+                "name": "銚子",
+                "area_code": "120000",
+                "wbgt_location_code": "45148",
+                "prefecture": "千葉県"
             }
         ],
         "area_codes": {
-            "東京": "130000"
+            "札幌": "016000",
+            "青森": "020000",
+            "盛岡": "030000",
+            "仙台": "040000",
+            "秋田": "050000",
+            "山形": "060000",
+            "福島": "070000",
+            "水戸": "080000",
+            "宇都宮": "090000",
+            "前橋": "100000",
+            "さいたま": "110000",
+            "千葉": "120000",
+            "東京": "130000",
+            "横浜": "140000",
+            "新潟": "150000",
+            "富山": "160000",
+            "金沢": "170000",
+            "福井": "180000",
+            "甲府": "190000",
+            "長野": "200000",
+            "岐阜": "210000",
+            "静岡": "220000",
+            "名古屋": "230000",
+            "津": "240000",
+            "大津": "250000",
+            "京都": "260000",
+            "大阪": "270000",
+            "神戸": "280000",
+            "奈良": "290000",
+            "和歌山": "300000",
+            "鳥取": "310000",
+            "松江": "320000",
+            "岡山": "330000",
+            "広島": "340000",
+            "山口": "350000",
+            "徳島": "360000",
+            "高松": "370000",
+            "松山": "380000",
+            "高知": "390000",
+            "福岡": "400000",
+            "佐賀": "410000",
+            "長崎": "420000",
+            "熊本": "430000",
+            "大分": "440000",
+            "宮崎": "450000",
+            "鹿児島": "460100",
+            "那覇": "471000"
         },
         "update_interval_minutes": 30,
         "display": {
@@ -82,7 +118,7 @@ def get_default_config() -> Dict[str, Any]:
             "small": 14
         },
         "logging": {
-            "level": "INFO",
+            "level": "DEBUG",
             "file": "wbgt_kiosk.log"
         },
         "ssl": {
@@ -101,35 +137,4 @@ def get_area_codes() -> Dict[str, str]:
     config = load_config()
     return config.get('area_codes', {})
 
-# Backward compatibility - expose variables that existing code expects
-try:
-    _config = load_config()
-    LOCATIONS = _config.get('locations', [])
-    AREA_CODES = _config.get('area_codes', {})
-    UPDATE_INTERVAL_MINUTES = _config.get('update_interval_minutes', 30)
-    DISPLAY_WIDTH = _config.get('display', {}).get('width', 800)
-    DISPLAY_HEIGHT = _config.get('display', {}).get('height', 600)
-    FULLSCREEN = _config.get('display', {}).get('fullscreen', False)
-    FONT_SIZE_LARGE = _config.get('font_sizes', {}).get('large', 24)
-    FONT_SIZE_MEDIUM = _config.get('font_sizes', {}).get('medium', 18)
-    FONT_SIZE_SMALL = _config.get('font_sizes', {}).get('small', 14)
-    LOG_LEVEL = _config.get('logging', {}).get('level', 'INFO')
-    LOG_FILE = _config.get('logging', {}).get('file', 'wbgt_kiosk.log')
-    SSL_VERIFY = _config.get('ssl', {}).get('verify', True)
-    SSL_CERT_PATH = _config.get('ssl', {}).get('cert_path', None)
-except Exception as e:
-    print(f"Warning: Error loading config: {e}")
-    _default = get_default_config()
-    LOCATIONS = _default['locations']
-    AREA_CODES = _default['area_codes']
-    UPDATE_INTERVAL_MINUTES = _default['update_interval_minutes']
-    DISPLAY_WIDTH = _default['display']['width']
-    DISPLAY_HEIGHT = _default['display']['height']
-    FULLSCREEN = _default['display']['fullscreen']
-    FONT_SIZE_LARGE = _default['font_sizes']['large']
-    FONT_SIZE_MEDIUM = _default['font_sizes']['medium']
-    FONT_SIZE_SMALL = _default['font_sizes']['small']
-    LOG_LEVEL = _default['logging']['level']
-    LOG_FILE = _default['logging']['file']
-    SSL_VERIFY = _default['ssl']['verify']
-    SSL_CERT_PATH = _default['ssl']['cert_path']
+# JSON-only configuration - no backward compatibility with Python config

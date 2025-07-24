@@ -20,28 +20,44 @@ from datetime import datetime
 import threading
 import logging
 
-# Load configuration
+# Load configuration (JSON-based)
 try:
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
-    import config_en
-except ImportError:
-    print("❌ Configuration file setup/config_en.py not found.")
-    print("📝 Please copy setup/config_en.sample.py and create setup/config_en.py.")
+    from config_loader import load_config
+    config_data = load_config()
+    
+    # Backward compatibility wrapper
+    class Config:
+        def __init__(self, config_dict):
+            self._config = config_dict
+            # Set old-style variable names for backward compatibility
+            self.LOCATIONS = config_dict.get('locations', [])
+            self.AREA_CODES = config_dict.get('area_codes', {})
+            self.UPDATE_INTERVAL_MINUTES = config_dict.get('update_interval_minutes', 30)
+            self.DISPLAY_WIDTH = config_dict.get('display', {}).get('width', 800)
+            self.DISPLAY_HEIGHT = config_dict.get('display', {}).get('height', 600)
+            self.FULLSCREEN = config_dict.get('display', {}).get('fullscreen', False)
+            self.FONT_SIZE_LARGE = config_dict.get('font_sizes', {}).get('large', 24)
+            self.FONT_SIZE_MEDIUM = config_dict.get('font_sizes', {}).get('medium', 18)
+            self.FONT_SIZE_SMALL = config_dict.get('font_sizes', {}).get('small', 14)
+            self.LOG_LEVEL = config_dict.get('logging', {}).get('level', 'INFO')
+            self.LOG_FILE = config_dict.get('logging', {}).get('file', 'wbgt_kiosk_en.log')
+            
+            # Use first location for backward compatibility
+            if self.LOCATIONS:
+                first_location = self.LOCATIONS[0]
+                self.AREA_CODE = first_location.get('area_code', '130000')
+                self.CITY_NAME = first_location.get('name', 'Tokyo')
+            else:
+                self.AREA_CODE = '130000'
+                self.CITY_NAME = 'Tokyo'
+    
+    config_en = Config(config_data)
+    
+except Exception as e:
+    print(f"❌ Configuration loading error: {e}")
+    print("📝 Please check setup/config.json.")
     sys.exit(1)
-
-# Add GUI configuration defaults
-if not hasattr(config_en, 'DISPLAY_WIDTH'):
-    config_en.DISPLAY_WIDTH = 1024
-if not hasattr(config_en, 'DISPLAY_HEIGHT'):
-    config_en.DISPLAY_HEIGHT = 768
-if not hasattr(config_en, 'FONT_SIZE_LARGE'):
-    config_en.FONT_SIZE_LARGE = 20
-if not hasattr(config_en, 'FONT_SIZE_MEDIUM'):
-    config_en.FONT_SIZE_MEDIUM = 16
-if not hasattr(config_en, 'FONT_SIZE_SMALL'):
-    config_en.FONT_SIZE_SMALL = 12
-if not hasattr(config_en, 'FULLSCREEN'):
-    config_en.FULLSCREEN = False
 
 from jma_api_en import JMAWeatherAPIEN
 from heatstroke_alert_en import HeatstrokeAlertEN

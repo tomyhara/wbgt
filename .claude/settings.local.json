@@ -18,7 +18,12 @@
       "Bash(./scripts/download_all_data.sh:*)",
       "Bash(./scripts/wbgt.sh:*)",
       "Bash(find:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(./scripts/run_wbgt.sh:*)",
+      "Bash(./scripts/run_wbgt_en.sh:*)",
+      "Bash(timeout:*)",
+      "Bash(pkill:*)",
+      "Bash(true)"
     ],
     "deny": []
   }

@@ -20,28 +20,46 @@ from datetime import datetime
 import threading
 import logging
 
-# 設定の読み込み
+# 設定の読み込み (JSON設定を使用)
 try:
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'setup'))
-    import config
-except ImportError:
-    print("❌ 設定ファイル setup/config.py が見つかりません。")
-    print("📝 setup/config.sample.py をコピーして setup/config.py を作成してください。")
+    from config_loader import load_config
+    config_data = load_config()
+    
+    # 後方互換性のため、古い変数名も設定
+    class Config:
+        def __init__(self, config_dict):
+            self._config = config_dict
+            # 旧形式の変数名でアクセス可能にする
+            self.LOCATIONS = config_dict.get('locations', [])
+            self.AREA_CODES = config_dict.get('area_codes', {})
+            self.UPDATE_INTERVAL_MINUTES = config_dict.get('update_interval_minutes', 30)
+            self.DISPLAY_WIDTH = config_dict.get('display', {}).get('width', 800)
+            self.DISPLAY_HEIGHT = config_dict.get('display', {}).get('height', 600)
+            self.FULLSCREEN = config_dict.get('display', {}).get('fullscreen', False)
+            self.FONT_SIZE_LARGE = config_dict.get('font_sizes', {}).get('large', 24)
+            self.FONT_SIZE_MEDIUM = config_dict.get('font_sizes', {}).get('medium', 18)
+            self.FONT_SIZE_SMALL = config_dict.get('font_sizes', {}).get('small', 14)
+            self.LOG_LEVEL = config_dict.get('logging', {}).get('level', 'INFO')
+            self.LOG_FILE = config_dict.get('logging', {}).get('file', 'wbgt_kiosk.log')
+            
+            # 旧形式で最初の地点を使用（後方互換性）
+            if self.LOCATIONS:
+                first_location = self.LOCATIONS[0]
+                self.AREA_CODE = first_location.get('area_code', '130000')
+                self.CITY_NAME = first_location.get('name', '東京')
+            else:
+                self.AREA_CODE = '130000'
+                self.CITY_NAME = '東京'
+    
+    config = Config(config_data)
+    
+except Exception as e:
+    print(f"❌ 設定ファイルの読み込みエラー: {e}")
+    print("📝 setup/config.json を確認してください。")
     sys.exit(1)
 
-# GUI設定のデフォルト値を追加
-if not hasattr(config, 'DISPLAY_WIDTH'):
-    config.DISPLAY_WIDTH = 1024
-if not hasattr(config, 'DISPLAY_HEIGHT'):
-    config.DISPLAY_HEIGHT = 768
-if not hasattr(config, 'FONT_SIZE_LARGE'):
-    config.FONT_SIZE_LARGE = 20
-if not hasattr(config, 'FONT_SIZE_MEDIUM'):
-    config.FONT_SIZE_MEDIUM = 16
-if not hasattr(config, 'FONT_SIZE_SMALL'):
-    config.FONT_SIZE_SMALL = 12
-if not hasattr(config, 'FULLSCREEN'):
-    config.FULLSCREEN = False
+# JSONコンフィグから読み込み済み（デフォルト値設定不要）
 
 from jma_api import JMAWeatherAPI
 from heatstroke_alert import HeatstrokeAlert

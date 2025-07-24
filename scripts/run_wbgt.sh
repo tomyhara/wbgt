@@ -40,6 +40,7 @@ show_version() {
 main() {
     local project_root="$(get_project_root)"
     local app_path="$project_root/src/wbgt_kiosk.py"
+    local app_args=()
     
     # Parse arguments
     while [[ $# -gt 0 ]]; do
@@ -54,7 +55,8 @@ main() {
                 ;;
             --demo|--gui)
                 # Pass through to application
-                break
+                app_args+=("$1")
+                shift
                 ;;
             *)
                 log_message "Unknown option: $1" "ERROR"
@@ -62,7 +64,6 @@ main() {
                 cleanup_and_exit 1
                 ;;
         esac
-        shift
     done
     
     # Check Python environment
@@ -80,7 +81,7 @@ main() {
     
     # Run application
     log_message "Starting Japanese WBGT Kiosk..." "INFO"
-    python3 "$app_path" "$@"
+    python3 "$app_path" "${app_args[@]}"
     local exit_code=$?
     
     cleanup_and_exit $exit_code "Japanese WBGT Kiosk completed with exit code: $exit_code"
