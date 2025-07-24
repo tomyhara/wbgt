@@ -3,51 +3,46 @@
 # Master Download Script
 # Downloads all CSV data for WBGT system offline fallback
 
+# Load common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOG_FILE="$SCRIPT_DIR/../logs/master_download.log"
+source "$SCRIPT_DIR/common.sh"
 
-# Create directories if they don't exist
-mkdir -p "$(dirname "$LOG_FILE")"
+# Initialize logging
+PROJECT_ROOT="$(get_project_root)"
+LOG_FILE="$PROJECT_ROOT/logs/master_download.log"
+ensure_directory "$(dirname "$LOG_FILE")" "logs directory"
 
-# Function to log messages
-log_message() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
-}
-
-log_message "=== Master Data Download Started ==="
+log_to_file "$LOG_FILE" "Master Data Download Started" "INFO"
 
 # Download JMA weather data
-log_message "Starting JMA weather data download..."
+log_to_file "$LOG_FILE" "Starting JMA weather data download..." "INFO"
 if "$SCRIPT_DIR/download_jma_data.sh"; then
-    log_message "✅ JMA weather data download completed successfully"
+    log_to_file "$LOG_FILE" "JMA weather data download completed successfully" "SUCCESS"
     jma_success=1
 else
-    log_message "❌ JMA weather data download failed"
+    log_to_file "$LOG_FILE" "JMA weather data download failed" "ERROR"
     jma_success=0
 fi
 
-# Wait between downloads
+# Wait between downloads to avoid overwhelming servers
 sleep 2
 
 # Download Environment Ministry WBGT data
-log_message "Starting Environment Ministry WBGT data download..."
+log_to_file "$LOG_FILE" "Starting Environment Ministry WBGT data download..." "INFO"
 if "$SCRIPT_DIR/download_wbgt_data.sh"; then
-    log_message "✅ Environment Ministry WBGT data download completed successfully"
+    log_to_file "$LOG_FILE" "Environment Ministry WBGT data download completed successfully" "SUCCESS"
     wbgt_success=1
 else
-    log_message "❌ Environment Ministry WBGT data download failed"
+    log_to_file "$LOG_FILE" "Environment Ministry WBGT data download failed" "ERROR"
     wbgt_success=0
 fi
 
-# Summary
-log_message "=== Master Data Download Summary ==="
+# Summary and exit
+log_to_file "$LOG_FILE" "Master Data Download Summary" "INFO"
 if [ $jma_success -eq 1 ] && [ $wbgt_success -eq 1 ]; then
-    log_message "🎉 All data downloads completed successfully"
-    exit 0
+    cleanup_and_exit 0 "All data downloads completed successfully"
 elif [ $jma_success -eq 1 ] || [ $wbgt_success -eq 1 ]; then
-    log_message "⚠️ Partial success: Some data downloads completed"
-    exit 1
+    cleanup_and_exit 1 "Partial success: Some data downloads completed"
 else
-    log_message "❌ All data downloads failed"
-    exit 2
+    cleanup_and_exit 2 "All data downloads failed"
 fi

@@ -15,7 +15,8 @@
       "Bash(./scripts/download_jma_data.sh:*)",
       "Bash(./scripts/download_wbgt_data.sh:*)",
       "Bash(./scripts/run_with_csv.sh:*)",
-      "Bash(./scripts/download_all_data.sh:*)"
+      "Bash(./scripts/download_all_data.sh:*)",
+      "Bash(./scripts/wbgt.sh:*)"
     ],
     "deny": []
   }
