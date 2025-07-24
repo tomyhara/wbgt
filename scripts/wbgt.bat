@@ -7,6 +7,7 @@ setlocal EnableDelayedExpansion
 set "SCRIPT_DIR=%~dp0"
 set "LANGUAGE="
 set "OPTIONS="
+set "CSV_MODE=false"
 
 goto main
 
@@ -31,12 +32,14 @@ echo.
 echo オプション / Options:
 echo   --demo              デモモード / Demo mode
 echo   --gui               GUI版 / GUI version
+echo   --csv               CSVモード（オフライン） / CSV mode (offline)
 echo   --help, -h          このヘルプを表示 / Show this help
 echo.
 echo 例 / Examples:
 echo   %~nx0 ja --demo     日本語版デモモード / Japanese demo mode
 echo   %~nx0 en --gui      英語版GUI / English GUI version
-echo   %~nx0 auto          自動言語検出 / Auto language detection
+echo   %~nx0 auto --csv    自動言語検出・CSV / Auto detection with CSV mode
+echo   %~nx0 en --csv --gui 英語版CSVモードGUI / English CSV mode GUI
 echo.
 echo 仮想環境使用時 / With Virtual Environment:
 echo   事前にsetup_venv.batを実行してください
@@ -123,6 +126,10 @@ if /i "%1"=="ja" (
     set "OPTIONS=!OPTIONS! %1"
     shift
     goto parse_args
+) else if /i "%1"=="--csv" (
+    set "CSV_MODE=true"
+    shift
+    goto parse_args
 ) else (
     REM 最初の未知の引数を言語として扱う
     if "%LANGUAGE%"=="" (
@@ -161,6 +168,18 @@ if "%LANGUAGE%"=="auto" (
 
 REM 仮想環境のセットアップ
 call :setup_virtual_env
+
+REM CSVモードの場合
+if "%CSV_MODE%"=="true" (
+    call :print_colored cyan "📊 CSVモードで実行 / Running in CSV mode"
+    set "FORCE_CSV_MODE=1"
+    if "%LANGUAGE%"=="en" (
+        call "%SCRIPT_DIR%run_with_csv.bat" --english !OPTIONS!
+    ) else (
+        call "%SCRIPT_DIR%run_with_csv.bat" !OPTIONS!
+    )
+    exit /b !errorlevel!
+)
 
 REM 言語に応じたアプリケーションを起動
 if "%LANGUAGE%"=="ja" (
