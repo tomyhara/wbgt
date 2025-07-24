@@ -124,6 +124,12 @@ def get_default_config() -> Dict[str, Any]:
         "ssl": {
             "verify": True,
             "cert_path": None
+        },
+        "openweather_api_key": "YOUR_OPENWEATHERMAP_API_KEY_HERE",
+        "weather_api": {
+            "provider": "openweathermap",
+            "fallback_to_jma": True,
+            "timeout": 10
         }
     }
 

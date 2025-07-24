@@ -60,6 +60,7 @@ except Exception as e:
     sys.exit(1)
 
 from jma_api_en import JMAWeatherAPIEN
+from openweather_api_en import OpenWeatherAPIEN
 from heatstroke_alert_en import HeatstrokeAlertEN
 from env_wbgt_api_en import EnvWBGTAPIEN
 
@@ -87,11 +88,25 @@ class WBGTKioskEN:
         self.locations = config_en.LOCATIONS
         self.update_interval = config_en.UPDATE_INTERVAL_MINUTES
         
-        # Initialize APIs
+        # Initialize weather APIs with OpenWeatherMap priority
         self.weather_apis = []
         for location in self.locations:
-            area_code = location.get('area_code', '130000')  # Default to Tokyo
-            self.weather_apis.append(JMAWeatherAPIEN(area_code))
+            try:
+                # Prioritize OpenWeatherMap
+                ow_api = OpenWeatherAPIEN.create_from_location_name(location['name'])
+                self.weather_apis.append(ow_api)
+            except Exception as e:
+                # Fallback to JMA API
+                print(f"⚠️  Failed to initialize OpenWeatherMap API, using JMA API: {e}")
+                area_code = location.get('area_code', '130000')  # Default to Tokyo
+                jma_api = JMAWeatherAPIEN(area_code)
+                self.weather_apis.append(jma_api)
+        
+        # Keep JMA APIs for WBGT calculation (used with Environment Ministry data)
+        self.jma_apis = []
+        for location in self.locations:
+            area_code = location.get('area_code', '130000')
+            self.jma_apis.append(JMAWeatherAPIEN(area_code))
         
         self.heatstroke_alert = HeatstrokeAlertEN()
         self.env_wbgt_api = EnvWBGTAPIEN()
@@ -148,9 +163,12 @@ class WBGTKioskEN:
                     'env_wbgt_data': None
                 }
                 
-                # Get data from JMA API
+                # Get weather data from OpenWeatherMap
                 location_data['weather_data'] = self.weather_apis[i].get_weather_data()
                 location_data['alert_data'] = self.heatstroke_alert.get_alert_data(location.get('prefecture', 'Tokyo'))
+                
+                # Get JMA data for WBGT fallback calculation
+                jma_weather_data = self.jma_apis[i].get_weather_data()
                 
                 # Get data from Environment Ministry WBGT service (if available)
                 if self.env_wbgt_api.is_service_available():

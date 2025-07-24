@@ -62,6 +62,7 @@ except Exception as e:
 # JSONコンフィグから読み込み済み（デフォルト値設定不要）
 
 from jma_api import JMAWeatherAPI
+from openweather_api import OpenWeatherAPI
 from heatstroke_alert import HeatstrokeAlert
 from env_wbgt_api import EnvWBGTAPI
 
@@ -72,7 +73,23 @@ class WBGTKiosk:
         self.demo_mode = demo_mode
         self.gui_mode = gui_mode
         self.locations = config.LOCATIONS
-        self.weather_apis = [JMAWeatherAPI(area_code=loc['area_code']) for loc in self.locations]
+        
+        # 天気データ用にOpenWeatherMap APIを初期化
+        self.weather_apis = []
+        for loc in self.locations:
+            try:
+                # OpenWeatherMapを優先使用
+                ow_api = OpenWeatherAPI.create_from_location_name(loc['name'])
+                self.weather_apis.append(ow_api)
+            except Exception as e:
+                # フォールバックとしてJMA APIを使用
+                print(f"⚠️  OpenWeatherMap APIの初期化に失敗、JMA APIを使用: {e}")
+                jma_api = JMAWeatherAPI(area_code=loc['area_code'])
+                self.weather_apis.append(jma_api)
+        
+        # WBGT計算用に気象庁APIを維持（環境省データと併用）
+        self.jma_apis = [JMAWeatherAPI(area_code=loc['area_code']) for loc in self.locations]
+        
         self.heatstroke_alert = HeatstrokeAlert()
         self.env_wbgt_api = EnvWBGTAPI()
         self.locations_data = []
@@ -151,9 +168,12 @@ class WBGTKiosk:
                     'env_wbgt_data': None
                 }
                 
-                # 気象庁APIからデータ取得
+                # OpenWeatherMapから天気データ取得
                 location_data['weather_data'] = self.weather_apis[i].get_weather_data()
                 location_data['alert_data'] = self.heatstroke_alert.get_alert_data(location.get('prefecture', '東京都'))
+                
+                # WBGTが取得できなかった場合のフォールバック用に気象庁データも保持
+                jma_weather_data = self.jma_apis[i].get_weather_data()
                 
                 # 環境省WBGTサービスからデータ取得（サービス期間内の場合）
                 if self.env_wbgt_api.is_service_available():
@@ -186,6 +206,16 @@ class WBGTKiosk:
                             if forecast_data:
                                 data_types.append('予測値')
                             print(self.colored_text(f"✅ {location['name']} 環境省公式WBGTデータ取得完了 ({'/'.join(data_types)})", 'green'))
+                    else:
+                        # 環境省データがない場合は気象庁データでWBGT計算
+                        self._calculate_wbgt_from_jma(location_data, jma_weather_data)
+                        if not self.demo_mode:
+                            print(self.colored_text(f"📊 {location['name']} 気象庁データでWBGT計算完了", 'yellow'))
+                else:
+                    # 環境省サービスが利用できない場合は気象庁データでWBGT計算
+                    self._calculate_wbgt_from_jma(location_data, jma_weather_data)
+                    if not self.demo_mode:
+                        print(self.colored_text(f"📊 {location['name']} 気象庁データでWBGT計算完了", 'yellow'))
                 
                 self.locations_data.append(location_data)
             
@@ -219,6 +249,37 @@ class WBGTKiosk:
             
             location_name = location_data['location']['name']
             self.logger.info(f"{location_name} 環境省公式WBGT値を使用: {official_wbgt}°C")
+    
+    def _calculate_wbgt_from_jma(self, location_data, jma_weather_data):
+        """気象庁データからWBGTを計算（環境省データが利用できない場合のフォールバック）"""
+        if jma_weather_data and location_data['weather_data']:
+            # 気象庁データからWBGT値とレベル情報を取得
+            jma_wbgt = jma_weather_data.get('wbgt', 0)
+            jma_level = jma_weather_data.get('wbgt_level', 'Safe')
+            jma_color = jma_weather_data.get('wbgt_color', 'blue')
+            jma_advice = jma_weather_data.get('wbgt_advice', '安全レベル')
+            
+            # OpenWeatherMapの天気データにWBGT情報を追加
+            location_data['weather_data'].update({
+                'wbgt': jma_wbgt,
+                'wbgt_level': jma_level,
+                'wbgt_color': jma_color,
+                'wbgt_advice': jma_advice,
+                'wbgt_source': '気象庁データ（計算値）'
+            })
+            
+            location_name = location_data['location']['name']
+            self.logger.info(f"{location_name} 気象庁データでWBGT計算: {jma_wbgt}°C")
+        else:
+            # データがない場合のデフォルト値
+            if location_data['weather_data']:
+                location_data['weather_data'].update({
+                    'wbgt': 0,
+                    'wbgt_level': 'データなし',
+                    'wbgt_color': 'gray',
+                    'wbgt_advice': 'データを取得できませんでした',
+                    'wbgt_source': 'データなし'
+                })
     
     def display_header(self):
         """ヘッダーを表示"""

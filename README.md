@@ -45,6 +45,9 @@ pip install -r setup/requirements.txt
 cp setup/config.json setup/config.json.bak
 nano setup/config.json
 
+# OpenWeatherMap APIキーを設定（オプション）
+# "YOUR_OPENWEATHERMAP_API_KEY_HERE" を実際のAPIキーに置換
+
 # または従来のPythonコンフィグ
 cp setup/config.sample.py setup/config.py
 nano setup/config.py
@@ -117,9 +120,45 @@ python3 src/wbgt_kiosk.py --gui
     "width": 800,
     "height": 600,
     "fullscreen": false
+  },
+  "openweather_api_key": "YOUR_OPENWEATHERMAP_API_KEY_HERE",
+  "weather_api": {
+    "provider": "openweathermap",
+    "fallback_to_jma": true,
+    "timeout": 10
   }
 }
 ```
+
+#### OpenWeatherMap APIキーの設定
+
+1. **APIキー取得**:
+   - [OpenWeatherMap](https://openweathermap.org/api) でアカウント作成
+   - 無料プランで1,000 calls/day利用可能
+   - API Keysページでキーを取得
+
+2. **設定ファイル更新**:
+   ```bash
+   # config.jsonを編集
+   nano setup/config.json
+   
+   # "YOUR_OPENWEATHERMAP_API_KEY_HERE" を実際のAPIキーに置換
+   "openweather_api_key": "abcd1234your_actual_api_key_here"
+   ```
+
+3. **簡単設定スクリプト**:
+   ```bash
+   # 対話式でAPIキーを設定
+   ./scripts/setup_openweather_api.sh
+   ```
+
+4. **動作確認**:
+   ```bash
+   # OpenWeatherMapデータのテスト
+   python3 test_openweather_offline.py
+   ```
+
+**注意**: APIキーが設定されていない場合、システムは自動的にオフラインモードや気象庁APIにフォールバックします。
 
 ### Pythonコンフィグ（従来方式）
 

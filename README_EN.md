@@ -70,9 +70,45 @@ Edit `setup/config.json` to customize your setup:
     "width": 800,
     "height": 600,
     "fullscreen": false
+  },
+  "openweather_api_key": "YOUR_OPENWEATHERMAP_API_KEY_HERE",
+  "weather_api": {
+    "provider": "openweathermap",
+    "fallback_to_jma": true,
+    "timeout": 10
   }
 }
 ```
+
+#### OpenWeatherMap API Key Setup
+
+1. **Get API Key**:
+   - Create account at [OpenWeatherMap](https://openweathermap.org/api)
+   - Free plan: 1,000 calls/day
+   - Get key from API Keys page
+
+2. **Update Configuration**:
+   ```bash
+   # Edit config.json
+   nano setup/config.json
+   
+   # Replace "YOUR_OPENWEATHERMAP_API_KEY_HERE" with actual key
+   "openweather_api_key": "abcd1234your_actual_api_key_here"
+   ```
+
+3. **Easy Setup Script**:
+   ```bash
+   # Interactive API key setup
+   ./scripts/setup_openweather_api.sh
+   ```
+
+4. **Test Configuration**:
+   ```bash
+   # Test OpenWeatherMap data
+   python3 test_openweather_offline.py
+   ```
+
+**Note**: If API key is not configured, the system automatically falls back to offline mode or JMA API.
 
 ### Python Configuration (Legacy)
 

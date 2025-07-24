@@ -80,5 +80,11 @@
   "ssl": {
     "verify": true,
     "cert_path": null
+  },
+  "openweather_api_key": "YOUR_OPENWEATHERMAP_API_KEY_HERE",
+  "weather_api": {
+    "provider": "openweathermap",
+    "fallback_to_jma": true,
+    "timeout": 10
   }
 }
