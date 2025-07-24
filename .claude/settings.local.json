@@ -23,7 +23,8 @@
       "Bash(./scripts/run_wbgt_en.sh:*)",
       "Bash(timeout:*)",
       "Bash(pkill:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

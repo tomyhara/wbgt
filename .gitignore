@@ -391,6 +391,7 @@ service_config.xml
 # Test output
 test_output/
 test_results/
+test_*.py
 
 # Coverage reports
 coverage/
