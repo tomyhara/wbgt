@@ -69,9 +69,9 @@
     "fullscreen": false
   },
   "font_sizes": {
-    "large": 24,
-    "medium": 18,
-    "small": 14
+    "large": 30,
+    "medium": 24,
+    "small": 24
   },
   "logging": {
     "level": "DEBUG",

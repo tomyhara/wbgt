@@ -550,18 +550,20 @@ class WBGTKioskEN:
                 location_forecast_table.heading('value', text='WBGT')
                 location_forecast_table.heading('level', text='Alert Level')
                 
-                # Configure column widths
-                location_forecast_table.column('time', width=60, anchor='center')
-                location_forecast_table.column('value', width=60, anchor='center')
-                location_forecast_table.column('level', width=80, anchor='center')
+                # Configure column widths (adjusted for font size)
+                col_width_multiplier = max(1.0, config_en.FONT_SIZE_SMALL / 14.0)
+                location_forecast_table.column('time', width=int(60 * col_width_multiplier), anchor='center')
+                location_forecast_table.column('value', width=int(60 * col_width_multiplier), anchor='center')
+                location_forecast_table.column('level', width=int(80 * col_width_multiplier), anchor='center')
                 
                 # Configure table style
                 style = ttk.Style()
                 style.theme_use('clam')
                 style.configure('Treeview', background='#2a2a2a', foreground='white', 
-                              fieldbackground='#2a2a2a', borderwidth=1)
+                              fieldbackground='#2a2a2a', borderwidth=1,
+                              font=('Arial', config_en.FONT_SIZE_SMALL))
                 style.configure('Treeview.Heading', background='#404040', foreground='white',
-                              borderwidth=1)
+                              borderwidth=1, font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'))
                 style.map('Treeview', background=[('selected', '#505050')])
                 
                 location_forecast_table.pack(fill='both', expand=True)

@@ -577,18 +577,20 @@ class WBGTKiosk:
                 location_forecast_table.heading('value', text='WBGT')
                 location_forecast_table.heading('level', text='警戒レベル')
                 
-                # カラム幅の設定
-                location_forecast_table.column('time', width=60, anchor='center')
-                location_forecast_table.column('value', width=60, anchor='center')
-                location_forecast_table.column('level', width=80, anchor='center')
+                # カラム幅の設定（フォントサイズに応じて調整）
+                col_width_multiplier = max(1.0, config.FONT_SIZE_SMALL / 14.0)
+                location_forecast_table.column('time', width=int(60 * col_width_multiplier), anchor='center')
+                location_forecast_table.column('value', width=int(60 * col_width_multiplier), anchor='center')
+                location_forecast_table.column('level', width=int(80 * col_width_multiplier), anchor='center')
                 
                 # 表のスタイル設定
                 style = ttk.Style()
                 style.theme_use('clam')
                 style.configure('Treeview', background='#2a2a2a', foreground='white', 
-                              fieldbackground='#2a2a2a', borderwidth=1)
+                              fieldbackground='#2a2a2a', borderwidth=1,
+                              font=('Helvetica', config.FONT_SIZE_SMALL))
                 style.configure('Treeview.Heading', background='#404040', foreground='white',
-                              borderwidth=1)
+                              borderwidth=1, font=('Helvetica', config.FONT_SIZE_SMALL, 'bold'))
                 style.map('Treeview', background=[('selected', '#505050')])
                 
                 location_forecast_table.pack(fill=tk.BOTH, expand=True)
