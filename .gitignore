@@ -290,6 +290,12 @@ tramp
 # =============================================================================
 # Configuration Files (Sensitive)
 # =============================================================================
+# Active configuration files (not samples)
+setup/config.py
+setup/config_en.py
+setup/config.json.local
+setup/config.json.personal
+
 # Personal configuration files that might contain sensitive information
 config.local.py
 config_local.py
