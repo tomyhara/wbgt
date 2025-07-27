@@ -242,9 +242,7 @@ class WBGTKioskEN:
         humidity_text = f"{weather_data['humidity']}%"
         feels_like_text = f"{weather_data['feels_like']}°C"
         
-        print(f"Humidity:     {self.colored_text(humidity_text, 'blue')}")
-        print(f"Weather:      {weather_emoji} {self.colored_text(weather_data['weather_description'], 'green')}")
-        print()
+        print(f"Humidity: {self.colored_text(humidity_text, 'blue')}  Weather: {weather_emoji} {self.colored_text(weather_data['weather_description'], 'green')}")
     
     def display_wbgt(self, location_data):
         """Display WBGT information"""
@@ -270,7 +268,6 @@ class WBGTKioskEN:
         forecast_data = location_data.get('env_wbgt_forecast')
         
         if current_data or forecast_data:
-            print()
             print(f"📊 Official Environment Ministry Data:")
             if current_data:
                 current_level, current_color, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
@@ -292,10 +289,7 @@ class WBGTKioskEN:
         else:
             print(f"Data Source: {self.colored_text('JMA API (Calculated)', 'yellow')}")
         
-        print()
-        print(f"📋 Advice:")
-        print(f"   {self.colored_text(weather_data['wbgt_advice'], 'white')}")
-        print()
+        print(f"📋 Advice: {self.colored_text(weather_data['wbgt_advice'], 'white')}")
         
         # WBGT level display
         level = weather_data['wbgt_level']
@@ -311,7 +305,6 @@ class WBGTKioskEN:
             indicator = "✅ SAFE"
         
         print(f"Level: {self.colored_text(indicator, wbgt_color)}")
-        print()
     
     def display_alerts(self, location_data):
         """Display heat stroke warning alerts"""
@@ -403,7 +396,6 @@ class WBGTKioskEN:
         # Display concatenated in single line
         forecast_line = " | ".join(forecast_items)
         print(self.colored_text(f"📅 {location_name}", 'cyan') + f": {forecast_line}")
-        print()
     
     def display_footer(self):
         """Display footer information"""

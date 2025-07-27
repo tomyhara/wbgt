@@ -256,9 +256,7 @@ class WBGTKiosk:
         humidity_text = f"{weather_data['humidity']}%"
         feels_like_text = f"{weather_data['feels_like']}°C"
         
-        print(f"湿度:     {self.colored_text(humidity_text, 'blue')}")
-        print(f"天気:     {weather_emoji} {self.colored_text(weather_data['weather_description'], 'green')}")
-        print()
+        print(f"湿度: {self.colored_text(humidity_text, 'blue')}  天気: {weather_emoji} {self.colored_text(weather_data['weather_description'], 'green')}")
     
     def display_wbgt(self, location_data):
         """WBGT情報を表示"""
@@ -284,7 +282,6 @@ class WBGTKiosk:
         forecast_data = location_data.get('env_wbgt_forecast')
         
         if current_data or forecast_data:
-            print()
             print(f"📊 環境省公式データ:")
             if current_data:
                 current_level, current_color, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
@@ -306,10 +303,7 @@ class WBGTKiosk:
         else:
             print(f"データソース: {self.colored_text('気象庁API（計算値）', 'yellow')}")
         
-        print()
-        print(f"📋 アドバイス:")
-        print(f"   {self.colored_text(weather_data['wbgt_advice'], 'white')}")
-        print()
+        print(f"📋 アドバイス: {self.colored_text(weather_data['wbgt_advice'], 'white')}")
         
         # WBGT レベル表示
         level = weather_data['wbgt_level']
@@ -417,7 +411,6 @@ class WBGTKiosk:
         # 1列に連結して表示
         forecast_line = " | ".join(forecast_items)
         print(self.colored_text(f"📅 {location_name}", 'cyan') + f": {forecast_line}")
-        print()
     
     def display_footer(self):
         """フッターを表示"""
