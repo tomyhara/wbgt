@@ -28,7 +28,8 @@
       "WebFetch(domain:www.jma.go.jp)",
       "Bash(python:*)",
       "Bash(source:*)",
-      "Bash(gtimeout:*)"
+      "Bash(gtimeout:*)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "deny": []
   }

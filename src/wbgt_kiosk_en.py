@@ -230,7 +230,12 @@ class WBGTKioskEN:
             print(self.colored_text(f"❌ {location_name} Unable to fetch weather data", 'red'))
             return
         
-        print(self.colored_text(f"🌤️  {location_name} - Current Weather Information", 'cyan'))
+        # Get weather icon
+        weather_code = weather_data.get('weather_code', '100')
+        weather_api = self.weather_apis[0]  # Use first API instance
+        weather_emoji = weather_api.get_weather_emoji(weather_code)
+        
+        print(self.colored_text(f"{weather_emoji}  {location_name} - Current Weather Information", 'cyan'))
         print("-" * 50)
         
         temp_text = f"{weather_data['temperature']}°C"
@@ -238,7 +243,7 @@ class WBGTKioskEN:
         feels_like_text = f"{weather_data['feels_like']}°C"
         
         print(f"Humidity:     {self.colored_text(humidity_text, 'blue')}")
-        print(f"Weather:      {self.colored_text(weather_data['weather_description'], 'green')}")
+        print(f"Weather:      {weather_emoji} {self.colored_text(weather_data['weather_description'], 'green')}")
         print()
     
     def display_wbgt(self, location_data):
@@ -335,6 +340,71 @@ class WBGTKioskEN:
             print(f"          {tomorrow_alert['message']}")
         print()
     
+    def display_weekly_forecast(self, location_data):
+        """Display weekly forecast"""
+        weather_data = location_data['weather_data']
+        location_name = location_data['location']['name']
+        
+        if not weather_data or 'weekly_forecast' not in weather_data:
+            return
+        
+        weekly_forecast = weather_data['weekly_forecast']
+        if not weekly_forecast:
+            return
+        
+        # Compact single-line display
+        forecast_items = []
+        weather_api = self.weather_apis[0]  # Use first API instance
+        for day in weekly_forecast[:7]:  # Maximum 7 days
+            date_str = day['date']
+            weekday = day['weekday']
+            weather_desc = day['weather_desc'][:4] if day['weather_desc'] else '--'  # Further truncate weather description
+            pop = day['pop'] if day['pop'] is not None and day['pop'] != '' else 'No forecast'
+            temp_max = day['temp_max'] if day['temp_max'] is not None and day['temp_max'] != '' else 'No forecast'
+            temp_min = day['temp_min'] if day['temp_min'] is not None and day['temp_min'] != '' else 'No forecast'
+            
+            # Get weather icon
+            weather_code = day.get('weather_code', '100')
+            weather_emoji = weather_api.get_weather_emoji(weather_code)
+            
+            # Color coding for precipitation probability
+            pop_color = 'blue'
+            if pop != 'No forecast':
+                try:
+                    pop_val = int(pop)
+                    if pop_val >= 70:
+                        pop_color = 'red'
+                    elif pop_val >= 50:
+                        pop_color = 'yellow'
+                    elif pop_val >= 30:
+                        pop_color = 'orange'
+                except:
+                    pass
+            
+            # Color coding for temperature
+            temp_max_color = 'yellow'
+            if temp_max != 'No forecast':
+                try:
+                    temp_val = int(temp_max)
+                    if temp_val >= 35:
+                        temp_max_color = 'red'
+                    elif temp_val >= 30:
+                        temp_max_color = 'orange'
+                except:
+                    pass
+            
+            # Compact format: Date(Day) Emoji Weather Rain% High/Low°
+            pop_display = f'{pop}%' if pop != 'No forecast' else 'No forecast'
+            temp_max_display = f'{temp_max}' if temp_max != 'No forecast' else 'No forecast'
+            temp_min_display = f'{temp_min}' if temp_min != 'No forecast' else 'No forecast'
+            item = f"{date_str}({weekday}) {weather_emoji} {self.colored_text(pop_display, pop_color)} {self.colored_text(temp_max_display, temp_max_color)}/{temp_min_display}°"
+            forecast_items.append(item)
+        
+        # Display concatenated in single line
+        forecast_line = " | ".join(forecast_items)
+        print(self.colored_text(f"📅 {location_name}", 'cyan') + f": {forecast_line}")
+        print()
+    
     def display_footer(self):
         """Display footer information"""
         if self.locations_data and self.locations_data[0].get('weather_data'):
@@ -378,6 +448,7 @@ class WBGTKioskEN:
                     self.display_weather(location_data)
                     self.display_wbgt(location_data)
                     self.display_alerts(location_data)
+                    self.display_weekly_forecast(location_data)
                     print("=" * 120)
                     print()
                 
@@ -509,6 +580,16 @@ class WBGTKioskEN:
                 
                 frames = {}
                 
+                # Weather icon and description frame
+                weather_info_frame = tk.Frame(weather_frame, bg='#2a2a2a')
+                weather_info_frame.pack(anchor='w', fill='x')
+                
+                frames['weather_icon'] = tk.Label(weather_info_frame, text="", font=('Arial', 20), fg='white', bg='#2a2a2a')
+                frames['weather_icon'].pack(side='left')
+                
+                frames['weather_desc'] = tk.Label(weather_info_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
+                frames['weather_desc'].pack(side='left', padx=(5, 0))
+                
                 # Forecast temperature frame (color-coded min/max display)
                 forecast_temp_frame = tk.Frame(weather_frame, bg='#2a2a2a')
                 forecast_temp_frame.pack(anchor='w', fill='x')
@@ -525,8 +606,6 @@ class WBGTKioskEN:
                 frames['forecast_high'] = tk.Label(forecast_temp_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='red', bg='#2a2a2a')
                 frames['forecast_high'].pack(side='left')
                 
-                frames['weather'] = tk.Label(weather_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
-                frames['weather'].pack(anchor='w')
                 
                 # WBGT forecast table frame
                 wbgt_frame = tk.LabelFrame(location_frame, text="📊 WBGT Forecast", 
@@ -580,7 +659,35 @@ class WBGTKioskEN:
                 frames['tomorrow_alert'] = tk.Label(alert_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
                 frames['tomorrow_alert'].pack(anchor='w')
                 
+                # Weekly forecast frame (table version)
+                weekly_frame = tk.LabelFrame(location_frame, text="📅 Weekly Weather Forecast", 
+                                           font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'), fg='#00ccff', bg='#2a2a2a')
+                weekly_frame.pack(fill=tk.X, padx=10, pady=5)
+                
+                # Create weekly forecast table
+                weekly_table_frame = tk.Frame(weekly_frame, bg='#2a2a2a')
+                weekly_table_frame.pack(fill=tk.X, padx=5, pady=5)
+                
+                # Treeview for weekly forecast table
+                weekly_columns = ('date', 'weather', 'pop', 'temp')
+                weekly_forecast_table = ttk.Treeview(weekly_table_frame, columns=weekly_columns, show='headings', height=4)
+                
+                # Configure column headers
+                weekly_forecast_table.heading('date', text='Date')
+                weekly_forecast_table.heading('weather', text='Weather')
+                weekly_forecast_table.heading('pop', text='Rain %')
+                weekly_forecast_table.heading('temp', text='Temp')
+                
+                # Configure column widths
+                weekly_forecast_table.column('date', width=80, anchor='center')
+                weekly_forecast_table.column('weather', width=80, anchor='center')
+                weekly_forecast_table.column('pop', width=60, anchor='center')
+                weekly_forecast_table.column('temp', width=80, anchor='center')
+                
+                weekly_forecast_table.pack(fill=tk.X)
+                
                 frames['forecast_table'] = location_forecast_table
+                frames['weekly_forecast_table'] = weekly_forecast_table
                 location_frames.append(frames)
             
             
@@ -625,7 +732,13 @@ class WBGTKioskEN:
                                 if weather_data:
                                     frames['forecast_low'].config(text=f"{weather_data['forecast_low']}°C")
                                     frames['forecast_high'].config(text=f"{weather_data['forecast_high']}°C")
-                                    frames['weather'].config(text=f"☁️ {weather_data['weather_description']}", fg='lightgreen')
+                                    
+                                    # Weather icon and description
+                                    weather_code = weather_data.get('weather_code', '100')
+                                    weather_api = self.weather_apis[0]  # Use first API instance
+                                    weather_emoji = weather_api.get_weather_emoji(weather_code)
+                                    frames['weather_icon'].config(text=weather_emoji)
+                                    frames['weather_desc'].config(text=f"Weather: {weather_data['weather_description']}")
                                     
                                     # Update WBGT forecast table
                                     forecast_table = frames['forecast_table']
@@ -659,6 +772,78 @@ class WBGTKioskEN:
                                             # Apply color to row
                                             forecast_table.tag_configure(f'level_{level}', background=color, foreground='black')
                                             forecast_table.item(item, tags=(f'level_{level}',))
+                                    
+                                    # Update weekly forecast table
+                                    weekly_forecast_table = frames['weekly_forecast_table']
+                                    
+                                    # Clear existing rows
+                                    for item in weekly_forecast_table.get_children():
+                                        weekly_forecast_table.delete(item)
+                                    
+                                    # Add weekly forecast data to table
+                                    if 'weekly_forecast' in weather_data and weather_data['weekly_forecast']:
+                                        for day in weather_data['weekly_forecast'][:7]:  # Maximum 7 days
+                                            date_str = f"{day['date']}({day['weekday']})"
+                                            
+                                            # Get weather icon
+                                            day_weather_code = day.get('weather_code', '100')
+                                            day_weather_emoji = weather_api.get_weather_emoji(day_weather_code)
+                                            weather_desc = f"{day_weather_emoji}"  # Icon only
+                                            
+                                            # Process precipitation probability
+                                            if day['pop'] is not None and day['pop'] != '':
+                                                pop = f"{day['pop']}%"
+                                            else:
+                                                pop = 'No forecast'
+                                            
+                                            # Process temperature
+                                            if day['temp_max'] is not None and day['temp_max'] != '':
+                                                temp_max = day['temp_max']
+                                            else:
+                                                temp_max = 'No forecast'
+                                            
+                                            if day['temp_min'] is not None and day['temp_min'] != '':
+                                                temp_min = day['temp_min']
+                                            else:
+                                                temp_min = 'No forecast'
+                                            
+                                            # Temperature display processing
+                                            if temp_max != 'No forecast' or temp_min != 'No forecast':
+                                                if temp_max != 'No forecast' and temp_min != 'No forecast':
+                                                    temp_range = f"{temp_max}/{temp_min}°C"
+                                                elif temp_max != 'No forecast':
+                                                    temp_range = f"{temp_max}/--°C"
+                                                else:
+                                                    temp_range = f"--/{temp_min}°C"
+                                            else:
+                                                temp_range = 'No forecast'
+                                            
+                                            # Determine color based on precipitation probability
+                                            pop_color = 'white'
+                                            if pop != 'No forecast':
+                                                try:
+                                                    pop_val = int(day['pop'])
+                                                    if pop_val >= 70:
+                                                        pop_color = '#ff6666'
+                                                    elif pop_val >= 50:
+                                                        pop_color = '#ffaa66'
+                                                    elif pop_val >= 30:
+                                                        pop_color = '#ffff66'
+                                                except:
+                                                    pass
+                                            
+                                            # Add row
+                                            item_id = weekly_forecast_table.insert('', 'end', 
+                                                values=(date_str, weather_desc, pop, temp_range))
+                                            
+                                            # Set precipitation probability color
+                                            weekly_forecast_table.tag_configure(f'pop_{pop_color}', 
+                                                background='#2a2a2a', foreground=pop_color)
+                                            weekly_forecast_table.item(item_id, tags=(f'pop_{pop_color}',))
+                                    else:
+                                        # No data available
+                                        weekly_forecast_table.insert('', 'end', 
+                                            values=('--', 'No data', '--', '--'))
                                 
                                 if alert_data and 'alerts' in alert_data:
                                     today_alert = alert_data['alerts']['today']

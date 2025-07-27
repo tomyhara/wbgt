@@ -96,7 +96,12 @@ class JMAWeatherAPIEN:
             obs_response = requests.get(obs_url, timeout=10, verify=self.ssl_verify)
             obs_response.raise_for_status()
             
-            return self._parse_weather_data(forecast_data)
+            # Also get weekly forecast data
+            weekly_data = self._parse_weekly_forecast(forecast_data)
+            weather_data = self._parse_weather_data(forecast_data)
+            if weather_data and weekly_data:
+                weather_data['weekly_forecast'] = weekly_data
+            return weather_data
             
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to get weather data: {e}")
@@ -221,6 +226,165 @@ class JMAWeatherAPIEN:
             logger.error(f"Failed to parse weather data: {e}")
             return None
     
+    def _parse_weekly_forecast(self, forecast_data):
+        """Parse weekly forecast data (improved version)"""
+        try:
+            if len(forecast_data) < 2:
+                logger.warning("Weekly forecast data not found")
+                return None
+            
+            weekly_series = forecast_data[1]  # Series 1 is weekly forecast
+            
+            if 'timeSeries' not in weekly_series or len(weekly_series['timeSeries']) < 2:
+                logger.warning("Weekly forecast time series data incomplete")
+                return None
+            
+            # Weekly weather data (timeSeries[0])
+            weather_ts = weekly_series['timeSeries'][0]
+            weather_areas = weather_ts.get('areas', [])
+            if not weather_areas:
+                logger.warning("Weekly forecast area data not found")
+                return None
+            
+            weather_area = weather_areas[0]
+            weather_dates = weather_ts.get('timeDefines', [])
+            weather_codes = weather_area.get('weatherCodes', [])
+            pops = weather_area.get('pops', [])
+            reliabilities = weather_area.get('reliabilities', [])
+            
+            logger.info(f"Weekly weather data: {weather_area['area']['name']}, days: {len(weather_dates)}")
+            
+            # Weekly temperature data (timeSeries[1])
+            temp_ts = weekly_series['timeSeries'][1]
+            temp_areas = temp_ts.get('areas', [])
+            if not temp_areas:
+                logger.warning("Weekly forecast temperature data not found")
+                return None
+            
+            temp_area = temp_areas[0]
+            temp_dates = temp_ts.get('timeDefines', [])
+            temps_max = temp_area.get('tempsMax', [])
+            temps_min = temp_area.get('tempsMin', [])
+            temps_max_upper = temp_area.get('tempsMaxUpper', [])
+            temps_max_lower = temp_area.get('tempsMaxLower', [])
+            temps_min_upper = temp_area.get('tempsMinUpper', [])
+            temps_min_lower = temp_area.get('tempsMinLower', [])
+            
+            logger.info(f"Weekly temperature data: {temp_area['area']['name']}, days: {len(temp_dates)}")
+            
+            # Map data by date for integration
+            weather_data_map = {}
+            for i, date_str in enumerate(weather_dates):
+                if i < len(weather_codes):
+                    weather_data_map[date_str] = {
+                        'weather_code': weather_codes[i] if weather_codes[i] else None,
+                        'pop': pops[i] if i < len(pops) and pops[i] and str(pops[i]).strip() != '' else None,
+                        'reliability': reliabilities[i] if i < len(reliabilities) and reliabilities[i] else None
+                    }
+            
+            temp_data_map = {}
+            for i, date_str in enumerate(temp_dates):
+                temp_data_map[date_str] = {
+                    'temp_max': temps_max[i] if i < len(temps_max) and temps_max[i] and str(temps_max[i]).strip() != '' else None,
+                    'temp_min': temps_min[i] if i < len(temps_min) and temps_min[i] and str(temps_min[i]).strip() != '' else None,
+                    'temp_max_upper': temps_max_upper[i] if i < len(temps_max_upper) and temps_max_upper[i] and str(temps_max_upper[i]).strip() != '' else None,
+                    'temp_max_lower': temps_max_lower[i] if i < len(temps_max_lower) and temps_max_lower[i] and str(temps_max_lower[i]).strip() != '' else None,
+                    'temp_min_upper': temps_min_upper[i] if i < len(temps_min_upper) and temps_min_upper[i] and str(temps_min_upper[i]).strip() != '' else None,
+                    'temp_min_lower': temps_min_lower[i] if i < len(temps_min_lower) and temps_min_lower[i] and str(temps_min_lower[i]).strip() != '' else None
+                }
+            
+            # Collect all dates (from both weather and temperature)
+            all_dates = set(weather_dates + temp_dates)
+            
+            # Organize weekly forecast data
+            weekly_forecast = []
+            for date_str in sorted(all_dates)[:7]:  # Maximum 7 days, sorted by date
+                try:
+                    from datetime import datetime
+                    date_obj = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                    formatted_date = date_obj.strftime('%m/%d')
+                    weekday = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][date_obj.weekday()]
+                except:
+                    formatted_date = f"Day{len(weekly_forecast)+1}"
+                    weekday = ""
+                
+                # Get weather data
+                weather_data = weather_data_map.get(date_str, {})
+                weather_code = weather_data.get('weather_code')
+                pop_value = weather_data.get('pop')
+                reliability = weather_data.get('reliability')
+                
+                # Get temperature data
+                temp_data = temp_data_map.get(date_str, {})
+                temp_max_value = temp_data.get('temp_max')
+                temp_min_value = temp_data.get('temp_min')
+                
+                day_data = {
+                    'date': formatted_date,
+                    'weekday': weekday,
+                    'weather_code': weather_code,
+                    'weather_desc': self._get_weather_description_from_code(weather_code) if weather_code else None,
+                    'pop': pop_value,
+                    'reliability': reliability,
+                    'temp_max': temp_max_value,
+                    'temp_min': temp_min_value,
+                    'temp_max_upper': temp_data.get('temp_max_upper'),
+                    'temp_max_lower': temp_data.get('temp_max_lower'),
+                    'temp_min_upper': temp_data.get('temp_min_upper'),
+                    'temp_min_lower': temp_data.get('temp_min_lower')
+                }
+                weekly_forecast.append(day_data)
+                
+                logger.debug(f"{formatted_date}({weekday}): weather={weather_code}, pop={pop_value}%, temp={temp_max_value}/{temp_min_value}°C")
+            
+            logger.info(f"Weekly forecast data acquired: {len(weekly_forecast)} days")
+            return weekly_forecast
+            
+        except Exception as e:
+            logger.error(f"Failed to parse weekly forecast data: {e}")
+            return None
+    
+    def _get_weather_description_from_code(self, code):
+        """Get weather description from weather code"""
+        weather_map = {
+            '100': 'Sunny', '101': 'Partly Cloudy', '102': 'Sunny/Rain', '103': 'Partly Rainy',
+            '104': 'Sunny/Snow', '105': 'Sunny/Snow', '106': 'Sunny/Rain or Snow', '107': 'Partly Rain/Snow',
+            '108': 'Sunny/Thunderstorm', '110': 'Sunny then Cloudy', '111': 'Sunny then Cloudy',
+            '112': 'Sunny then Rain', '113': 'Sunny then Rain', '114': 'Sunny then Rain',
+            '115': 'Sunny then Snow', '116': 'Sunny then Snow', '117': 'Sunny then Snow',
+            '118': 'Sunny then Rain/Snow', '119': 'Sunny then Storm', '120': 'Sunny/Morning Rain',
+            '121': 'Sunny/Morning Rain', '122': 'Sunny/Evening Rain', '123': 'Sunny/Mountain Storm',
+            '124': 'Sunny/Mountain Snow', '125': 'Sunny/PM Storm', '126': 'Sunny/Midday Rain',
+            '127': 'Sunny/Evening Rain', '128': 'Sunny/Night Rain', '130': 'Morning Fog then Sunny',
+            '131': 'Sunny/Dawn Fog', '132': 'Sunny/Morning Evening Cloudy', '140': 'Sunny/Rain & Storm',
+            '200': 'Cloudy', '201': 'Partly Sunny', '202': 'Cloudy/Rain', '203': 'Partly Rainy',
+            '204': 'Cloudy/Snow', '205': 'Cloudy/Snow', '206': 'Cloudy/Rain or Snow', '207': 'Cloudy/Rain or Snow',
+            '208': 'Cloudy/Thunderstorm', '209': 'Fog', '210': 'Cloudy then Sunny', '211': 'Cloudy then Sunny',
+            '212': 'Cloudy then Rain', '213': 'Cloudy then Rain', '214': 'Cloudy then Rain',
+            '215': 'Cloudy then Snow', '216': 'Cloudy then Snow', '217': 'Cloudy then Snow',
+            '218': 'Cloudy then Rain/Snow', '219': 'Cloudy then Storm', '220': 'Cloudy/Morning Evening Rain',
+            '221': 'Cloudy/Morning Rain', '222': 'Cloudy/Evening Rain', '223': 'Cloudy/Midday Sunny',
+            '224': 'Cloudy/Midday Rain', '225': 'Cloudy/Evening Rain', '226': 'Cloudy/Night Rain',
+            '228': 'Cloudy/Midday Snow', '229': 'Cloudy/Evening Snow', '230': 'Cloudy/Night Snow',
+            '231': 'Cloudy/Sea Fog', '240': 'Cloudy/Rain & Storm', '250': 'Cloudy/Snow & Storm',
+            '260': 'Cloudy/Snow or Rain', '270': 'Cloudy/Snow or Rain', '281': 'Cloudy/Midday Snow/Rain',
+            '300': 'Rain', '301': 'Rain/Sunny', '302': 'Rain/Stop', '303': 'Rain/Snow',
+            '304': 'Rain or Snow', '306': 'Heavy Rain', '308': 'Rain/Strong Wind', '309': 'Rain/Snow',
+            '311': 'Rain then Sunny', '313': 'Rain then Cloudy', '314': 'Rain then Snow', '315': 'Rain then Snow',
+            '316': 'Rain/Snow then Sunny', '317': 'Rain/Snow then Cloudy', '320': 'Morning Rain then Sunny',
+            '321': 'Morning Rain then Cloudy', '322': 'Rain/Morning Evening Snow', '323': 'Rain/Midday Sunny',
+            '324': 'Rain/Evening Sunny', '325': 'Rain/Night Sunny', '326': 'Rain/Evening Snow',
+            '327': 'Rain/Night Snow', '328': 'Heavy Rain', '329': 'Rain/Sleet',
+            '340': 'Snow or Rain', '350': 'Rain/Thunder', '361': 'Snow/Rain then Sunny',
+            '371': 'Snow/Rain then Cloudy', '400': 'Snow', '401': 'Snow/Sunny', '402': 'Snow/Stop',
+            '403': 'Snow/Rain', '405': 'Heavy Snow', '406': 'Strong Snow/Wind', '407': 'Blizzard',
+            '409': 'Snow/Rain', '411': 'Snow then Sunny', '413': 'Snow then Cloudy', '414': 'Snow then Rain',
+            '420': 'Morning Snow then Sunny', '421': 'Morning Snow then Cloudy', '422': 'Snow/Midday Sunny',
+            '423': 'Snow/Evening Sunny', '424': 'Snow/Night Sunny', '425': 'Heavy Snow',
+            '426': 'Snow then Sleet', '427': 'Snow/Sleet', '450': 'Snow/Thunder'
+        }
+        return weather_map.get(code, 'Unknown')
+    
     def _estimate_temp_humidity_from_weather(self, weather_code, weather_desc):
         """Estimate temperature and humidity from weather code"""
         # Consider current season
@@ -290,6 +454,95 @@ class JMAWeatherAPIEN:
         else:
             # For other cases, limit to first 15 characters
             return cleaned[:15]
+    
+    def get_weather_emoji(self, weather_code):
+        """Get weather emoji icon from weather code"""
+        emoji_map = {
+            # Sunny series
+            '100': '☀️', '101': '🌤️', '102': '🌦️', '103': '🌦️',
+            '104': '🌨️', '105': '🌨️', '106': '🌨️', '107': '🌨️',
+            '108': '⛈️', '110': '🌤️', '111': '☁️',
+            '112': '🌦️', '113': '🌦️', '114': '🌧️',
+            '115': '🌨️', '116': '🌨️', '117': '❄️',
+            '118': '🌨️', '119': '⛈️', '120': '🌦️',
+            '121': '🌦️', '122': '🌦️', '123': '⛈️',
+            '124': '🌨️', '125': '⛈️', '126': '🌧️',
+            '127': '🌧️', '128': '🌧️', '130': '🌫️',
+            '131': '🌫️', '132': '🌤️', '140': '⛈️',
+            
+            # Cloudy series
+            '200': '☁️', '201': '⛅', '202': '🌦️', '203': '🌦️',
+            '204': '🌨️', '205': '🌨️', '206': '🌨️', '207': '🌨️',
+            '208': '⛈️', '209': '🌫️', '210': '⛅', '211': '⛅',
+            '212': '🌦️', '213': '🌦️', '214': '🌧️',
+            '215': '🌨️', '216': '🌨️', '217': '❄️',
+            '218': '🌨️', '219': '⛈️', '220': '🌦️',
+            '221': '🌦️', '222': '🌦️', '223': '⛅',
+            '224': '🌧️', '225': '🌧️', '226': '🌧️',
+            '228': '❄️', '229': '❄️', '230': '❄️',
+            '231': '🌫️', '240': '⛈️', '250': '⛈️',
+            '260': '🌨️', '270': '🌨️', '281': '🌨️',
+            
+            # Rain series
+            '300': '🌧️', '301': '🌦️', '302': '🌧️', '303': '🌨️',
+            '304': '🌨️', '306': '🌧️', '308': '🌪️', '309': '🌨️',
+            '311': '🌦️', '313': '🌧️', '314': '🌨️', '315': '❄️',
+            '316': '🌨️', '317': '🌨️', '320': '🌦️',
+            '321': '🌧️', '322': '🌨️', '323': '🌦️',
+            '324': '🌦️', '325': '🌧️', '326': '🌨️',
+            '327': '❄️', '328': '🌧️', '329': '🌨️',
+            '340': '🌨️', '350': '⛈️', '361': '🌨️',
+            '371': '🌨️',
+            
+            # Snow series
+            '400': '❄️', '401': '🌨️', '402': '❄️', '403': '🌨️',
+            '405': '❄️', '406': '🌪️', '407': '🌪️',
+            '409': '🌨️', '411': '🌨️', '413': '❄️', '414': '🌨️',
+            '420': '🌨️', '421': '❄️', '422': '🌨️',
+            '423': '🌨️', '424': '❄️', '425': '❄️',
+            '426': '🌨️', '427': '🌨️', '450': '⛈️'
+        }
+        return emoji_map.get(weather_code, '🌈')
+    
+    def get_weather_icon_path(self, weather_code):
+        """Get local image file path from weather code"""
+        # Classify into basic weather patterns
+        if weather_code.startswith('1'):  # Sunny series
+            if weather_code in ['102', '103', '112', '113', '114', '119', '120', '121', '122', '125', '126', '127', '128', '140']:
+                return 'assets/weather_icons/rainy.png'  # Sunny then rain
+            elif weather_code in ['104', '105', '115', '116', '117', '124']:
+                return 'assets/weather_icons/snowy.png'  # Sunny then snow
+            elif weather_code in ['101', '110', '111', '132']:
+                return 'assets/weather_icons/partly_cloudy.png'  # Partly cloudy
+            else:
+                return 'assets/weather_icons/sunny.png'  # Sunny
+        
+        elif weather_code.startswith('2'):  # Cloudy series
+            if weather_code in ['202', '203', '212', '213', '214', '219', '220', '221', '222', '224', '225', '226', '240']:
+                return 'assets/weather_icons/rainy.png'  # Cloudy then rain
+            elif weather_code in ['204', '205', '215', '216', '217', '228', '229', '230', '250', '260', '270', '281']:
+                return 'assets/weather_icons/snowy.png'  # Cloudy then snow
+            elif weather_code in ['201', '210', '211', '223']:
+                return 'assets/weather_icons/partly_cloudy.png'  # Partly sunny
+            else:
+                return 'assets/weather_icons/cloudy.png'  # Cloudy
+        
+        elif weather_code.startswith('3'):  # Rain series
+            if weather_code in ['303', '309', '314', '315', '322', '326', '327', '329', '340', '361', '371']:
+                return 'assets/weather_icons/snowy.png'  # Rain/snow
+            elif weather_code in ['306', '308', '328', '350']:
+                return 'assets/weather_icons/storm.png'  # Heavy rain/storm
+            else:
+                return 'assets/weather_icons/rainy.png'  # Rain
+        
+        elif weather_code.startswith('4'):  # Snow series
+            if weather_code in ['405', '406', '407', '425', '450']:
+                return 'assets/weather_icons/storm.png'  # Heavy snow/blizzard
+            else:
+                return 'assets/weather_icons/snowy.png'  # Snow
+        
+        else:
+            return 'assets/weather_icons/unknown.png'  # Other
     
     def _get_current_temperature_from_amedas(self):
         """Get current temperature from JMA overview_forecast API"""
@@ -388,31 +641,6 @@ class JMAWeatherAPIEN:
         except Exception as e:
             logger.error(f"AMeDAS real-time data acquisition error: {e}")
             return None
-        
-        # Simplify long descriptions
-        if '晴' in cleaned:
-            if '時々' in cleaned or 'のち' in cleaned:
-                return "Partly Cloudy" if '曇' in cleaned else "Sunny"
-            return "Sunny"
-        elif '曇' in cleaned:
-            if '雨' in cleaned or '雷' in cleaned:
-                return "Cloudy/Rain"
-            elif '晴' in cleaned:
-                return "Partly Sunny"
-            return "Cloudy"
-        elif '雨' in cleaned:
-            if '雷' in cleaned:
-                return "Rain/Thunder"
-            elif '雪' in cleaned:
-                return "Rain/Snow"
-            return "Rain"
-        elif '雪' in cleaned:
-            if '雨' in cleaned:
-                return "Snow/Rain"
-            return "Snow"
-        else:
-            # For other cases, limit to first 15 characters
-            return cleaned[:15]
     
     def calculate_wbgt(self, temp, humidity):
         """Calculate WBGT index"""
@@ -451,7 +679,7 @@ class JMAWeatherAPIEN:
         wbgt = self.calculate_wbgt(temp, humidity)
         level, color, advice = self.get_wbgt_level(wbgt)
         
-        return {
+        result = {
             'temperature': round(temp, 1),
             'forecast_high': weather_data['forecast_high'],
             'forecast_low': weather_data['forecast_low'],
@@ -468,6 +696,12 @@ class JMAWeatherAPIEN:
             'publishing_office': weather_data['publishing_office'],
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
+        
+        # Add weekly forecast data if available
+        if 'weekly_forecast' in weather_data:
+            result['weekly_forecast'] = weather_data['weekly_forecast']
+        
+        return result
     
     def _get_weather_from_csv(self):
         """Get weather data from CSV file (fallback when API access fails)"""

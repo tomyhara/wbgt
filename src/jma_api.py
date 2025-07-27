@@ -97,7 +97,14 @@ class JMAWeatherAPI:
             obs_response = requests.get(obs_url, timeout=10, verify=self.ssl_verify)
             obs_response.raise_for_status()
             
-            return self._parse_weather_data(forecast_data)
+            # 週間予報データも取得
+            weekly_data = self._parse_weekly_forecast(forecast_data)
+            weather_data = self._parse_weather_data(forecast_data)
+            if weather_data and weekly_data:
+                # 今日・明日予報から週間予報の最初の日を補完
+                weekly_data = self._supplement_weekly_with_daily_forecast(forecast_data, weekly_data)
+                weather_data['weekly_forecast'] = weekly_data
+            return weather_data
             
         except requests.exceptions.RequestException as e:
             logger.error(f"気象データの取得に失敗しました: {e}")
@@ -107,6 +114,44 @@ class JMAWeatherAPI:
             logger.error(f"データ解析エラー: {e}")
             logger.info("CSVファイルからのデータ読み込みを試行中...")
             return self._get_weather_from_csv()
+    
+    def _supplement_weekly_with_daily_forecast(self, forecast_data, weekly_data):
+        """今日・明日予報から週間予報の最初の日を補完"""
+        try:
+            if not forecast_data or len(forecast_data) < 1 or not weekly_data:
+                return weekly_data
+            
+            daily_series = forecast_data[0]  # Series 0が今日・明日予報
+            if 'timeSeries' not in daily_series:
+                return weekly_data
+            
+            # 今日・明日の降水確率を取得
+            for ts in daily_series['timeSeries']:
+                if 'areas' in ts and ts['areas']:
+                    area = ts['areas'][0]
+                    if 'pops' in area:
+                        time_defines = ts.get('timeDefines', [])
+                        pops = area.get('pops', [])
+                        
+                        # 明日のデータを検索（時間で判断）
+                        from datetime import datetime, timedelta
+                        tomorrow = datetime.now() + timedelta(days=1)
+                        tomorrow_date_str = tomorrow.strftime('%Y-%m-%d')
+                        
+                        for i, time_str in enumerate(time_defines):
+                            if tomorrow_date_str in time_str and i < len(pops) and pops[i]:
+                                # 週間予報の最初の日が明日の場合、降水確率を補完
+                                if weekly_data and weekly_data[0]['pop'] is None:
+                                    weekly_data[0]['pop'] = pops[i]
+                                    logger.info(f"明日の降水確率を補完: {pops[i]}%")
+                                break
+                        break
+            
+            return weekly_data
+            
+        except Exception as e:
+            logger.warning(f"週間予報の補完処理でエラー: {e}")
+            return weekly_data
     
     def _parse_weather_data(self, forecast_data):
         """予報データを解析"""
@@ -234,6 +279,254 @@ class JMAWeatherAPI:
         except Exception as e:
             logger.error(f"天気データの解析に失敗: {e}")
             return None
+    
+    def _parse_weekly_forecast(self, forecast_data):
+        """週間予報データを解析（改善版）"""
+        try:
+            if len(forecast_data) < 2:
+                logger.warning("週間予報データが見つかりません")
+                return None
+            
+            weekly_series = forecast_data[1]  # Series 1が週間予報
+            
+            if 'timeSeries' not in weekly_series or len(weekly_series['timeSeries']) < 2:
+                logger.warning("週間予報の時系列データが不完全です")
+                return None
+            
+            # 週間天気データ（timeSeries[0]）
+            weather_ts = weekly_series['timeSeries'][0]
+            weather_areas = weather_ts.get('areas', [])
+            if not weather_areas:
+                logger.warning("週間予報の地域データが見つかりません")
+                return None
+            
+            weather_area = weather_areas[0]
+            weather_dates = weather_ts.get('timeDefines', [])
+            weather_codes = weather_area.get('weatherCodes', [])
+            pops = weather_area.get('pops', [])
+            reliabilities = weather_area.get('reliabilities', [])
+            
+            logger.info(f"週間天気データ: {weather_area['area']['name']}, 日数: {len(weather_dates)}")
+            
+            # 週間気温データ（timeSeries[1]）
+            temp_ts = weekly_series['timeSeries'][1]
+            temp_areas = temp_ts.get('areas', [])
+            if not temp_areas:
+                logger.warning("週間予報の気温データが見つかりません")
+                return None
+            
+            temp_area = temp_areas[0]
+            temp_dates = temp_ts.get('timeDefines', [])
+            temps_max = temp_area.get('tempsMax', [])
+            temps_min = temp_area.get('tempsMin', [])
+            temps_max_upper = temp_area.get('tempsMaxUpper', [])
+            temps_max_lower = temp_area.get('tempsMaxLower', [])
+            temps_min_upper = temp_area.get('tempsMinUpper', [])
+            temps_min_lower = temp_area.get('tempsMinLower', [])
+            
+            logger.info(f"週間気温データ: {temp_area['area']['name']}, 日数: {len(temp_dates)}")
+            
+            # データ統合のために日付をベースにマッピング
+            weather_data_map = {}
+            for i, date_str in enumerate(weather_dates):
+                if i < len(weather_codes):
+                    weather_data_map[date_str] = {
+                        'weather_code': weather_codes[i] if weather_codes[i] else None,
+                        'pop': pops[i] if i < len(pops) and pops[i] and str(pops[i]).strip() != '' else None,
+                        'reliability': reliabilities[i] if i < len(reliabilities) and reliabilities[i] else None
+                    }
+            
+            temp_data_map = {}
+            for i, date_str in enumerate(temp_dates):
+                temp_data_map[date_str] = {
+                    'temp_max': temps_max[i] if i < len(temps_max) and temps_max[i] and str(temps_max[i]).strip() != '' else None,
+                    'temp_min': temps_min[i] if i < len(temps_min) and temps_min[i] and str(temps_min[i]).strip() != '' else None,
+                    'temp_max_upper': temps_max_upper[i] if i < len(temps_max_upper) and temps_max_upper[i] and str(temps_max_upper[i]).strip() != '' else None,
+                    'temp_max_lower': temps_max_lower[i] if i < len(temps_max_lower) and temps_max_lower[i] and str(temps_max_lower[i]).strip() != '' else None,
+                    'temp_min_upper': temps_min_upper[i] if i < len(temps_min_upper) and temps_min_upper[i] and str(temps_min_upper[i]).strip() != '' else None,
+                    'temp_min_lower': temps_min_lower[i] if i < len(temps_min_lower) and temps_min_lower[i] and str(temps_min_lower[i]).strip() != '' else None
+                }
+            
+            # 全日付を収集（天気と気温の両方から）
+            all_dates = set(weather_dates + temp_dates)
+            
+            # 週間予報データを整理
+            weekly_forecast = []
+            for date_str in sorted(all_dates)[:7]:  # 最大7日間、日付順
+                try:
+                    from datetime import datetime
+                    date_obj = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                    formatted_date = date_obj.strftime('%m/%d')
+                    weekday = ['月', '火', '水', '木', '金', '土', '日'][date_obj.weekday()]
+                except:
+                    formatted_date = f"Day{len(weekly_forecast)+1}"
+                    weekday = ""
+                
+                # 天気データを取得
+                weather_data = weather_data_map.get(date_str, {})
+                weather_code = weather_data.get('weather_code')
+                pop_value = weather_data.get('pop')
+                reliability = weather_data.get('reliability')
+                
+                # 気温データを取得
+                temp_data = temp_data_map.get(date_str, {})
+                temp_max_value = temp_data.get('temp_max')
+                temp_min_value = temp_data.get('temp_min')
+                
+                day_data = {
+                    'date': formatted_date,
+                    'weekday': weekday,
+                    'weather_code': weather_code,
+                    'weather_desc': self._get_weather_description_from_code(weather_code) if weather_code else None,
+                    'pop': pop_value,
+                    'reliability': reliability,
+                    'temp_max': temp_max_value,
+                    'temp_min': temp_min_value,
+                    'temp_max_upper': temp_data.get('temp_max_upper'),
+                    'temp_max_lower': temp_data.get('temp_max_lower'),
+                    'temp_min_upper': temp_data.get('temp_min_upper'),
+                    'temp_min_lower': temp_data.get('temp_min_lower')
+                }
+                weekly_forecast.append(day_data)
+                
+                logger.debug(f"{formatted_date}({weekday}): 天気={weather_code}, 降水確率={pop_value}%, 気温={temp_max_value}/{temp_min_value}°C")
+            
+            logger.info(f"週間予報データを取得: {len(weekly_forecast)}日分")
+            return weekly_forecast
+            
+        except Exception as e:
+            logger.error(f"週間予報データの解析に失敗: {e}")
+            return None
+    
+    def _get_weather_description_from_code(self, code):
+        """天気コードから天気説明を取得"""
+        weather_map = {
+            '100': '晴れ', '101': '晴れ時々曇り', '102': '晴れ一時雨', '103': '晴れ時々雨',
+            '104': '晴れ一時雪', '105': '晴れ時々雪', '106': '晴れ一時雨か雪', '107': '晴れ時々雨か雪',
+            '108': '晴れ一時雨か雷雨', '110': '晴れ後時々曇り', '111': '晴れ後曇り',
+            '112': '晴れ後一時雨', '113': '晴れ後時々雨', '114': '晴れ後雨',
+            '115': '晴れ後一時雪', '116': '晴れ後時々雪', '117': '晴れ後雪',
+            '118': '晴れ後雨か雪', '119': '晴れ後雨か雷雨', '120': '晴れ朝夕一時雨',
+            '121': '晴れ朝の内一時雨', '122': '晴れ夕方一時雨', '123': '晴れ山沿い雷雨',
+            '124': '晴れ山沿い雪', '125': '晴れ午後は雷雨', '126': '晴れ昼頃から雨',
+            '127': '晴れ夕方から雨', '128': '晴れ夜は雨', '130': '朝の内霧後晴れ',
+            '131': '晴れ明け方霧', '132': '晴れ朝夕曇り', '140': '晴れ時々雨と雷雨',
+            '200': '曇り', '201': '曇り時々晴れ', '202': '曇り一時雨', '203': '曇り時々雨',
+            '204': '曇り一時雪', '205': '曇り時々雪', '206': '曇り一時雨か雪', '207': '曇り時々雨か雪',
+            '208': '曇り一時雨か雷雨', '209': '霧', '210': '曇り後時々晴れ', '211': '曇り後晴れ',
+            '212': '曇り後一時雨', '213': '曇り後時々雨', '214': '曇り後雨',
+            '215': '曇り後一時雪', '216': '曇り後時々雪', '217': '曇り後雪',
+            '218': '曇り後雨か雪', '219': '曇り後雨か雷雨', '220': '曇り朝夕一時雨',
+            '221': '曇り朝の内一時雨', '222': '曇り夕方一時雨', '223': '曇り日中時々晴れ',
+            '224': '曇り昼頃から雨', '225': '曇り夕方から雨', '226': '曇り夜は雨',
+            '228': '曇り昼頃から雪', '229': '曇り夕方から雪', '230': '曇り夜は雪',
+            '231': '曇り海上海岸は霧か霧雨', '240': '曇り時々雨と雷雨', '250': '曇り時々雪と雷雨',
+            '260': '曇り一時雪か雨', '270': '曇り時々雪か雨', '281': '曇り昼頃から雪か雨',
+            '300': '雨', '301': '雨時々晴れ', '302': '雨時々止む', '303': '雨時々雪',
+            '304': '雨か雪', '306': '大雨', '308': '雨で暴風を伴う', '309': '雨一時雪',
+            '311': '雨後晴れ', '313': '雨後曇り', '314': '雨後時々雪', '315': '雨後雪',
+            '316': '雨か雪後晴れ', '317': '雨か雪後曇り', '320': '朝の内雨後晴れ',
+            '321': '朝の内雨後曇り', '322': '雨朝晩一時雪', '323': '雨昼頃から晴れ',
+            '324': '雨夕方から晴れ', '325': '雨夜は晴', '326': '雨夕方から雪',
+            '327': '雨夜は雪', '328': '雨一時強く降る', '329': '雨一時みぞれ',
+            '340': '雪か雨', '350': '雨で雷を伴う', '361': '雪か雨後晴れ',
+            '371': '雪か雨後曇り', '400': '雪', '401': '雪時々晴れ', '402': '雪時々止む',
+            '403': '雪時々雨', '405': '大雪', '406': '風雪強い', '407': '暴風雪',
+            '409': '雪一時雨', '411': '雪後晴れ', '413': '雪後曇り', '414': '雪後雨',
+            '420': '朝の内雪後晴れ', '421': '朝の内雪後曇り', '422': '雪昼頃から晴れ',
+            '423': '雪夕方から晴れ', '424': '雪夜は晴れ', '425': '雪一時強く降る',
+            '426': '雪後みぞれ', '427': '雪一時みぞれ', '450': '雪で雷を伴う'
+        }
+        return weather_map.get(code, '不明')
+    
+    def get_weather_emoji(self, weather_code):
+        """天気コードから絵文字アイコンを取得"""
+        emoji_map = {
+            # 晴れ系
+            '100': '☀️', '101': '🌤️', '102': '🌦️', '103': '🌦️',
+            '104': '🌨️', '105': '🌨️', '106': '🌨️', '107': '🌨️',
+            '108': '⛈️', '110': '🌤️', '111': '☁️',
+            '112': '🌦️', '113': '🌦️', '114': '🌧️',
+            '115': '🌨️', '116': '🌨️', '117': '❄️',
+            '118': '🌨️', '119': '⛈️', '120': '🌦️',
+            '121': '🌦️', '122': '🌦️', '123': '⛈️',
+            '124': '🌨️', '125': '⛈️', '126': '🌧️',
+            '127': '🌧️', '128': '🌧️', '130': '🌫️',
+            '131': '🌫️', '132': '🌤️', '140': '⛈️',
+            
+            # 曇り系
+            '200': '☁️', '201': '⛅', '202': '🌦️', '203': '🌦️',
+            '204': '🌨️', '205': '🌨️', '206': '🌨️', '207': '🌨️',
+            '208': '⛈️', '209': '🌫️', '210': '⛅', '211': '⛅',
+            '212': '🌦️', '213': '🌦️', '214': '🌧️',
+            '215': '🌨️', '216': '🌨️', '217': '❄️',
+            '218': '🌨️', '219': '⛈️', '220': '🌦️',
+            '221': '🌦️', '222': '🌦️', '223': '⛅',
+            '224': '🌧️', '225': '🌧️', '226': '🌧️',
+            '228': '❄️', '229': '❄️', '230': '❄️',
+            '231': '🌫️', '240': '⛈️', '250': '⛈️',
+            '260': '🌨️', '270': '🌨️', '281': '🌨️',
+            
+            # 雨系
+            '300': '🌧️', '301': '🌦️', '302': '🌧️', '303': '🌨️',
+            '304': '🌨️', '306': '🌧️', '308': '🌪️', '309': '🌨️',
+            '311': '🌦️', '313': '🌧️', '314': '🌨️', '315': '❄️',
+            '316': '🌨️', '317': '🌨️', '320': '🌦️',
+            '321': '🌧️', '322': '🌨️', '323': '🌦️',
+            '324': '🌦️', '325': '🌧️', '326': '🌨️',
+            '327': '❄️', '328': '🌧️', '329': '🌨️',
+            '340': '🌨️', '350': '⛈️', '361': '🌨️',
+            '371': '🌨️',
+            
+            # 雪系
+            '400': '❄️', '401': '🌨️', '402': '❄️', '403': '🌨️',
+            '405': '❄️', '406': '🌪️', '407': '🌪️',
+            '409': '🌨️', '411': '🌨️', '413': '❄️', '414': '🌨️',
+            '420': '🌨️', '421': '❄️', '422': '🌨️',
+            '423': '🌨️', '424': '❄️', '425': '❄️',
+            '426': '🌨️', '427': '🌨️', '450': '⛈️'
+        }
+        return emoji_map.get(weather_code, '🌈')
+    
+    def get_weather_icon_path(self, weather_code):
+        """天気コードからローカル画像ファイルパスを取得"""
+        # 基本的な天気パターンに分類
+        if weather_code.startswith('1'):  # 晴れ系
+            if weather_code in ['102', '103', '112', '113', '114', '119', '120', '121', '122', '125', '126', '127', '128', '140']:
+                return 'assets/weather_icons/rainy.png'  # 晴れ後雨
+            elif weather_code in ['104', '105', '115', '116', '117', '124']:
+                return 'assets/weather_icons/snowy.png'  # 晴れ後雪
+            elif weather_code in ['101', '110', '111', '132']:
+                return 'assets/weather_icons/partly_cloudy.png'  # 晴れ時々曇り
+            else:
+                return 'assets/weather_icons/sunny.png'  # 晴れ
+        
+        elif weather_code.startswith('2'):  # 曇り系
+            if weather_code in ['202', '203', '212', '213', '214', '219', '220', '221', '222', '224', '225', '226', '240']:
+                return 'assets/weather_icons/rainy.png'  # 曇り後雨
+            elif weather_code in ['204', '205', '215', '216', '217', '228', '229', '230', '250', '260', '270', '281']:
+                return 'assets/weather_icons/snowy.png'  # 曇り後雪
+            elif weather_code in ['201', '210', '211', '223']:
+                return 'assets/weather_icons/partly_cloudy.png'  # 曇り時々晴れ
+            else:
+                return 'assets/weather_icons/cloudy.png'  # 曇り
+        
+        elif weather_code.startswith('3'):  # 雨系
+            if weather_code in ['303', '309', '314', '315', '322', '326', '327', '329', '340', '361', '371']:
+                return 'assets/weather_icons/snowy.png'  # 雨雪
+            elif weather_code in ['306', '308', '328', '350']:
+                return 'assets/weather_icons/storm.png'  # 大雨・暴風雨
+            else:
+                return 'assets/weather_icons/rainy.png'  # 雨
+        
+        elif weather_code.startswith('4'):  # 雪系
+            if weather_code in ['405', '406', '407', '425', '450']:
+                return 'assets/weather_icons/storm.png'  # 大雪・暴風雪
+            else:
+                return 'assets/weather_icons/snowy.png'  # 雪
+        
+        else:
+            return 'assets/weather_icons/unknown.png'  # その他
     
     def _estimate_temp_humidity_from_weather(self, weather_code, weather_desc):
         """天気コードから気温と湿度を推定"""
@@ -437,7 +730,7 @@ class JMAWeatherAPI:
         wbgt = self.calculate_wbgt(temp, humidity)
         level, color, advice = self.get_wbgt_level(wbgt)
         
-        return {
+        result = {
             'temperature': round(temp, 1),
             'forecast_high': weather_data['forecast_high'],
             'forecast_low': weather_data['forecast_low'],
@@ -454,6 +747,12 @@ class JMAWeatherAPI:
             'publishing_office': weather_data['publishing_office'],
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
+        
+        # 週間予報データがあれば追加
+        if 'weekly_forecast' in weather_data:
+            result['weekly_forecast'] = weather_data['weekly_forecast']
+        
+        return result
     
     def _get_weather_from_csv(self):
         """CSVファイルから天気データを取得（APIアクセス失敗時のフォールバック）"""

@@ -244,7 +244,12 @@ class WBGTKiosk:
             print(self.colored_text(f"❌ {location_name} 天気データを取得できませんでした", 'red'))
             return
         
-        print(self.colored_text(f"🌤️  {location_name} - 現在の天気情報", 'cyan'))
+        # 天気アイコンを取得
+        weather_code = weather_data.get('weather_code', '100')
+        weather_api = self.weather_apis[0]  # 最初のAPIインスタンスを使用
+        weather_emoji = weather_api.get_weather_emoji(weather_code)
+        
+        print(self.colored_text(f"{weather_emoji}  {location_name} - 現在の天気情報", 'cyan'))
         print("-" * 50)
         
         temp_text = f"{weather_data['temperature']}°C"
@@ -252,7 +257,7 @@ class WBGTKiosk:
         feels_like_text = f"{weather_data['feels_like']}°C"
         
         print(f"湿度:     {self.colored_text(humidity_text, 'blue')}")
-        print(f"天気:     {self.colored_text(weather_data['weather_description'], 'green')}")
+        print(f"天気:     {weather_emoji} {self.colored_text(weather_data['weather_description'], 'green')}")
         print()
     
     def display_wbgt(self, location_data):
@@ -349,6 +354,71 @@ class WBGTKiosk:
             print(f"        {tomorrow_alert['message']}")
         print()
     
+    def display_weekly_forecast(self, location_data):
+        """週間予報を表示"""
+        weather_data = location_data['weather_data']
+        location_name = location_data['location']['name']
+        
+        if not weather_data or 'weekly_forecast' not in weather_data:
+            return
+        
+        weekly_forecast = weather_data['weekly_forecast']
+        if not weekly_forecast:
+            return
+        
+        # コンパクトな1列表示
+        forecast_items = []
+        weather_api = self.weather_apis[0]  # 最初のAPIインスタンスを使用
+        for day in weekly_forecast[:7]:  # 最大7日間
+            date_str = day['date']
+            weekday = day['weekday']
+            weather_desc = day['weather_desc'][:4] if day['weather_desc'] else '--'  # 天気説明をさらに短縮
+            pop = day['pop'] if day['pop'] is not None and day['pop'] != '' else '予報なし'
+            temp_max = day['temp_max'] if day['temp_max'] is not None and day['temp_max'] != '' else '予報なし'
+            temp_min = day['temp_min'] if day['temp_min'] is not None and day['temp_min'] != '' else '予報なし'
+            
+            # 天気アイコンを取得
+            weather_code = day.get('weather_code', '100')
+            weather_emoji = weather_api.get_weather_emoji(weather_code)
+            
+            # 降水確率に応じた色付け
+            pop_color = 'blue'
+            if pop != '予報なし':
+                try:
+                    pop_val = int(pop)
+                    if pop_val >= 70:
+                        pop_color = 'red'
+                    elif pop_val >= 50:
+                        pop_color = 'yellow'
+                    elif pop_val >= 30:
+                        pop_color = 'orange'
+                except:
+                    pass
+            
+            # 気温に応じた色付け
+            temp_max_color = 'yellow'
+            if temp_max != '予報なし':
+                try:
+                    temp_val = int(temp_max)
+                    if temp_val >= 35:
+                        temp_max_color = 'red'
+                    elif temp_val >= 30:
+                        temp_max_color = 'orange'
+                except:
+                    pass
+            
+            # コンパクトなフォーマット: 日付(曜) 絵文字 天気 降水% 最高/最低°
+            pop_display = f'{pop}%' if pop != '予報なし' else '予報なし'
+            temp_max_display = f'{temp_max}' if temp_max != '予報なし' else '予報なし'
+            temp_min_display = f'{temp_min}' if temp_min != '予報なし' else '予報なし'
+            item = f"{date_str}({weekday}) {weather_emoji} {self.colored_text(pop_display, pop_color)} {self.colored_text(temp_max_display, temp_max_color)}/{temp_min_display}°"
+            forecast_items.append(item)
+        
+        # 1列に連結して表示
+        forecast_line = " | ".join(forecast_items)
+        print(self.colored_text(f"📅 {location_name}", 'cyan') + f": {forecast_line}")
+        print()
+    
     def display_footer(self):
         """フッターを表示"""
         if self.locations_data and self.locations_data[0]['weather_data']:
@@ -379,6 +449,7 @@ class WBGTKiosk:
             self.display_weather(location_data)
             self.display_wbgt(location_data)
             self.display_alerts(location_data)
+            self.display_weekly_forecast(location_data)
         
         self.display_footer()
     
@@ -535,6 +606,16 @@ class WBGTKiosk:
                                             font=data_font, fg='#00ccff', bg='#2a2a2a')
                 weather_frame.pack(fill=tk.X, padx=10, pady=5)
                 
+                # 天気アイコンと説明を表示するフレーム
+                weather_info_frame = tk.Frame(weather_frame, bg='#2a2a2a')
+                weather_info_frame.pack(anchor='w', fill='x')
+                
+                weather_icon_label = tk.Label(weather_info_frame, text="", font=('Arial', 20), fg='white', bg='#2a2a2a')
+                weather_icon_label.pack(side='left')
+                
+                weather_desc_label = tk.Label(weather_info_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
+                weather_desc_label.pack(side='left', padx=(5, 0))
+                
                 
                 # 予想気温フレーム（最低気温と最高気温を色分け表示）
                 forecast_temp_frame = tk.Frame(weather_frame, bg='#2a2a2a')
@@ -551,9 +632,6 @@ class WBGTKiosk:
                 
                 forecast_high_label = tk.Label(forecast_temp_frame, text="", font=data_font, fg='red', bg='#2a2a2a')
                 forecast_high_label.pack(side='left')
-                
-                weather_label = tk.Label(weather_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
-                weather_label.pack(anchor='w')
                 
                 # WBGT予測値表フレーム
                 wbgt_frame = tk.LabelFrame(location_frame, text="📊 WBGT予測値", 
@@ -607,11 +685,40 @@ class WBGTKiosk:
                 tomorrow_alert_label = tk.Label(alert_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
                 tomorrow_alert_label.pack(anchor='w')
                 
+                # 週間予報フレーム（テーブル版）
+                weekly_frame = tk.LabelFrame(location_frame, text="📅 週間天気予報", 
+                                           font=data_font, fg='#00ccff', bg='#2a2a2a')
+                weekly_frame.pack(fill=tk.X, padx=10, pady=5)
+                
+                # 週間予報表の作成
+                weekly_table_frame = tk.Frame(weekly_frame, bg='#2a2a2a')
+                weekly_table_frame.pack(fill=tk.X, padx=5, pady=5)
+                
+                # Treeviewで週間予報表を作成
+                weekly_columns = ('date', 'weather', 'pop', 'temp')
+                weekly_forecast_table = ttk.Treeview(weekly_table_frame, columns=weekly_columns, show='headings', height=4)
+                
+                # カラムヘッダーの設定
+                weekly_forecast_table.heading('date', text='日付')
+                weekly_forecast_table.heading('weather', text='天気')
+                weekly_forecast_table.heading('pop', text='降水確率')
+                weekly_forecast_table.heading('temp', text='気温')
+                
+                # カラム幅の設定
+                weekly_forecast_table.column('date', width=80, anchor='center')
+                weekly_forecast_table.column('weather', width=80, anchor='center')
+                weekly_forecast_table.column('pop', width=60, anchor='center')
+                weekly_forecast_table.column('temp', width=80, anchor='center')
+                
+                weekly_forecast_table.pack(fill=tk.X)
+                
                 location_frames.append({
                     'forecast_low': forecast_low_label,
                     'forecast_high': forecast_high_label,
-                    'weather': weather_label,
+                    'weather_icon': weather_icon_label,
+                    'weather_desc': weather_desc_label,
                     'forecast_table': location_forecast_table,
+                    'weekly_forecast_table': weekly_forecast_table,
                     'today_alert': today_alert_label,
                     'tomorrow_alert': tomorrow_alert_label
                 })
@@ -673,7 +780,13 @@ class WBGTKiosk:
                                     # 天気情報
                                     frames['forecast_low'].config(text=f"{weather_data['forecast_low']}°C")
                                     frames['forecast_high'].config(text=f"{weather_data['forecast_high']}°C")
-                                    frames['weather'].config(text=f"天気: {weather_data['weather_description']}")
+                                    
+                                    # 天気アイコンと説明
+                                    weather_code = weather_data.get('weather_code', '100')
+                                    weather_api = self.weather_apis[0]  # 最初のAPIインスタンスを使用
+                                    weather_emoji = weather_api.get_weather_emoji(weather_code)
+                                    frames['weather_icon'].config(text=weather_emoji)
+                                    frames['weather_desc'].config(text=f"天気: {weather_data['weather_description']}")
                                     
                                     # WBGT予測値表を更新
                                     forecast_table = frames['forecast_table']
@@ -707,6 +820,78 @@ class WBGTKiosk:
                                             # 行に色を適用
                                             forecast_table.tag_configure(f'level_{level}', background=color, foreground='black')
                                             forecast_table.item(item, tags=(f'level_{level}',))
+                                    
+                                    # 週間予報表を更新
+                                    weekly_forecast_table = frames['weekly_forecast_table']
+                                    
+                                    # 既存の行をクリア
+                                    for item in weekly_forecast_table.get_children():
+                                        weekly_forecast_table.delete(item)
+                                    
+                                    # 週間予報データを表に追加
+                                    if 'weekly_forecast' in weather_data and weather_data['weekly_forecast']:
+                                        for day in weather_data['weekly_forecast'][:7]:  # 最大7日間
+                                            date_str = f"{day['date']}({day['weekday']})"
+                                            
+                                            # 天気アイコンを取得
+                                            day_weather_code = day.get('weather_code', '100')
+                                            day_weather_emoji = weather_api.get_weather_emoji(day_weather_code)
+                                            weather_desc = f"{day_weather_emoji}"  # アイコンのみ
+                                            
+                                            # 降水確率の処理
+                                            if day['pop'] is not None and day['pop'] != '':
+                                                pop = f"{day['pop']}%"
+                                            else:
+                                                pop = '予報なし'
+                                            
+                                            # 気温の処理
+                                            if day['temp_max'] is not None and day['temp_max'] != '':
+                                                temp_max = day['temp_max']
+                                            else:
+                                                temp_max = '予報なし'
+                                            
+                                            if day['temp_min'] is not None and day['temp_min'] != '':
+                                                temp_min = day['temp_min']
+                                            else:
+                                                temp_min = '予報なし'
+                                            
+                                            # 気温表示の処理
+                                            if temp_max != '予報なし' or temp_min != '予報なし':
+                                                if temp_max != '予報なし' and temp_min != '予報なし':
+                                                    temp_range = f"{temp_max}/{temp_min}°C"
+                                                elif temp_max != '予報なし':
+                                                    temp_range = f"{temp_max}/--°C"
+                                                else:
+                                                    temp_range = f"--/{temp_min}°C"
+                                            else:
+                                                temp_range = '予報なし'
+                                            
+                                            # 降水確率に応じた色を決定
+                                            pop_color = 'white'
+                                            if pop != '予報なし':
+                                                try:
+                                                    pop_val = int(day['pop'])
+                                                    if pop_val >= 70:
+                                                        pop_color = '#ff6666'
+                                                    elif pop_val >= 50:
+                                                        pop_color = '#ffaa66'
+                                                    elif pop_val >= 30:
+                                                        pop_color = '#ffff66'
+                                                except:
+                                                    pass
+                                            
+                                            # 行を追加
+                                            item_id = weekly_forecast_table.insert('', 'end', 
+                                                values=(date_str, weather_desc, pop, temp_range))
+                                            
+                                            # 降水確率の色を設定
+                                            weekly_forecast_table.tag_configure(f'pop_{pop_color}', 
+                                                background='#2a2a2a', foreground=pop_color)
+                                            weekly_forecast_table.item(item_id, tags=(f'pop_{pop_color}',))
+                                    else:
+                                        # データがない場合
+                                        weekly_forecast_table.insert('', 'end', 
+                                            values=('--', 'データなし', '--', '--'))
                                 
                                 if alert_data and 'alerts' in alert_data:
                                     # アラート情報
