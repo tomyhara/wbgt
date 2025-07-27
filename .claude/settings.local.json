@@ -25,7 +25,10 @@
       "Bash(pkill:*)",
       "Bash(true)",
       "Bash(ls:*)",
-      "WebFetch(domain:www.jma.go.jp)"
+      "WebFetch(domain:www.jma.go.jp)",
+      "Bash(python:*)",
+      "Bash(source:*)",
+      "Bash(gtimeout:*)"
     ],
     "deny": []
   }

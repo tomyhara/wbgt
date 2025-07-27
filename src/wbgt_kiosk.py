@@ -251,10 +251,8 @@ class WBGTKiosk:
         humidity_text = f"{weather_data['humidity']}%"
         feels_like_text = f"{weather_data['feels_like']}°C"
         
-        print(f"気温:     {self.colored_text(temp_text, 'yellow')}")
         print(f"湿度:     {self.colored_text(humidity_text, 'blue')}")
         print(f"天気:     {self.colored_text(weather_data['weather_description'], 'green')}")
-        print(f"体感温度: {self.colored_text(feels_like_text, 'yellow')}")
         print()
     
     def display_wbgt(self, location_data):
@@ -537,8 +535,6 @@ class WBGTKiosk:
                                             font=data_font, fg='#00ccff', bg='#2a2a2a')
                 weather_frame.pack(fill=tk.X, padx=10, pady=5)
                 
-                temp_label = tk.Label(weather_frame, text="", font=data_font, fg='white', bg='#2a2a2a')
-                temp_label.pack(anchor='w')
                 
                 # 予想気温フレーム（最低気温と最高気温を色分け表示）
                 forecast_temp_frame = tk.Frame(weather_frame, bg='#2a2a2a')
@@ -570,7 +566,9 @@ class WBGTKiosk:
                 
                 # Treeviewで表を作成（各拠点用の小さな表）
                 columns = ('time', 'value', 'level')
-                location_forecast_table = ttk.Treeview(table_frame, columns=columns, show='headings', height=4)
+                # 縦幅をフォントサイズに応じて調整
+                table_height = max(4, int(4 * config.FONT_SIZE_SMALL / 14.0))
+                location_forecast_table = ttk.Treeview(table_frame, columns=columns, show='headings', height=table_height)
                 
                 # カラムヘッダーの設定
                 location_forecast_table.heading('time', text='時間')
@@ -586,9 +584,12 @@ class WBGTKiosk:
                 # 表のスタイル設定
                 style = ttk.Style()
                 style.theme_use('clam')
+                # 行の高さもフォントサイズに応じて調整
+                row_height = max(20, int(20 * config.FONT_SIZE_SMALL / 14.0))
                 style.configure('Treeview', background='#2a2a2a', foreground='white', 
                               fieldbackground='#2a2a2a', borderwidth=1,
-                              font=('Helvetica', config.FONT_SIZE_SMALL))
+                              font=('Helvetica', config.FONT_SIZE_SMALL),
+                              rowheight=row_height)
                 style.configure('Treeview.Heading', background='#404040', foreground='white',
                               borderwidth=1, font=('Helvetica', config.FONT_SIZE_SMALL, 'bold'))
                 style.map('Treeview', background=[('selected', '#505050')])
@@ -607,7 +608,6 @@ class WBGTKiosk:
                 tomorrow_alert_label.pack(anchor='w')
                 
                 location_frames.append({
-                    'temp': temp_label,
                     'forecast_low': forecast_low_label,
                     'forecast_high': forecast_high_label,
                     'weather': weather_label,
@@ -671,7 +671,6 @@ class WBGTKiosk:
                                 
                                 if weather_data:
                                     # 天気情報
-                                    frames['temp'].config(text=f"現在気温: {weather_data['temperature']}°C")
                                     frames['forecast_low'].config(text=f"{weather_data['forecast_low']}°C")
                                     frames['forecast_high'].config(text=f"{weather_data['forecast_high']}°C")
                                     frames['weather'].config(text=f"天気: {weather_data['weather_description']}")

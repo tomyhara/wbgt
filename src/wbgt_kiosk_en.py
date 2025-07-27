@@ -237,10 +237,8 @@ class WBGTKioskEN:
         humidity_text = f"{weather_data['humidity']}%"
         feels_like_text = f"{weather_data['feels_like']}°C"
         
-        print(f"Temperature:  {self.colored_text(temp_text, 'yellow')}")
         print(f"Humidity:     {self.colored_text(humidity_text, 'blue')}")
         print(f"Weather:      {self.colored_text(weather_data['weather_description'], 'green')}")
-        print(f"Feels Like:   {self.colored_text(feels_like_text, 'yellow')}")
         print()
     
     def display_wbgt(self, location_data):
@@ -510,8 +508,6 @@ class WBGTKioskEN:
                 weather_frame.pack(fill=tk.X, padx=10, pady=5)
                 
                 frames = {}
-                frames['temp'] = tk.Label(weather_frame, text="", font=('Arial', config_en.FONT_SIZE_SMALL), fg='white', bg='#2a2a2a')
-                frames['temp'].pack(anchor='w')
                 
                 # Forecast temperature frame (color-coded min/max display)
                 forecast_temp_frame = tk.Frame(weather_frame, bg='#2a2a2a')
@@ -543,7 +539,9 @@ class WBGTKioskEN:
                 
                 # Create Treeview table for this location
                 columns = ('time', 'value', 'level')
-                location_forecast_table = ttk.Treeview(table_frame, columns=columns, show='headings', height=4)
+                # Adjust table height based on font size
+                table_height = max(4, int(4 * config_en.FONT_SIZE_SMALL / 14.0))
+                location_forecast_table = ttk.Treeview(table_frame, columns=columns, show='headings', height=table_height)
                 
                 # Configure column headers
                 location_forecast_table.heading('time', text='Time')
@@ -559,9 +557,12 @@ class WBGTKioskEN:
                 # Configure table style
                 style = ttk.Style()
                 style.theme_use('clam')
+                # Adjust row height based on font size
+                row_height = max(20, int(20 * config_en.FONT_SIZE_SMALL / 14.0))
                 style.configure('Treeview', background='#2a2a2a', foreground='white', 
                               fieldbackground='#2a2a2a', borderwidth=1,
-                              font=('Arial', config_en.FONT_SIZE_SMALL))
+                              font=('Arial', config_en.FONT_SIZE_SMALL),
+                              rowheight=row_height)
                 style.configure('Treeview.Heading', background='#404040', foreground='white',
                               borderwidth=1, font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'))
                 style.map('Treeview', background=[('selected', '#505050')])
@@ -622,7 +623,6 @@ class WBGTKioskEN:
                                 alert_data = location_data.get('alert_data')
                                 
                                 if weather_data:
-                                    frames['temp'].config(text=f"🌡️ Current: {weather_data['temperature']}°C", fg='yellow')
                                     frames['forecast_low'].config(text=f"{weather_data['forecast_low']}°C")
                                     frames['forecast_high'].config(text=f"{weather_data['forecast_high']}°C")
                                     frames['weather'].config(text=f"☁️ {weather_data['weather_description']}", fg='lightgreen')
