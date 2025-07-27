@@ -111,7 +111,12 @@ class WBGTKioskEN:
         sys.exit(0)
     
     def colored_text(self, text, color):
-        """Return colored text for terminal display"""
+        """Return colored text for terminal display (Windows compatible)"""
+        # Disable color codes on Windows
+        import platform
+        if platform.system() == 'Windows':
+            return text
+        
         colors = {
             'red': '\033[91m',
             'green': '\033[92m',

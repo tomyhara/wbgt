@@ -110,7 +110,12 @@ class WBGTKiosk:
         os.system('clear' if os.name == 'posix' else 'cls')
     
     def get_color_code(self, color_name):
-        """ANSI色コードを取得"""
+        """ANSI色コードを取得（Windows互換）"""
+        # Windows環境では色コードを無効化
+        import platform
+        if platform.system() == 'Windows':
+            return ''
+        
         colors = {
             'red': '\033[91m',
             'green': '\033[92m',

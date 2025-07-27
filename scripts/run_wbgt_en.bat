@@ -1,12 +1,11 @@
 @echo off
 chcp 65001 >nul
-REM WBGT キオスク実行スクリプト（日本語版）
-REM WBGT Kiosk Runner Script (Japanese Version)
+REM WBGT Heat Stroke Warning Kiosk Runner Script (English Version)
 
 setlocal enabledelayedexpansion
 set "SCRIPT_DIR=%~dp0"
 set "PROJECT_ROOT=%SCRIPT_DIR%.."
-set "APP_PATH=%PROJECT_ROOT%\src\wbgt_kiosk.py"
+set "APP_PATH=%PROJECT_ROOT%\src\wbgt_kiosk_en.py"
 set "VENV_PATH=%PROJECT_ROOT%\venv"
 
 REM Color codes for output (Windows compatible)
@@ -62,7 +61,7 @@ if not exist "%APP_PATH%" (
 
 REM Header
 echo %CYAN%==================================================================%RESET%
-echo %BOLD%  🌡️  WBGT熱中症警戒キオスク (日本語版) / WBGT Heat Stroke Warning Kiosk (Japanese)%RESET%
+echo %BOLD%  🌡️  WBGT Heat Stroke Warning Kiosk (English Version)%RESET%
 echo %CYAN%  Version 2.0.0 - %DATE%%RESET%
 echo %CYAN%==================================================================%RESET%
 echo.
@@ -78,7 +77,7 @@ if exist "%VENV_PATH%\Scripts\activate.bat" (
 )
 
 REM Run application
-echo %CYAN%INFO: Starting Japanese WBGT Kiosk...%RESET%
+echo %CYAN%INFO: Starting English WBGT Kiosk...%RESET%
 
 REM Build command with proper argument handling
 if defined DEMO_MODE if defined GUI_MODE (
@@ -106,32 +105,31 @@ exit /b %EXIT_CODE%
 
 :show_help
 echo %CYAN%==================================================================%RESET%
-echo %BOLD%  🌡️  WBGT熱中症警戒キオスク (日本語版) / WBGT Heat Stroke Warning Kiosk (Japanese)%RESET%
+echo %BOLD%  🌡️  WBGT Heat Stroke Warning Kiosk (English Version)%RESET%
 echo %CYAN%==================================================================%RESET%
 echo.
-echo %WHITE%使用方法 / Usage:%RESET%
+echo %WHITE%Usage:%RESET%
 echo   %0 [OPTIONS]
 echo.
-echo %YELLOW%オプション / Options:%RESET%
-echo   --demo              デモモード (3回更新で終了) / Demo mode (3 updates then exit)
-echo   --gui               GUI版 (実験的) / GUI version (experimental)
-echo   --help, -h          ヘルプ表示 / Show this help
-echo   --version, -v       バージョン情報 / Version information
+echo %YELLOW%Options:%RESET%
+echo   --demo              Demo mode (3 updates then exit)
+echo   --gui               GUI version (experimental)
+echo   --help, -h          Show this help
+echo   --version, -v       Version information
 echo.
-echo %YELLOW%例 / Examples:%RESET%
-echo   %0                  通常モード / Normal mode
-echo   %0 --demo          デモモード / Demo mode
-echo   %0 --gui           GUI版 / GUI version
+echo %YELLOW%Examples:%RESET%
+echo   %0                  Normal mode
+echo   %0 --demo          Demo mode
+echo   %0 --gui           GUI version
 echo.
-echo %GREEN%設定 / Configuration:%RESET%
-echo   設定ファイル: setup\config.json または setup\config.py
+echo %GREEN%Configuration:%RESET%
 echo   Config file: setup\config.json or setup\config.py
 exit /b 0
 
 :show_version
 echo %CYAN%==================================================================%RESET%
-echo %BOLD%  🌡️  WBGT熱中症警戒キオスク (日本語版)%RESET%
+echo %BOLD%  🌡️  WBGT Heat Stroke Warning Kiosk (English Version)%RESET%
 echo %CYAN%==================================================================%RESET%
 echo %GREEN%Version: 2.0.0%RESET%
-echo %CYAN%Language: Japanese (日本語)%RESET%
+echo %CYAN%Language: English%RESET%
 exit /b 0
