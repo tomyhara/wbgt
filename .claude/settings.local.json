@@ -29,7 +29,9 @@
       "Bash(python:*)",
       "Bash(source:*)",
       "Bash(gtimeout:*)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(WBGT_CSV_MODE=1 python3 src/wbgt_kiosk.py --demo)",
+      "Bash(WBGT_CSV_MODE=1 python3 src/wbgt_kiosk_en.py --demo)"
     ],
     "deny": []
   }

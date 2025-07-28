@@ -73,7 +73,7 @@ def main():
             "福岡県": "fukuoka",
             "北海道": "hokkaido",
             "宮城県": "miyagi",
-            "千葉県": "tokyo",  # Use tokyo for Chiba as they're close
+            "千葉県": "chiba",
         }
         
         locations = config.get('locations', [])

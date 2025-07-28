@@ -163,7 +163,7 @@ class WBGTKioskEN:
                 
                 # Get data from JMA API
                 location_data['weather_data'] = self.weather_apis[i].get_weather_data()
-                location_data['alert_data'] = self.heatstroke_alert.get_alert_data(location.get('prefecture', 'Tokyo'))
+                location_data['alert_data'] = self.heatstroke_alert.get_alert_data(location.get('prefecture'))
                 
                 # Get data from Environment Ministry WBGT service (if available)
                 if self.env_wbgt_api.is_service_available():

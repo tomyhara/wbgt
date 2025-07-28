@@ -166,7 +166,7 @@ class WBGTKiosk:
                 
                 # 気象庁APIからデータ取得
                 location_data['weather_data'] = self.weather_apis[i].get_weather_data()
-                location_data['alert_data'] = self.heatstroke_alert.get_alert_data(location.get('prefecture', '東京都'))
+                location_data['alert_data'] = self.heatstroke_alert.get_alert_data(location.get('prefecture'))
                 
                 # 環境省WBGTサービスからデータ取得（サービス期間内の場合）
                 if self.env_wbgt_api.is_service_available():
