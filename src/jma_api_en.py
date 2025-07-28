@@ -228,6 +228,44 @@ class JMAWeatherAPIEN:
             logger.error(f"Failed to parse weather data: {e}")
             return None
     
+    def _supplement_weekly_with_daily_forecast(self, forecast_data, weekly_data):
+        """Supplement weekly forecast with today/tomorrow forecast data"""
+        try:
+            if not forecast_data or len(forecast_data) < 1 or not weekly_data:
+                return weekly_data
+            
+            daily_series = forecast_data[0]  # Series 0 is today/tomorrow forecast
+            if 'timeSeries' not in daily_series:
+                return weekly_data
+            
+            # Get precipitation probability from today/tomorrow forecast
+            for ts in daily_series['timeSeries']:
+                if 'areas' in ts and ts['areas']:
+                    area = ts['areas'][0]
+                    if 'pops' in area:
+                        time_defines = ts.get('timeDefines', [])
+                        pops = area.get('pops', [])
+                        
+                        # Search for tomorrow's data (determined by time)
+                        from datetime import datetime, timedelta
+                        tomorrow = datetime.now() + timedelta(days=1)
+                        tomorrow_date_str = tomorrow.strftime('%Y-%m-%d')
+                        
+                        for i, time_str in enumerate(time_defines):
+                            if tomorrow_date_str in time_str and i < len(pops) and pops[i]:
+                                # If the first day of weekly forecast is tomorrow, supplement precipitation probability
+                                if weekly_data and weekly_data[0]['pop'] is None:
+                                    weekly_data[0]['pop'] = pops[i]
+                                    logger.info(f"Supplemented tomorrow's precipitation probability: {pops[i]}%")
+                                break
+                        break
+            
+            return weekly_data
+            
+        except Exception as e:
+            logger.warning(f"Error in weekly forecast supplementation: {e}")
+            return weekly_data
+    
     def _parse_weekly_forecast(self, forecast_data):
         """Parse weekly forecast data (improved version)"""
         try:
