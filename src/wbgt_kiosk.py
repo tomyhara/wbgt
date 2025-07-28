@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 WBGT熱中症警戒キオスク
 Raspberry Pi用熱中症警戒アラート情報と天気を表示するキオスク端末
@@ -12,9 +13,16 @@ Options:
     デフォルト: ターミナル版で起動
 """
 import os
+import sys
+
+# Windows での Unicode 出力エラーを防ぐための設定
+if sys.platform == "win32":
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
 import time
 import signal
-import sys
 import argparse
 from datetime import datetime
 import threading
