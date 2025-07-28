@@ -726,7 +726,17 @@ class JMAWeatherAPIEN:
                 forecast_data = json.load(f)
             
             logger.info(f"Successfully read data from JSON file: {json_file}")
-            return self._parse_weather_data(forecast_data)
+            
+            # Process including weekly forecast data
+            weekly_data = self._parse_weekly_forecast(forecast_data)
+            weather_data = self._parse_weather_data(forecast_data)
+            
+            if weather_data and weekly_data:
+                # Supplement weekly forecast with daily forecast data
+                weekly_data = self._supplement_weekly_with_daily_forecast(forecast_data, weekly_data)
+                weather_data['weekly_forecast'] = weekly_data
+                
+            return weather_data
             
         except Exception as e:
             logger.error(f"Error reading data from JSON file: {e}")
