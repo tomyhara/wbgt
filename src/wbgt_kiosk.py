@@ -290,13 +290,15 @@ class WBGTKiosk:
             print(f"📊 環境省公式データ:")
             if current_data:
                 current_level, current_color, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
-                print(f"   実況値: {self.colored_text(f'{current_data.get('wbgt_value', 'N/A')}°C', current_color)} " +
+                wbgt_val = current_data.get('wbgt_value', 'N/A')
+                print(f"   実況値: {self.colored_text(f'{wbgt_val}°C', current_color)} " +
                       f"({self.colored_text(current_level, current_color)})")
                 if 'datetime' in current_data:
                     print(f"   更新時刻: {current_data.get('datetime', 'Unknown')}")
             if forecast_data:
                 forecast_level, forecast_color, _ = self.env_wbgt_api.get_wbgt_level_info(forecast_data['wbgt_value'])
-                print(f"   予測値: {self.colored_text(f'{forecast_data.get('wbgt_value', 'N/A')}°C', forecast_color)} " +
+                forecast_val = forecast_data.get('wbgt_value', 'N/A')
+                print(f"   予測値: {self.colored_text(f'{forecast_val}°C', forecast_color)} " +
                       f"({self.colored_text(forecast_level, forecast_color)})")
                 if 'update_time' in forecast_data:
                     print(f"   更新時刻: {forecast_data.get('update_time', 'Unknown')}")
