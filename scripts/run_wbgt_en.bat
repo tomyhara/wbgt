@@ -80,10 +80,12 @@ REM Run application
 echo %CYAN%INFO: Starting English WBGT Kiosk...%RESET%
 
 REM Build command with proper argument handling
-if defined DEMO_MODE if defined GUI_MODE (
-    python "%APP_PATH%" --demo --gui
-) else if defined DEMO_MODE (
-    python "%APP_PATH%" --demo
+if defined DEMO_MODE (
+    if defined GUI_MODE (
+        python "%APP_PATH%" --demo --gui
+    ) else (
+        python "%APP_PATH%" --demo
+    )
 ) else if defined GUI_MODE (
     python "%APP_PATH%" --gui
 ) else (
