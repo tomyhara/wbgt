@@ -100,6 +100,9 @@ if %EXIT_CODE%==0 (
     echo %RED%  ❌ Script completed with errors (Exit code: %EXIT_CODE%)%RESET%
 )
 echo %CYAN%==================================================================%RESET%
+echo.
+echo Press any key to exit...
+pause >nul
 
 exit /b %EXIT_CODE%
 

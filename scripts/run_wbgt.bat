@@ -67,10 +67,14 @@ echo %CYAN%  Version 2.0.0 - %DATE%%RESET%
 echo %CYAN%==================================================================%RESET%
 echo.
 
-REM Activate virtual environment if it exists
+REM Activate virtual environment if it exists (Windows or Unix-like systems)
 if exist "%VENV_PATH%\Scripts\activate.bat" (
-    echo %CYAN%INFO: Activating virtual environment...%RESET%
+    echo %CYAN%INFO: Activating virtual environment (Windows)...%RESET%
     call "%VENV_PATH%\Scripts\activate.bat"
+    echo %GREEN%SUCCESS: Virtual environment activated%RESET%
+) else if exist "%VENV_PATH%\bin\activate" (
+    echo %CYAN%INFO: Activating virtual environment (Unix-like)...%RESET%
+    call "%VENV_PATH%\bin\activate"
     echo %GREEN%SUCCESS: Virtual environment activated%RESET%
 ) else (
     echo %YELLOW%WARN: Virtual environment not found at %VENV_PATH%%RESET%
@@ -101,6 +105,9 @@ if %EXIT_CODE%==0 (
     echo %RED%  ❌ Script completed with errors (Exit code: %EXIT_CODE%)%RESET%
 )
 echo %CYAN%==================================================================%RESET%
+echo.
+echo Press any key to exit...
+pause >nul
 
 exit /b %EXIT_CODE%
 
