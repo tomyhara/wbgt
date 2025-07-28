@@ -276,7 +276,7 @@ class WBGTKiosk:
         print(self.colored_text(f"🌡️  {location_name} - WBGT指数（熱中症指数）", 'cyan'))
         print("-" * 50)
         
-        wbgt_text = f"{weather_data['wbgt']}°C"
+        wbgt_text = f"{weather_data.get('wbgt', 'N/A')}°C"
         level_text = f"({weather_data['wbgt_level']})"
         
         print(f"WBGT指数: {self.colored_text(wbgt_text, wbgt_color)} " + 
