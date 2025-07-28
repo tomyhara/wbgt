@@ -243,11 +243,11 @@ class WBGTKioskEN:
         print(self.colored_text(f"{weather_emoji}  {location_name} - Current Weather Information", 'cyan'))
         print("-" * 50)
         
-        temp_text = f"{weather_data['temperature']}°C"
-        humidity_text = f"{weather_data['humidity']}%"
-        feels_like_text = f"{weather_data['feels_like']}°C"
+        temp_text = f"{weather_data.get('temperature', 'N/A')}°C"
+        humidity_text = f"{weather_data.get('humidity', 'N/A')}%"
+        feels_like_text = f"{weather_data.get('feels_like', 'N/A')}°C"
         
-        print(f"Humidity: {self.colored_text(humidity_text, 'blue')}  Weather: {weather_emoji} {self.colored_text(weather_data['weather_description'], 'green')}")
+        print(f"Humidity: {self.colored_text(humidity_text, 'blue')}  Weather: {weather_emoji} {self.colored_text(weather_data.get('weather_description', 'Unknown'), 'green')}")
     
     def display_wbgt(self, location_data):
         """Display WBGT information"""
@@ -262,8 +262,8 @@ class WBGTKioskEN:
         print(self.colored_text(f"🌡️  {location_name} - WBGT Index (Heat Stroke Index)", 'cyan'))
         print("-" * 50)
         
-        wbgt_text = f"{weather_data['wbgt']}°C"
-        level_text = f"({weather_data['wbgt_level']})"
+        wbgt_text = f"{weather_data.get('wbgt', 'N/A')}°C"
+        level_text = f"({weather_data.get('wbgt_level', 'Unknown')})"
         
         print(f"WBGT Index: {self.colored_text(wbgt_text, wbgt_color)} " + 
               self.colored_text(level_text, wbgt_color))
@@ -276,25 +276,25 @@ class WBGTKioskEN:
             print(f"📊 Official Environment Ministry Data:")
             if current_data:
                 current_level, current_color, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
-                print(f"   Current: {self.colored_text(f'{current_data['wbgt_value']}°C', current_color)} " +
+                print(f"   Current: {self.colored_text(f'{current_data.get('wbgt_value', 'N/A')}°C', current_color)} " +
                       f"({self.colored_text(current_level, current_color)})")
                 if 'datetime' in current_data:
-                    print(f"   Update Time: {current_data['datetime']}")
+                    print(f"   Update Time: {current_data.get('datetime', 'Unknown')}")
             if forecast_data:
                 forecast_level, forecast_color, _ = self.env_wbgt_api.get_wbgt_level_info(forecast_data['wbgt_value'])
-                print(f"   Forecast: {self.colored_text(f'{forecast_data['wbgt_value']}°C', forecast_color)} " +
+                print(f"   Forecast: {self.colored_text(f'{forecast_data.get('wbgt_value', 'N/A')}°C', forecast_color)} " +
                       f"({self.colored_text(forecast_level, forecast_color)})")
                 if 'update_time' in forecast_data:
-                    print(f"   Update Time: {forecast_data['update_time']}")
+                    print(f"   Update Time: {forecast_data.get('update_time', 'Unknown')}")
         
         # Display data source
         if 'wbgt_source' in weather_data:
             source_color = 'green' if 'Environment Ministry' in weather_data['wbgt_source'] else 'yellow'
-            print(f"Data Source: {self.colored_text(weather_data['wbgt_source'], source_color)}")
+            print(f"Data Source: {self.colored_text(weather_data.get('wbgt_source', 'Unknown'), source_color)}")
         else:
             print(f"Data Source: {self.colored_text('JMA API (Calculated)', 'yellow')}")
         
-        print(f"📋 Advice: {self.colored_text(weather_data['wbgt_advice'], 'white')}")
+        print(f"📋 Advice: {self.colored_text(weather_data.get('wbgt_advice', 'No data'), 'white')}")
         
         # WBGT level display
         level = weather_data['wbgt_level']
@@ -329,13 +329,13 @@ class WBGTKioskEN:
         today_color = self.heatstroke_alert.get_alert_color(today_alert['level'])
         tomorrow_color = self.heatstroke_alert.get_alert_color(tomorrow_alert['level'])
         
-        print(f"Today:    {self.colored_text(today_alert['status'], today_color)}")
+        print(f"Today:    {self.colored_text(today_alert.get('status', 'Unknown'), today_color)}")
         if today_alert['message']:
-            print(f"          {today_alert['message']}")
+            print(f"          {today_alert.get('message', '')}")
         
-        print(f"Tomorrow: {self.colored_text(tomorrow_alert['status'], tomorrow_color)}")
+        print(f"Tomorrow: {self.colored_text(tomorrow_alert.get('status', 'Unknown'), tomorrow_color)}")
         if tomorrow_alert['message']:
-            print(f"          {tomorrow_alert['message']}")
+            print(f"          {tomorrow_alert.get('message', '')}")
         print()
     
     def display_weekly_forecast(self, location_data):
@@ -565,7 +565,7 @@ class WBGTKioskEN:
                 
                 # Location title
                 location_title = tk.Label(location_frame, 
-                                        text=f"📍 {location['name']}",
+                                        text=f"📍 {location.get('name', 'Unknown')}",
                                         font=('Arial', config_en.FONT_SIZE_MEDIUM, 'bold'), 
                                         fg='#00ccff', bg='#2a2a2a')
                 location_title.pack(pady=10)
@@ -727,15 +727,15 @@ class WBGTKioskEN:
                                 alert_data = location_data.get('alert_data')
                                 
                                 if weather_data:
-                                    frames['forecast_low'].config(text=f"{weather_data['forecast_low']}°C")
-                                    frames['forecast_high'].config(text=f"{weather_data['forecast_high']}°C")
+                                    frames['forecast_low'].config(text=f"{weather_data.get('forecast_low', 'N/A')}°C")
+                                    frames['forecast_high'].config(text=f"{weather_data.get('forecast_high', 'N/A')}°C")
                                     
                                     # Weather icon and description
                                     weather_code = weather_data.get('weather_code', '100')
                                     weather_api = self.weather_apis[0]  # Use first API instance
                                     weather_emoji = weather_api.get_weather_emoji(weather_code)
                                     frames['weather_icon'].config(text=weather_emoji)
-                                    frames['weather_desc'].config(text=f"Weather: {weather_data['weather_description']}")
+                                    frames['weather_desc'].config(text=f"Weather: {weather_data.get('weather_description', 'Unknown')}")
                                     
                                     # Update WBGT forecast table
                                     forecast_table = frames['forecast_table']
@@ -749,7 +749,7 @@ class WBGTKioskEN:
                                     if current_data:
                                         level, _, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
                                         color = get_wbgt_color(level)
-                                        item = forecast_table.insert('', 'end', values=('Current', f"{current_data['wbgt_value']:.1f}°C", level))
+                                        item = forecast_table.insert('', 'end', values=('Current', f"{current_data.get('wbgt_value', 0):.1f}°C", level))
                                         forecast_table.set(item, 'level', level)
                                         # Apply color to row
                                         forecast_table.tag_configure(f'level_{level}', background=color, foreground='black')
@@ -763,7 +763,7 @@ class WBGTKioskEN:
                                         for j, data_point in enumerate(timeseries[:3]):
                                             level, _, _ = self.env_wbgt_api.get_wbgt_level_info(data_point['wbgt_value'])
                                             time_str = data_point['datetime_str']
-                                            value_str = f"{data_point['wbgt_value']:.1f}°C"
+                                            value_str = f"{data_point.get('wbgt_value', 0):.1f}°C"
                                             color = get_wbgt_color(level)
                                             item = forecast_table.insert('', 'end', values=(time_str, value_str, level))
                                             # Apply color to row
@@ -780,7 +780,7 @@ class WBGTKioskEN:
                                     # Add weekly forecast data to table
                                     if 'weekly_forecast' in weather_data and weather_data['weekly_forecast']:
                                         for day in weather_data['weekly_forecast'][:7]:  # Maximum 7 days
-                                            date_str = f"{day['date']}({day['weekday']})"
+                                            date_str = f"{day.get('date', 'Unknown')}({day.get('weekday', '')})"
                                             
                                             # Get weather icon
                                             day_weather_code = day.get('weather_code', '100')
@@ -789,7 +789,7 @@ class WBGTKioskEN:
                                             
                                             # Process precipitation probability
                                             if day['pop'] is not None and day['pop'] != '':
-                                                pop = f"{day['pop']}%"
+                                                pop = f"{day.get('pop', 0)}%"
                                             else:
                                                 pop = 'No forecast'
                                             
@@ -849,8 +849,8 @@ class WBGTKioskEN:
                                     today_color = self.heatstroke_alert.get_alert_color(today_alert['level'])
                                     tomorrow_color = self.heatstroke_alert.get_alert_color(tomorrow_alert['level'])
                                     
-                                    frames['today_alert'].config(text=f"Today: {today_alert['status']}", fg=today_color)
-                                    frames['tomorrow_alert'].config(text=f"Tomorrow: {tomorrow_alert['status']}", fg=tomorrow_color)
+                                    frames['today_alert'].config(text=f"Today: {today_alert.get('status', 'Unknown')}", fg=today_color)
+                                    frames['tomorrow_alert'].config(text=f"Tomorrow: {tomorrow_alert.get('status', 'Unknown')}", fg=tomorrow_color)
                         
                         # Update time display
                         if self.locations_data and self.locations_data[0].get('weather_data'):

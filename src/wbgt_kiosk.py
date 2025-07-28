@@ -257,11 +257,11 @@ class WBGTKiosk:
         print(self.colored_text(f"{weather_emoji}  {location_name} - 現在の天気情報", 'cyan'))
         print("-" * 50)
         
-        temp_text = f"{weather_data['temperature']}°C"
-        humidity_text = f"{weather_data['humidity']}%"
-        feels_like_text = f"{weather_data['feels_like']}°C"
+        temp_text = f"{weather_data.get('temperature', 'N/A')}°C"
+        humidity_text = f"{weather_data.get('humidity', 'N/A')}%"
+        feels_like_text = f"{weather_data.get('feels_like', 'N/A')}°C"
         
-        print(f"湿度: {self.colored_text(humidity_text, 'blue')}  天気: {weather_emoji} {self.colored_text(weather_data['weather_description'], 'green')}")
+        print(f"湿度: {self.colored_text(humidity_text, 'blue')}  天気: {weather_emoji} {self.colored_text(weather_data.get('weather_description', 'Unknown'), 'green')}")
     
     def display_wbgt(self, location_data):
         """WBGT情報を表示"""
@@ -277,7 +277,7 @@ class WBGTKiosk:
         print("-" * 50)
         
         wbgt_text = f"{weather_data.get('wbgt', 'N/A')}°C"
-        level_text = f"({weather_data['wbgt_level']})"
+        level_text = f"({weather_data.get('wbgt_level', 'Unknown')})"
         
         print(f"WBGT指数: {self.colored_text(wbgt_text, wbgt_color)} " + 
               self.colored_text(level_text, wbgt_color))
@@ -290,25 +290,25 @@ class WBGTKiosk:
             print(f"📊 環境省公式データ:")
             if current_data:
                 current_level, current_color, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
-                print(f"   実況値: {self.colored_text(f'{current_data['wbgt_value']}°C', current_color)} " +
+                print(f"   実況値: {self.colored_text(f'{current_data.get('wbgt_value', 'N/A')}°C', current_color)} " +
                       f"({self.colored_text(current_level, current_color)})")
                 if 'datetime' in current_data:
-                    print(f"   更新時刻: {current_data['datetime']}")
+                    print(f"   更新時刻: {current_data.get('datetime', 'Unknown')}")
             if forecast_data:
                 forecast_level, forecast_color, _ = self.env_wbgt_api.get_wbgt_level_info(forecast_data['wbgt_value'])
-                print(f"   予測値: {self.colored_text(f'{forecast_data['wbgt_value']}°C', forecast_color)} " +
+                print(f"   予測値: {self.colored_text(f'{forecast_data.get('wbgt_value', 'N/A')}°C', forecast_color)} " +
                       f"({self.colored_text(forecast_level, forecast_color)})")
                 if 'update_time' in forecast_data:
-                    print(f"   更新時刻: {forecast_data['update_time']}")
+                    print(f"   更新時刻: {forecast_data.get('update_time', 'Unknown')}")
         
         # データソース表示
         if 'wbgt_source' in weather_data:
             source_color = 'green' if '環境省' in weather_data['wbgt_source'] else 'yellow'
-            print(f"データソース: {self.colored_text(weather_data['wbgt_source'], source_color)}")
+            print(f"データソース: {self.colored_text(weather_data.get('wbgt_source', 'Unknown'), source_color)}")
         else:
             print(f"データソース: {self.colored_text('気象庁API（計算値）', 'yellow')}")
         
-        print(f"📋 アドバイス: {self.colored_text(weather_data['wbgt_advice'], 'white')}")
+        print(f"📋 アドバイス: {self.colored_text(weather_data.get('wbgt_advice', 'データなし'), 'white')}")
         
         # WBGT レベル表示
         level = weather_data['wbgt_level']
@@ -344,13 +344,13 @@ class WBGTKiosk:
         today_color = self.heatstroke_alert.get_alert_color(today_alert['level'])
         tomorrow_color = self.heatstroke_alert.get_alert_color(tomorrow_alert['level'])
         
-        print(f"今日:   {self.colored_text(today_alert['status'], today_color)}")
+        print(f"今日:   {self.colored_text(today_alert.get('status', 'Unknown'), today_color)}")
         if today_alert['message']:
-            print(f"        {today_alert['message']}")
+            print(f"        {today_alert.get('message', '')}")
         
-        print(f"明日:   {self.colored_text(tomorrow_alert['status'], tomorrow_color)}")
+        print(f"明日:   {self.colored_text(tomorrow_alert.get('status', 'Unknown'), tomorrow_color)}")
         if tomorrow_alert['message']:
-            print(f"        {tomorrow_alert['message']}")
+            print(f"        {tomorrow_alert.get('message', '')}")
         print()
     
     def display_weekly_forecast(self, location_data):
@@ -595,7 +595,7 @@ class WBGTKiosk:
                 
                 # 拠点名
                 location_title = tk.Label(location_frame, 
-                                        text=f"📍 {location['name']}",
+                                        text=f"📍 {location.get('name', 'Unknown')}",
                                         font=title_font, fg='#00ccff', bg='#2a2a2a')
                 location_title.pack(pady=10)
                 
@@ -776,15 +776,15 @@ class WBGTKiosk:
                                 
                                 if weather_data:
                                     # 天気情報
-                                    frames['forecast_low'].config(text=f"{weather_data['forecast_low']}°C")
-                                    frames['forecast_high'].config(text=f"{weather_data['forecast_high']}°C")
+                                    frames['forecast_low'].config(text=f"{weather_data.get('forecast_low', 'N/A')}°C")
+                                    frames['forecast_high'].config(text=f"{weather_data.get('forecast_high', 'N/A')}°C")
                                     
                                     # 天気アイコンと説明
                                     weather_code = weather_data.get('weather_code', '100')
                                     weather_api = self.weather_apis[0]  # 最初のAPIインスタンスを使用
                                     weather_emoji = weather_api.get_weather_emoji(weather_code)
                                     frames['weather_icon'].config(text=weather_emoji)
-                                    frames['weather_desc'].config(text=f"天気: {weather_data['weather_description']}")
+                                    frames['weather_desc'].config(text=f"天気: {weather_data.get('weather_description', 'Unknown')}")
                                     
                                     # WBGT予測値表を更新
                                     forecast_table = frames['forecast_table']
@@ -798,7 +798,7 @@ class WBGTKiosk:
                                     if current_data:
                                         level, _, _ = self.env_wbgt_api.get_wbgt_level_info(current_data['wbgt_value'])
                                         color = get_wbgt_color(level)
-                                        item = forecast_table.insert('', 'end', values=('現在', f"{current_data['wbgt_value']:.1f}°C", level))
+                                        item = forecast_table.insert('', 'end', values=('現在', f"{current_data.get('wbgt_value', 0):.1f}°C", level))
                                         forecast_table.set(item, 'level', level)
                                         # 行に色を適用
                                         forecast_table.tag_configure(f'level_{level}', background=color, foreground='black')
@@ -812,7 +812,7 @@ class WBGTKiosk:
                                         for j, data_point in enumerate(timeseries[:3]):
                                             level, _, _ = self.env_wbgt_api.get_wbgt_level_info(data_point['wbgt_value'])
                                             time_str = data_point['datetime_str']
-                                            value_str = f"{data_point['wbgt_value']:.1f}°C"
+                                            value_str = f"{data_point.get('wbgt_value', 0):.1f}°C"
                                             color = get_wbgt_color(level)
                                             item = forecast_table.insert('', 'end', values=(time_str, value_str, level))
                                             # 行に色を適用
@@ -829,7 +829,7 @@ class WBGTKiosk:
                                     # 週間予報データを表に追加
                                     if 'weekly_forecast' in weather_data and weather_data['weekly_forecast']:
                                         for day in weather_data['weekly_forecast'][:7]:  # 最大7日間
-                                            date_str = f"{day['date']}({day['weekday']})"
+                                            date_str = f"{day.get('date', 'Unknown')}({day.get('weekday', '')})"
                                             
                                             # 天気アイコンを取得
                                             day_weather_code = day.get('weather_code', '100')
@@ -838,7 +838,7 @@ class WBGTKiosk:
                                             
                                             # 降水確率の処理
                                             if day['pop'] is not None and day['pop'] != '':
-                                                pop = f"{day['pop']}%"
+                                                pop = f"{day.get('pop', 0)}%"
                                             else:
                                                 pop = '予報なし'
                                             
@@ -899,8 +899,8 @@ class WBGTKiosk:
                                     today_color = get_alert_color(today_alert['level'])
                                     tomorrow_color = get_alert_color(tomorrow_alert['level'])
                                     
-                                    frames['today_alert'].config(text=f"今日: {today_alert['status']}", fg=today_color)
-                                    frames['tomorrow_alert'].config(text=f"明日: {tomorrow_alert['status']}", fg=tomorrow_color)
+                                    frames['today_alert'].config(text=f"今日: {today_alert.get('status', 'Unknown')}", fg=today_color)
+                                    frames['tomorrow_alert'].config(text=f"明日: {tomorrow_alert.get('status', 'Unknown')}", fg=tomorrow_color)
                         
                         # 更新時刻表示
                         if self.locations_data and self.locations_data[0].get('weather_data'):
