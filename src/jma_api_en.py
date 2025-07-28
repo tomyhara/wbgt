@@ -99,9 +99,11 @@ class JMAWeatherAPIEN:
             # Also get weekly forecast data
             weekly_data = self._parse_weekly_forecast(forecast_data)
             weather_data = self._parse_weather_data(forecast_data)
-            if weather_data and weekly_data:
-                weather_data['weekly_forecast'] = weekly_data
-            return weather_data
+            if weather_data:
+                if weekly_data:
+                    weather_data['weekly_forecast'] = weekly_data
+                return weather_data
+            return None
             
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to get weather data: {e}")
