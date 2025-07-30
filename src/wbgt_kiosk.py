@@ -72,6 +72,10 @@ except Exception as e:
 from jma_api import JMAWeatherAPI
 from heatstroke_alert import HeatstrokeAlert
 from env_wbgt_api import EnvWBGTAPI
+from gui_components import (
+    PlatformUtils, ColorManager, WeatherIconManager, 
+    TreeviewManager, GUIComponentFactory, WeatherDataProcessor
+)
 
 class WBGTKiosk:
     """WBGT熱中症警戒キオスクのメインクラス"""
@@ -548,21 +552,11 @@ class WBGTKiosk:
             from datetime import datetime
             import os
             
-            # プラットフォーム検出
-            import platform
-            platform_name = platform.system()
-            is_windows = platform_name == 'Windows'
+            # プラットフォーム検出と初期化メッセージ
+            is_windows = PlatformUtils.is_windows()
             
-            # 環境固有のGUI表示確認
             print("🪟 WBGT熱中症警戒キオスク GUI版を起動中...")
-            if platform_name == 'Darwin':
-                if os.environ.get('DISPLAY') is None:
-                    print("⚠️  macOS環境でのGUI起動を試行中...")
-            elif is_windows:
-                print("⚠️  Windows環境での表示最適化を適用中...")
-            else:
-                print("⚠️  汎用環境で実行中...")
-            
+            print(PlatformUtils.get_platform_message())
             print("✅ GUI準備完了")
             
             # メインウィンドウ設定
@@ -758,52 +752,12 @@ class WBGTKiosk:
             status_label = tk.Label(footer_frame, text="ESC キーで終了", font=data_font, fg='#888888', bg='#1a1a1a')
             status_label.pack()
             
+            # 色管理は共通モジュールを使用
             def get_wbgt_color(level):
-                """WBGT警戒レベルに応じた色を返す（Windows互換性対応）"""
-                if is_windows:
-                    # Windows環境では標準色名を使用
-                    colors = {
-                        'ほぼ安全': 'cyan',
-                        '注意': 'green',
-                        '警戒': 'yellow',
-                        '厳重警戒': 'orange',
-                        '危険': 'red',
-                        '極めて危険': 'darkred'
-                    }
-                else:
-                    # その他の環境では16進数カラーコードを使用
-                    colors = {
-                        'ほぼ安全': '#0080ff',
-                        '注意': '#00ff00',
-                        '警戒': '#ffff00',
-                        '厳重警戒': '#ff8000',
-                        '危険': '#ff0000',
-                        '極めて危険': '#800000'
-                    }
-                return colors.get(level, 'white')
+                return ColorManager.get_wbgt_color(level, is_windows)
             
             def get_alert_color(level):
-                """アラートレベルに応じた色を返す（Windows互換性対応）"""
-                if is_windows:
-                    # Windows環境では標準色名を使用
-                    if level >= 4:
-                        return 'red'
-                    elif level >= 3:
-                        return 'orange'
-                    elif level >= 2:
-                        return 'yellow'
-                    else:
-                        return 'gray'
-                else:
-                    # その他の環境では16進数カラーコードを使用
-                    if level >= 4:
-                        return '#ff0000'
-                    elif level >= 3:
-                        return '#ff8000'
-                    elif level >= 2:
-                        return '#ffff00'
-                    else:
-                        return '#888888'
+                return ColorManager.get_alert_color(level, is_windows)
             
 
             def update_gui():
@@ -879,61 +833,14 @@ class WBGTKiosk:
                                     
                                     # 週間予報データを表に追加
                                     if 'weekly_forecast' in weather_data and weather_data['weekly_forecast']:
-                                        for day in weather_data['weekly_forecast'][:7]:  # 最大7日間
-                                            date_str = f"{day.get('date', 'Unknown')}({day.get('weekday', '')})"
-                                            
-                                            # 天気アイコンを取得
-                                            day_weather_code = day.get('weather_code', '100')
-                                            day_weather_emoji = weather_api.get_weather_emoji(day_weather_code)
-                                            weather_desc = f"{day_weather_emoji}"  # アイコンのみ
-                                            
-                                            # 降水確率の処理
-                                            if day['pop'] is not None and day['pop'] != '':
-                                                pop = f"{day.get('pop', 0)}%"
-                                            else:
-                                                pop = '予報なし'
-                                            
-                                            # 気温の処理
-                                            if day['temp_max'] is not None and day['temp_max'] != '':
-                                                temp_max = day['temp_max']
-                                            else:
-                                                temp_max = '予報なし'
-                                            
-                                            if day['temp_min'] is not None and day['temp_min'] != '':
-                                                temp_min = day['temp_min']
-                                            else:
-                                                temp_min = '予報なし'
-                                            
-                                            # 気温表示の処理
-                                            if temp_max != '予報なし' or temp_min != '予報なし':
-                                                if temp_max != '予報なし' and temp_min != '予報なし':
-                                                    temp_range = f"{temp_max}/{temp_min}°C"
-                                                elif temp_max != '予報なし':
-                                                    temp_range = f"{temp_max}/--°C"
-                                                else:
-                                                    temp_range = f"--/{temp_min}°C"
-                                            else:
-                                                temp_range = '予報なし'
-                                            
-                                            # 降水確率に応じたアイコン付きで表示（シンプルな視覚的区別）
-                                            pop_display = pop
-                                            if pop != '予報なし':
-                                                try:
-                                                    pop_val = int(day['pop'])
-                                                    if pop_val >= 70:
-                                                        pop_display = f"🌧️ {pop} (高)"
-                                                    elif pop_val >= 50:
-                                                        pop_display = f"☔ {pop} (中)"
-                                                    elif pop_val >= 30:
-                                                        pop_display = f"🌦️ {pop} (低)"
-                                                    else:
-                                                        pop_display = f"☀️ {pop}"
-                                                except:
-                                                    pop_display = pop
-                                            
-                                            # 行を追加（アイコンで視覚的に区別）
+                                        weather_api = self.weather_apis[0]
+                                        processed_data = WeatherDataProcessor.process_weekly_forecast_data(
+                                            weather_data['weekly_forecast'], weather_api, 'ja')
+                                        
+                                        for data in processed_data:
                                             weekly_forecast_table.insert('', 'end', 
-                                                values=(date_str, weather_desc, pop_display, temp_range))
+                                                values=(data['date'], data['weather'], 
+                                                       data['pop'], data['temp']))
                                     else:
                                         # データがない場合
                                         weekly_forecast_table.insert('', 'end', 

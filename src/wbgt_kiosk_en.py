@@ -70,6 +70,10 @@ except Exception as e:
 from jma_api_en import JMAWeatherAPIEN
 from heatstroke_alert_en import HeatstrokeAlertEN
 from env_wbgt_api_en import EnvWBGTAPIEN
+from gui_components import (
+    PlatformUtils, ColorManager, WeatherIconManager, 
+    TreeviewManager, GUIComponentFactory, WeatherDataProcessor
+)
 
 class WBGTKioskEN:
     """Main class for WBGT Heat Stroke Warning Kiosk (English)"""
@@ -519,21 +523,11 @@ class WBGTKioskEN:
             from tkinter import ttk
             import os
             
-            # Platform detection
-            import platform
-            platform_name = platform.system()
-            is_windows = platform_name == 'Windows'
+            # Platform detection and initialization messages
+            is_windows = PlatformUtils.is_windows()
             
-            # Environment-specific GUI display confirmation
             print("🪟 Starting WBGT Heat Stroke Warning Kiosk GUI...")
-            if platform_name == 'Darwin':
-                if os.environ.get('DISPLAY') is None:
-                    print("⚠️  Attempting GUI startup on macOS environment...")
-            elif is_windows:
-                print("⚠️  Applying Windows environment display optimization...")
-            else:
-                print("⚠️  Running on generic environment...")
-            
+            print(PlatformUtils.get_platform_message())
             print("✅ GUI preparation complete")
             
             # Create main window
@@ -733,29 +727,12 @@ class WBGTKioskEN:
             )
             update_time_label.pack(side='bottom', pady=10)
             
+            # Color management using common module
             def get_wbgt_color(level):
-                """Return color based on WBGT warning level (Windows compatibility)"""
-                if is_windows:
-                    # Use standard color names for Windows environment
-                    colors = {
-                        'Safe': 'cyan',
-                        'Caution': 'green',
-                        'Warning': 'yellow',
-                        'Severe Warning': 'orange',
-                        'Dangerous': 'red',
-                        'Extremely Dangerous': 'darkred'
-                    }
-                else:
-                    # Use hex color codes for other environments
-                    colors = {
-                        'Safe': '#0080ff',
-                        'Caution': '#00ff00',
-                        'Warning': '#ffff00',
-                        'Severe Warning': '#ff8000',
-                        'Dangerous': '#ff0000',
-                        'Extremely Dangerous': '#800000'
-                    }
-                return colors.get(level, 'white')
+                return ColorManager.get_wbgt_color(level, is_windows)
+            
+            def get_alert_color(level):
+                return ColorManager.get_alert_color(level, is_windows)
             
             # Data update function
             def update_gui():
@@ -826,61 +803,14 @@ class WBGTKioskEN:
                                     
                                     # Add weekly forecast data to table
                                     if 'weekly_forecast' in weather_data and weather_data['weekly_forecast']:
-                                        for day in weather_data['weekly_forecast'][:7]:  # Maximum 7 days
-                                            date_str = f"{day.get('date', 'Unknown')}({day.get('weekday', '')})"
-                                            
-                                            # Get weather icon
-                                            day_weather_code = day.get('weather_code', '100')
-                                            day_weather_emoji = weather_api.get_weather_emoji(day_weather_code)
-                                            weather_desc = f"{day_weather_emoji}"  # Icon only
-                                            
-                                            # Process precipitation probability
-                                            if day['pop'] is not None and day['pop'] != '':
-                                                pop = f"{day.get('pop', 0)}%"
-                                            else:
-                                                pop = 'No forecast'
-                                            
-                                            # Process temperature
-                                            if day['temp_max'] is not None and day['temp_max'] != '':
-                                                temp_max = day['temp_max']
-                                            else:
-                                                temp_max = 'No forecast'
-                                            
-                                            if day['temp_min'] is not None and day['temp_min'] != '':
-                                                temp_min = day['temp_min']
-                                            else:
-                                                temp_min = 'No forecast'
-                                            
-                                            # Temperature display processing
-                                            if temp_max != 'No forecast' or temp_min != 'No forecast':
-                                                if temp_max != 'No forecast' and temp_min != 'No forecast':
-                                                    temp_range = f"{temp_max}/{temp_min}°C"
-                                                elif temp_max != 'No forecast':
-                                                    temp_range = f"{temp_max}/--°C"
-                                                else:
-                                                    temp_range = f"--/{temp_min}°C"
-                                            else:
-                                                temp_range = 'No forecast'
-                                            
-                                            # Display with icons based on precipitation probability (simple visual distinction)
-                                            pop_display = pop
-                                            if pop != 'No forecast':
-                                                try:
-                                                    pop_val = int(day['pop'])
-                                                    if pop_val >= 70:
-                                                        pop_display = f"🌧️ {pop} (High)"
-                                                    elif pop_val >= 50:
-                                                        pop_display = f"☔ {pop} (Med)"
-                                                    elif pop_val >= 30:
-                                                        pop_display = f"🌦️ {pop} (Low)"
-                                                    else:
-                                                        pop_display = f"☀️ {pop}"
-                                                except:
-                                                    pop_display = pop
-                                            
-                                            # Add row (visual distinction with icons)
+                                        weather_api = self.weather_apis[0]
+                                        processed_data = WeatherDataProcessor.process_weekly_forecast_data(
+                                            weather_data['weekly_forecast'], weather_api, 'en')
+                                        
+                                        for data in processed_data:
                                             weekly_forecast_table.insert('', 'end', 
-                                                values=(date_str, weather_desc, pop_display, temp_range))
+                                                values=(data['date'], data['weather'], 
+                                                       data['pop'], data['temp']))
                                     else:
                                         # No data available
                                         weekly_forecast_table.insert('', 'end', 
