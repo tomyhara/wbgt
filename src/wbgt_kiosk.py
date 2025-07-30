@@ -548,10 +548,18 @@ class WBGTKiosk:
             from datetime import datetime
             import os
             
+            # プラットフォーム検出
+            import platform
+            platform_name = platform.system()
+            is_windows = platform_name == 'Windows'
+            
             # macOS環境でのGUI表示確認
             if os.environ.get('DISPLAY') is None and 'Darwin' in os.uname().sysname:
                 print("🪟 WBGT熱中症警戒キオスク GUI版を起動中...")
                 print("⚠️  macOS環境でのGUI起動を試行中...")
+            elif is_windows:
+                print("🪟 WBGT熱中症警戒キオスク GUI版を起動中...")
+                print("⚠️  Windows環境での表示最適化を適用中...")
             
             print("✅ GUI準備完了")
             
@@ -682,6 +690,13 @@ class WBGTKiosk:
                 
                 location_forecast_table.pack(fill=tk.BOTH, expand=True)
                 
+                # デフォルトタグを設定（Windows互換性のため）
+                try:
+                    location_forecast_table.tag_configure('default', background='#2a2a2a', foreground='white')
+                    weekly_forecast_table.tag_configure('default', background='#2a2a2a', foreground='white')
+                except Exception as e:
+                    self.logger.debug(f"デフォルトタグの設定に失敗: {e}")
+                
                 # アラート情報フレーム
                 alert_frame = tk.LabelFrame(location_frame, text="🚨 熱中症警戒アラート", 
                                           font=data_font, fg='#00ccff', bg='#2a2a2a')
@@ -742,27 +757,51 @@ class WBGTKiosk:
             status_label.pack()
             
             def get_wbgt_color(level):
-                """WBGT警戒レベルに応じた色を返す"""
-                colors = {
-                    'ほぼ安全': '#0080ff',
-                    '注意': '#00ff00',
-                    '警戒': '#ffff00',
-                    '厳重警戒': '#ff8000',
-                    '危険': '#ff0000',
-                    '極めて危険': '#800000'
-                }
-                return colors.get(level, '#ffffff')
+                """WBGT警戒レベルに応じた色を返す（Windows互換性対応）"""
+                if is_windows:
+                    # Windows環境では標準色名を使用
+                    colors = {
+                        'ほぼ安全': 'cyan',
+                        '注意': 'green',
+                        '警戒': 'yellow',
+                        '厳重警戒': 'orange',
+                        '危険': 'red',
+                        '極めて危険': 'darkred'
+                    }
+                else:
+                    # その他の環境では16進数カラーコードを使用
+                    colors = {
+                        'ほぼ安全': '#0080ff',
+                        '注意': '#00ff00',
+                        '警戒': '#ffff00',
+                        '厳重警戒': '#ff8000',
+                        '危険': '#ff0000',
+                        '極めて危険': '#800000'
+                    }
+                return colors.get(level, 'white')
             
             def get_alert_color(level):
-                """アラートレベルに応じた色を返す"""
-                if level >= 4:
-                    return '#ff0000'
-                elif level >= 3:
-                    return '#ff8000'
-                elif level >= 2:
-                    return '#ffff00'
+                """アラートレベルに応じた色を返す（Windows互換性対応）"""
+                if is_windows:
+                    # Windows環境では標準色名を使用
+                    if level >= 4:
+                        return 'red'
+                    elif level >= 3:
+                        return 'orange'
+                    elif level >= 2:
+                        return 'yellow'
+                    else:
+                        return 'gray'
                 else:
-                    return '#888888'
+                    # その他の環境では16進数カラーコードを使用
+                    if level >= 4:
+                        return '#ff0000'
+                    elif level >= 3:
+                        return '#ff8000'
+                    elif level >= 2:
+                        return '#ffff00'
+                    else:
+                        return '#888888'
             
 
             def update_gui():
@@ -819,7 +858,7 @@ class WBGTKiosk:
                                     if timeseries_data and 'timeseries' in timeseries_data:
                                         timeseries = timeseries_data['timeseries']
                                         # 最初の3つの予測値を表示
-                                        for j, data_point in enumerate(timeseries[:3]):
+                                        for data_point in timeseries[:3]:
                                             level, _, _ = self.env_wbgt_api.get_wbgt_level_info(data_point['wbgt_value'])
                                             time_str = data_point['datetime_str']
                                             value_str = f"{data_point.get('wbgt_value', 0):.1f}°C"
@@ -874,17 +913,22 @@ class WBGTKiosk:
                                             else:
                                                 temp_range = '予報なし'
                                             
-                                            # 降水確率に応じた色を決定
+                                            # 降水確率に応じた色を決定（Windows互換性のため標準色名を使用）
                                             pop_color = 'white'
+                                            pop_tag = 'default'
                                             if pop != '予報なし':
                                                 try:
                                                     pop_val = int(day['pop'])
                                                     if pop_val >= 70:
-                                                        pop_color = '#ff6666'
+                                                        # Windows環境では標準色名を、その他では16進数を使用
+                                                        pop_color = 'red' if is_windows else '#ff6666'
+                                                        pop_tag = 'high_pop'
                                                     elif pop_val >= 50:
-                                                        pop_color = '#ffaa66'
+                                                        pop_color = 'orange' if is_windows else '#ffaa66'
+                                                        pop_tag = 'med_pop'
                                                     elif pop_val >= 30:
-                                                        pop_color = '#ffff66'
+                                                        pop_color = 'yellow' if is_windows else '#ffff66'
+                                                        pop_tag = 'low_pop'
                                                 except:
                                                     pass
                                             
@@ -892,10 +936,17 @@ class WBGTKiosk:
                                             item_id = weekly_forecast_table.insert('', 'end', 
                                                 values=(date_str, weather_desc, pop, temp_range))
                                             
-                                            # 降水確率の色を設定
-                                            weekly_forecast_table.tag_configure(f'pop_{pop_color}', 
-                                                background='#2a2a2a', foreground=pop_color)
-                                            weekly_forecast_table.item(item_id, tags=(f'pop_{pop_color}',))
+                                            # 降水確率の色を設定（Windows対応のため1回だけタグを設定）
+                                            if pop_tag not in ['default']:
+                                                try:
+                                                    weekly_forecast_table.tag_configure(pop_tag, 
+                                                        background='#2a2a2a', foreground=pop_color)
+                                                    weekly_forecast_table.item(item_id, tags=(pop_tag,))
+                                                except Exception as e:
+                                                    # Windows環境でタグが失敗した場合はログに記録
+                                                    self.logger.debug(f"週間予報の色設定に失敗 ({pop_tag}): {e}")
+                                                    # デフォルトの色を適用
+                                                    weekly_forecast_table.item(item_id, tags=('default',))
                                     else:
                                         # データがない場合
                                         weekly_forecast_table.insert('', 'end', 

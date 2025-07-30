@@ -517,6 +517,23 @@ class WBGTKioskEN:
         try:
             import tkinter as tk
             from tkinter import ttk
+            from datetime import datetime
+            import os
+            
+            # Platform detection
+            import platform
+            platform_name = platform.system()
+            is_windows = platform_name == 'Windows'
+            
+            # Environment-specific GUI display confirmation
+            if os.environ.get('DISPLAY') is None and 'Darwin' in os.uname().sysname:
+                print("🪟 Starting WBGT Heat Stroke Warning Kiosk GUI...")
+                print("⚠️  Attempting GUI startup on macOS environment...")
+            elif is_windows:
+                print("🪟 Starting WBGT Heat Stroke Warning Kiosk GUI...")
+                print("⚠️  Applying Windows environment display optimization...")
+            
+            print("✅ GUI preparation complete")
             
             # Create main window
             root = tk.Tk()
@@ -655,6 +672,13 @@ class WBGTKioskEN:
                 
                 location_forecast_table.pack(fill='both', expand=True)
                 
+                # Set default tags (Windows compatibility)
+                try:
+                    location_forecast_table.tag_configure('default', background='#2a2a2a', foreground='white')
+                    weekly_forecast_table.tag_configure('default', background='#2a2a2a', foreground='white')
+                except Exception as e:
+                    self.logger.debug(f"Failed to set default tags: {e}")
+                
                 # Alert info frame
                 alert_frame = tk.LabelFrame(location_frame, text="🚨 Heat Stroke Alert", 
                                           font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'), fg='#00ccff', bg='#2a2a2a')
@@ -709,16 +733,28 @@ class WBGTKioskEN:
             update_time_label.pack(side='bottom', pady=10)
             
             def get_wbgt_color(level):
-                """Return color based on WBGT warning level"""
-                colors = {
-                    'Safe': '#0080ff',
-                    'Caution': '#00ff00',
-                    'Warning': '#ffff00',
-                    'Severe Warning': '#ff8000',
-                    'Dangerous': '#ff0000',
-                    'Extremely Dangerous': '#800000'
-                }
-                return colors.get(level, '#ffffff')
+                """Return color based on WBGT warning level (Windows compatibility)"""
+                if is_windows:
+                    # Use standard color names for Windows environment
+                    colors = {
+                        'Safe': 'cyan',
+                        'Caution': 'green',
+                        'Warning': 'yellow',
+                        'Severe Warning': 'orange',
+                        'Dangerous': 'red',
+                        'Extremely Dangerous': 'darkred'
+                    }
+                else:
+                    # Use hex color codes for other environments
+                    colors = {
+                        'Safe': '#0080ff',
+                        'Caution': '#00ff00',
+                        'Warning': '#ffff00',
+                        'Severe Warning': '#ff8000',
+                        'Dangerous': '#ff0000',
+                        'Extremely Dangerous': '#800000'
+                    }
+                return colors.get(level, 'white')
             
             # Data update function
             def update_gui():
@@ -770,7 +806,7 @@ class WBGTKioskEN:
                                     if timeseries_data and 'timeseries' in timeseries_data:
                                         timeseries = timeseries_data['timeseries']
                                         # Show first 3 forecast values
-                                        for j, data_point in enumerate(timeseries[:3]):
+                                        for data_point in timeseries[:3]:
                                             level, _, _ = self.env_wbgt_api.get_wbgt_level_info(data_point['wbgt_value'])
                                             time_str = data_point['datetime_str']
                                             value_str = f"{data_point.get('wbgt_value', 0):.1f}°C"
@@ -825,17 +861,22 @@ class WBGTKioskEN:
                                             else:
                                                 temp_range = 'No forecast'
                                             
-                                            # Determine color based on precipitation probability
+                                            # Determine color based on precipitation probability (Windows compatibility)
                                             pop_color = 'white'
+                                            pop_tag = 'default'
                                             if pop != 'No forecast':
                                                 try:
                                                     pop_val = int(day['pop'])
                                                     if pop_val >= 70:
-                                                        pop_color = '#ff6666'
+                                                        # Use standard color names for Windows, hex codes for others
+                                                        pop_color = 'red' if is_windows else '#ff6666'
+                                                        pop_tag = 'high_pop'
                                                     elif pop_val >= 50:
-                                                        pop_color = '#ffaa66'
+                                                        pop_color = 'orange' if is_windows else '#ffaa66'
+                                                        pop_tag = 'med_pop'
                                                     elif pop_val >= 30:
-                                                        pop_color = '#ffff66'
+                                                        pop_color = 'yellow' if is_windows else '#ffff66'
+                                                        pop_tag = 'low_pop'
                                                 except:
                                                     pass
                                             
@@ -843,10 +884,17 @@ class WBGTKioskEN:
                                             item_id = weekly_forecast_table.insert('', 'end', 
                                                 values=(date_str, weather_desc, pop, temp_range))
                                             
-                                            # Set precipitation probability color
-                                            weekly_forecast_table.tag_configure(f'pop_{pop_color}', 
-                                                background='#2a2a2a', foreground=pop_color)
-                                            weekly_forecast_table.item(item_id, tags=(f'pop_{pop_color}',))
+                                            # Set precipitation probability color (Windows compatible)
+                                            if pop_tag not in ['default']:
+                                                try:
+                                                    weekly_forecast_table.tag_configure(pop_tag, 
+                                                        background='#2a2a2a', foreground=pop_color)
+                                                    weekly_forecast_table.item(item_id, tags=(pop_tag,))
+                                                except Exception as e:
+                                                    # Log failure if Windows environment tag fails
+                                                    self.logger.debug(f"Weekly forecast color setting failed ({pop_tag}): {e}")
+                                                    # Apply default color
+                                                    weekly_forecast_table.item(item_id, tags=('default',))
                                     else:
                                         # No data available
                                         weekly_forecast_table.insert('', 'end', 
