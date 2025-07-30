@@ -553,13 +553,15 @@ class WBGTKiosk:
             platform_name = platform.system()
             is_windows = platform_name == 'Windows'
             
-            # macOS環境でのGUI表示確認
-            if os.environ.get('DISPLAY') is None and 'Darwin' in os.uname().sysname:
-                print("🪟 WBGT熱中症警戒キオスク GUI版を起動中...")
-                print("⚠️  macOS環境でのGUI起動を試行中...")
+            # 環境固有のGUI表示確認
+            print("🪟 WBGT熱中症警戒キオスク GUI版を起動中...")
+            if platform_name == 'Darwin':
+                if os.environ.get('DISPLAY') is None:
+                    print("⚠️  macOS環境でのGUI起動を試行中...")
             elif is_windows:
-                print("🪟 WBGT熱中症警戒キオスク GUI版を起動中...")
                 print("⚠️  Windows環境での表示最適化を適用中...")
+            else:
+                print("⚠️  汎用環境で実行中...")
             
             print("✅ GUI準備完了")
             
@@ -571,7 +573,7 @@ class WBGTKiosk:
             
             if config.FULLSCREEN:
                 root.attributes('-fullscreen', True)
-                root.bind('<Escape>', lambda e: root.destroy())
+                root.bind('<Escape>', lambda event: root.destroy())
             
             # フォント設定
             header_font = ('Helvetica', config.FONT_SIZE_LARGE, 'bold')

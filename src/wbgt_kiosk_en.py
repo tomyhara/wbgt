@@ -25,7 +25,7 @@ import time
 import signal
 import argparse
 from datetime import datetime
-import threading
+# import threading  # Not currently used
 import logging
 
 # Load configuration (JSON-based)
@@ -111,7 +111,7 @@ class WBGTKioskEN:
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
     
-    def signal_handler(self, sig, frame):
+    def signal_handler(self, sig=None, frame=None):
         """Handle shutdown signals"""
         self.logger.info("Shutdown signal received")
         self.running = False
@@ -251,9 +251,9 @@ class WBGTKioskEN:
         print(self.colored_text(f"{weather_emoji}  {location_name} - Current Weather Information", 'cyan'))
         print("-" * 50)
         
-        temp_text = f"{weather_data.get('temperature', 'N/A')}°C"
+        # temp_text = f"{weather_data.get('temperature', 'N/A')}°C"
         humidity_text = f"{weather_data.get('humidity', 'N/A')}%"
-        feels_like_text = f"{weather_data.get('feels_like', 'N/A')}°C"
+        # feels_like_text = f"{weather_data.get('feels_like', 'N/A')}°C"
         
         print(f"Humidity: {self.colored_text(humidity_text, 'blue')}  Weather: {weather_emoji} {self.colored_text(weather_data.get('weather_description', 'Unknown'), 'green')}")
     
@@ -366,7 +366,7 @@ class WBGTKioskEN:
         for day in weekly_forecast[:7]:  # Maximum 7 days
             date_str = day['date']
             weekday = day['weekday']
-            weather_desc = day['weather_desc'][:4] if day['weather_desc'] else '--'  # Further truncate weather description
+            # weather_desc = day['weather_desc'][:4] if day['weather_desc'] else '--'  # Further truncate weather description
             pop = day['pop'] if day['pop'] is not None and day['pop'] != '' else 'No forecast'
             temp_max = day['temp_max'] if day['temp_max'] is not None and day['temp_max'] != '' else 'No forecast'
             temp_min = day['temp_min'] if day['temp_min'] is not None and day['temp_min'] != '' else 'No forecast'
@@ -502,7 +502,7 @@ class WBGTKioskEN:
                     print("❌ Failed to fetch data. Retrying in 1 minute...")
                 
                 # Wait for next update
-                for remaining in range(self.update_interval * 60, 0, -1):
+                for _ in range(self.update_interval * 60, 0, -1):
                     if not self.running:
                         break
                     time.sleep(1)
@@ -517,7 +517,6 @@ class WBGTKioskEN:
         try:
             import tkinter as tk
             from tkinter import ttk
-            from datetime import datetime
             import os
             
             # Platform detection
@@ -526,12 +525,14 @@ class WBGTKioskEN:
             is_windows = platform_name == 'Windows'
             
             # Environment-specific GUI display confirmation
-            if os.environ.get('DISPLAY') is None and 'Darwin' in os.uname().sysname:
-                print("🪟 Starting WBGT Heat Stroke Warning Kiosk GUI...")
-                print("⚠️  Attempting GUI startup on macOS environment...")
+            print("🪟 Starting WBGT Heat Stroke Warning Kiosk GUI...")
+            if platform_name == 'Darwin':
+                if os.environ.get('DISPLAY') is None:
+                    print("⚠️  Attempting GUI startup on macOS environment...")
             elif is_windows:
-                print("🪟 Starting WBGT Heat Stroke Warning Kiosk GUI...")
                 print("⚠️  Applying Windows environment display optimization...")
+            else:
+                print("⚠️  Running on generic environment...")
             
             print("✅ GUI preparation complete")
             
@@ -545,7 +546,7 @@ class WBGTKioskEN:
                 root.attributes('-fullscreen', True)
             
             # Exit handler
-            def on_escape(event):
+            def on_escape(_=None):
                 self.running = False
                 root.quit()
                 root.destroy()
