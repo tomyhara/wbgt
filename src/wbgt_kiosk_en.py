@@ -658,41 +658,18 @@ class WBGTKioskEN:
                 location_forecast_table.column('value', width=int(60 * col_width_multiplier), anchor='center')
                 location_forecast_table.column('level', width=int(80 * col_width_multiplier), anchor='center')
                 
-                # Configure table style (enhanced Windows support)
+                # Configure table style (simple version)
                 style = ttk.Style()
-                if is_windows:
-                    # Use 'alt' theme for Windows environment
-                    style.theme_use('alt')
-                else:
-                    style.theme_use('clam')
-                
+                style.theme_use('clam')
                 # Adjust row height based on font size
                 row_height = max(20, int(20 * config_en.FONT_SIZE_SMALL / 14.0))
-                
-                # Windows-specific configuration
-                if is_windows:
-                    style.configure('Treeview', 
-                                  background='#2a2a2a', 
-                                  foreground='white',
-                                  fieldbackground='#2a2a2a',
-                                  borderwidth=1,
-                                  font=('Arial', config_en.FONT_SIZE_SMALL),
-                                  rowheight=row_height,
-                                  selectbackground='#505050',
-                                  selectforeground='white')
-                    style.configure('Treeview.Heading', 
-                                  background='#404040', 
-                                  foreground='white',
-                                  borderwidth=1, 
-                                  font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'))
-                else:
-                    style.configure('Treeview', background='#2a2a2a', foreground='white', 
-                                  fieldbackground='#2a2a2a', borderwidth=1,
-                                  font=('Arial', config_en.FONT_SIZE_SMALL),
-                                  rowheight=row_height)
-                    style.configure('Treeview.Heading', background='#404040', foreground='white',
-                                  borderwidth=1, font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'))
-                    style.map('Treeview', background=[('selected', '#505050')])
+                style.configure('Treeview', background='#2a2a2a', foreground='white', 
+                              fieldbackground='#2a2a2a', borderwidth=1,
+                              font=('Arial', config_en.FONT_SIZE_SMALL),
+                              rowheight=row_height)
+                style.configure('Treeview.Heading', background='#404040', foreground='white',
+                              borderwidth=1, font=('Arial', config_en.FONT_SIZE_SMALL, 'bold'))
+                style.map('Treeview', background=[('selected', '#505050')])
                 
                 location_forecast_table.pack(fill='both', expand=True)
                 
@@ -885,45 +862,25 @@ class WBGTKioskEN:
                                             else:
                                                 temp_range = 'No forecast'
                                             
-                                            # Determine color based on precipitation probability (Windows compatibility)
-                                            pop_color = 'white'
-                                            pop_background = '#2a2a2a'
-                                            
+                                            # Display with icons based on precipitation probability (simple visual distinction)
+                                            pop_display = pop
                                             if pop != 'No forecast':
                                                 try:
                                                     pop_val = int(day['pop'])
                                                     if pop_val >= 70:
-                                                        # Use standard color names for Windows, hex codes for others
-                                                        pop_color = 'red' if is_windows else '#ff6666'
-                                                        pop_background = '#4a2a2a' if is_windows else '#3a2a2a'
+                                                        pop_display = f"🌧️ {pop} (High)"
                                                     elif pop_val >= 50:
-                                                        pop_color = 'orange' if is_windows else '#ffaa66'
-                                                        pop_background = '#4a3a2a' if is_windows else '#3a3a2a'
+                                                        pop_display = f"☔ {pop} (Med)"
                                                     elif pop_val >= 30:
-                                                        pop_color = 'yellow' if is_windows else '#ffff66'
-                                                        pop_background = '#4a4a2a' if is_windows else '#3a3a2a'
+                                                        pop_display = f"🌦️ {pop} (Low)"
+                                                    else:
+                                                        pop_display = f"☀️ {pop}"
                                                 except:
-                                                    pass
+                                                    pop_display = pop
                                             
-                                            # Add row
-                                            item_id = weekly_forecast_table.insert('', 'end', 
-                                                values=(date_str, weather_desc, pop, temp_range))
-                                            
-                                            # Use unique tag name for color setting
-                                            unique_tag = f"pop_{item_id}"
-                                            try:
-                                                weekly_forecast_table.tag_configure(unique_tag, 
-                                                    background=pop_background, foreground=pop_color)
-                                                weekly_forecast_table.item(item_id, tags=(unique_tag,))
-                                                self.logger.debug(f"Weekly forecast color setting successful: {pop_color} (Rain: {pop})")
-                                            except Exception as e:
-                                                # Fallback if color setting fails
-                                                self.logger.debug(f"Weekly forecast color setting failed ({unique_tag}): {e}")
-                                                try:
-                                                    # Alternative: Set color directly to item
-                                                    weekly_forecast_table.set(item_id, 'pop', f"🌧️ {pop}")
-                                                except:
-                                                    pass
+                                            # Add row (visual distinction with icons)
+                                            weekly_forecast_table.insert('', 'end', 
+                                                values=(date_str, weather_desc, pop_display, temp_range))
                                     else:
                                         # No data available
                                         weekly_forecast_table.insert('', 'end', 
